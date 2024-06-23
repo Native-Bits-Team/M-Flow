@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:m_flow/dependencies/md2pdf.dart';
+
 
 class FormPage extends StatefulWidget {
   const FormPage({Key? key}) : super(key: key);  // '?': Denotes that key can be of type 'null' or 'key'...
@@ -35,7 +37,6 @@ class _FormPageState extends State<FormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 183, 232, 255),
         toolbarHeight: 50.0,
@@ -151,3 +152,7 @@ class PreviewPanel extends StatelessWidget {
     );
   }
 }
+
+List<String> exportFormatOptions = ["HTML", "PDF"]; // Global Variable
+String exportFormat = exportFormatOptions[1];
+TextEditingController pathParameter =TextEditingController(text: "document_1.pdf");
