@@ -1,150 +1,153 @@
 import 'package:flutter/material.dart';
-
-_PreviewPanelState panel  = _PreviewPanelState(); // Temporary Global Vairable for development purpose
-
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class FormPage extends StatefulWidget {
-  const FormPage({super.key});
+  const FormPage({Key? key}) : super(key: key);  // '?': Denotes that key can be of type 'null' or 'key'...
+  // We can choose not to provide a Key when instantiating FormPage...
 
   @override
   State<FormPage> createState() => _FormPageState();
 }
 
 class _FormPageState extends State<FormPage> {
-  // Controllers to access the user's input
-  TextEditingController leftController = TextEditingController(); 
-  PreviewPanel rightController = const PreviewPanel();
+  TextEditingController leftController = TextEditingController();
+  String markdownText = "";  // Initialized an empty variable of type 'String' to store markdown text...
 
   @override
   void initState() {
     super.initState();
-    // Add a listener to the leftController
     leftController.addListener(_updateRightField);
   }
 
   @override
   void dispose() {
-    // Dispose the controllers when the widget is disposed, So that state object is removed permanently from the tree
-    leftController.dispose(); // Important to dispose of the controllers to free up resources and avoid memory leaks.
-    //rightController.dispose();
+    // Dispose the controllers when the widget is disposed, So that state object is removed permanently from the tree...
+    leftController.dispose(); // Important to dispose of the controllers to free up resources and avoid memory leaks...
     super.dispose();
   }
 
-  // Method to update the right text field in real-time
   void _updateRightField() {
     setState(() {
-      panel.update(leftController.text);
+      markdownText = leftController.text;  // Assigned user's input(left-form) to 'markdownText' variable...
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.lightBlueAccent, toolbarHeight: 32.0, title: Text("First Document !"), centerTitle: true, titleTextStyle: TextStyle(color: Colors.white),
-      actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu_open),)],),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(30),
-          child: Row(
-            children: [
-              // left form
-              Expanded(
-                child: Container(
-                  height: double.infinity,
-                  child: Column(
-                    children: [Expanded(child: TextField(
-                    controller: leftController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      // labelText: 'Left',
-                      hintText: 'What\'s on your mind?',
-                    ),
-                    maxLines: null, // null allows the form to grow dynamically as user types
-                    minLines: 50,  // Minimum number of lines to display
-                    // expands: true,
-                  )),SizedBox(height: 30), // spacer
-                  Row( mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [IconButton(onPressed: () {}, icon: Icon(Icons.arrow_left)),IconButton(onPressed: () {}, icon: Icon(Icons.add)),IconButton(onPressed: () {}, icon: Icon(Icons.arrow_right))])])
 
-                ),
-              ),
-
-              // spacer
-              SizedBox(width: 50),
-
-              // right form
-              Expanded(
-                child: Container(
-                  height: double.infinity,
-                  child: Column(
-                    children: [Expanded(child: rightController),
-                    SizedBox(height: 30),
-                    Row( mainAxisAlignment: MainAxisAlignment.end,
-                    children: [TextButton.icon(onPressed: () {}, label: Text("Export"), icon: Icon(Icons.save), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.lightBlueAccent), foregroundColor: WidgetStatePropertyAll(Colors.white)),)])])
-
-                ),
-              ),
-            ],
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 183, 232, 255),
+        toolbarHeight: 50.0,
+        // title: Text("First Document!"),
+        centerTitle: true,
+        titleTextStyle: TextStyle(color: Colors.white),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 30.0),
+            child: IconButton(onPressed: () {}, icon: Icon(Icons.home, color: Colors.white, size: 25.0,)),
           ),
+        ],
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(30),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left form
+            Expanded(
+              child: Container(
+                height: double.infinity,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: leftController,
+                        decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.lightBlue),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color.fromARGB(99, 128, 127, 127))
+                          ),
+                          border: OutlineInputBorder(),
+                          hintText: 'What\'s on your mind?',
+                        ),
+                        maxLines: null,
+                        minLines: 50,
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(onPressed: () {}, icon: Icon(Icons.arrow_left)),
+                        IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+                        IconButton(onPressed: () {}, icon: Icon(Icons.arrow_right)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Spacer
+            SizedBox(width: 50),
+
+            // Right form (PreviewPanel)
+            Expanded(
+              child: Container(
+                height: double.infinity,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: PreviewPanel(markdownText: markdownText),
+                    ),
+                    SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {},
+                          label: Text("Export"),
+                          icon: Icon(Icons.save),
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 183, 232, 255)),
+                            foregroundColor: WidgetStatePropertyAll(Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-
-
-class PreviewPanel extends StatefulWidget {
-  const PreviewPanel({super.key});
-  @override
-  State<PreviewPanel> createState() => _PreviewPanelState();
+class PreviewPanel extends StatelessWidget {
+  final String markdownText;  // used to declare a variable that can only be assigned once...
+  // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
   
-}
+  // Required keyword ensures that this parameter must be provided when constructing an instance of PreviewPanel...
+  const PreviewPanel({Key? key, required this.markdownText}) : super(key: key); 
 
-class _PreviewPanelState extends State<PreviewPanel> {
-  TextEditingController tcontroller = TextEditingController();
-  FocusNode tfocusnode = FocusNode();
-  Widget preview = markdownFromTextGenerator("");
   @override
   Widget build(BuildContext context) {
-    panel = this;
-    return Card.outlined(shadowColor: Colors.grey, elevation: 1.0, 
-    child: Padding(padding: const EdgeInsets.all(10.0), child: preview),
-);}
-  void update(String text){
-    setState(() {
-      preview = markdownFromTextGenerator(text);
-    });
+
+    // Card: A Material Design Card...
+    return Card(
+      shadowColor: Colors.grey,
+      elevation: 1.0,
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Markdown(data: markdownText),
+      ),
+    );
   }
-}
-
-
-Widget markdownFromTextGenerator(String text){
-
-  List<Widget> items = [];
-
-  List<String> lines = text.split('\n');
-
-  for (int i =0; i < lines.length ; ++i){
-
-    lines[i] = lines[i].trimLeft();
-
-    if (lines[i].startsWith("##")){
-      
-      items.add(Text(lines[i].substring(2).trimLeft(), style: TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold),));
-    } else if (lines[i].startsWith("#")) {
-      items.add(Text(lines[i].substring(1).trimLeft(), style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),));
-    } else {
-      items.add(Text(lines[i], style: TextStyle(fontSize: 20.0),));
-
-    }
-  }
-  Widget conWidget = Scaffold(
-    body: Column(crossAxisAlignment: CrossAxisAlignment.start,
-      children: items
-    ),
-  );
-
-
-  return conWidget;
 }
