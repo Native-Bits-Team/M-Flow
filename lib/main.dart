@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:m_flow/pages/dashboard.dart';
 import 'pages/form_page.dart';
 
 void main() => runApp(MyApp());

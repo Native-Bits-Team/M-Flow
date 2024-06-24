@@ -110,7 +110,7 @@ class _FormPageState extends State<FormPage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton.icon(
-                          onPressed: () {},
+                          onPressed: () {showDialog(context: context, builder: (BuildContext context) {return ExportDialog(dialogContext: context, markdownTextExport: markdownText);});},
                           label: Text("Export"),
                           icon: Icon(Icons.save),
                           style: ButtonStyle(
@@ -147,12 +147,100 @@ class PreviewPanel extends StatelessWidget {
       elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Markdown(data: markdownText),
+        child: Markdown(data: markdownText, styleSheet: MarkdownStyleSheet(code: TextStyle(backgroundColor: Colors.transparent),codeblockDecoration: BoxDecoration(color: Colors.black26) ),),
       ),
     );
   }
 }
 
-List<String> exportFormatOptions = ["HTML", "PDF"]; // Global Variable
-String exportFormat = exportFormatOptions[1];
-TextEditingController pathParameter =TextEditingController(text: "document_1.pdf");
+
+
+class ExportDialog extends StatefulWidget {
+
+  final BuildContext dialogContext;
+  final String markdownTextExport;
+
+  ExportDialog({Key? key, required this.dialogContext, required this.markdownTextExport}) : super(key: key);
+
+  @override
+  State<ExportDialog> createState() => _ExportDialogState();
+}
+
+class _ExportDialogState extends State<ExportDialog> {
+  List<String> exportFormatOptions = ["HTML", "PDF"]; 
+  String exportFormat = "PDF";
+  TextEditingController pathParameter =TextEditingController(text: "document_1.pdf");
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+                                      title: Text("Export Parameters"),
+                                      elevation: 3.0,
+                                      contentPadding: EdgeInsets.all(24.0),
+                                      children: [
+                                        Row(children: [
+                                          Text("Export Path: ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          SizedBox(width: 30.0),
+                                          Expanded(
+                                              child: TextField(
+                                                  controller: pathParameter))
+                                        ]),
+                                        SizedBox(height: 10.0),
+                                        Row(children: [
+                                          Text("File Format: ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          SizedBox(width: 10),
+                                          Text("HTML"),
+                                          Radio(
+                                              value: exportFormatOptions[0],
+                                              groupValue: exportFormat,
+                                              onChanged: (Object? newSelect) {
+                                                setState(() {
+                                                  exportFormat =
+                                                      newSelect.toString();
+                                                });
+                                              }),
+                                          SizedBox(width: 10.0),
+                                          Text("PDF"),
+                                          Radio(
+                                              value: exportFormatOptions[1],
+                                              groupValue: exportFormat,
+                                              onChanged: (Object? newSelect) {
+                                                setState(() {
+                                                  exportFormat =
+                                                      newSelect.toString();
+                                                });
+                                                ;
+                                              })
+                                        ]),
+                                        SizedBox(height: 10.0),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            TextButton.icon(
+                                                onPressed: () {
+                                                  
+                                                  Navigator.of(widget.dialogContext)
+                                                      .pop(null);
+                                                },
+                                                icon: Icon(Icons.cancel),
+                                                label: Text("Cancel")),
+                                            TextButton.icon(
+                                                onPressed: () {
+                                                  if (exportFormat == exportFormatOptions[0]){
+                                                  mdtopdf(widget.markdownTextExport, pathParameter.text, true);
+                                                  } else if (exportFormat == exportFormatOptions[1]) {
+                                                  mdtopdf(widget.markdownTextExport, pathParameter.text, false);
+                                                  }
+                                                },
+                                                icon: Icon(Icons.save),
+                                                label: Text("Export"))
+                                          ],
+                                        ),
+                                      ]);
+  }
+}

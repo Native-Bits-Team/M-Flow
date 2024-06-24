@@ -1,10 +1,14 @@
 // markdown_to_pdf MIT licensed | Copyright (c) 2022 Datagrove | Github link: https://github.com/datagrove/markdown_to_pdf/tree/main?tab=readme-ov-file
 
-// This file was modified by Native Bits Team.
+// This file was modified by Native Bits Team. ////////
 
 //import 'dart:developer';
+//import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+//import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -12,6 +16,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:pdf/pdf.dart' as p;
 import 'package:pdf/pdf.dart';
 import 'package:http/http.dart' as http;
+import 'package:pdf/widgets.dart';
 
 // computed style is a stack, each time we encounter an element like <p>... we push its style onto the stack, then pop it off at </p>
 // the top of the stack merges all of the styles of the parents.
@@ -449,10 +454,11 @@ mdtopdf(String input, String export_path, bool htmlOrPdf) async {
   if (document.body == null) {
     return;
   }
-  Chunk ch = await Styler().format(document.body!);
+  Chunk ch = await Styler().format(document.body!);  
   var doc = pw.Document();
   doc.addPage(pw.MultiPage(build: (context) => ch.widget ?? []));
   if (!htmlOrPdf){
   File(export_path).writeAsBytes(await doc.save());
   }
 }
+
