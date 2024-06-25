@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:m_flow/dependencies/md2pdf.dart';
@@ -172,7 +174,7 @@ class ExportDialog extends StatefulWidget {
 }
 
 class _ExportDialogState extends State<ExportDialog> {
-  List<String> exportFormatOptions = ["HTML", "PDF"]; 
+  List<String> exportFormatOptions = ["HTML", "PDF", "MD"]; 
   String exportFormat = "PDF";
   TextEditingController pathParameter =TextEditingController(text: "document_1.pdf");
 
@@ -218,7 +220,17 @@ class _ExportDialogState extends State<ExportDialog> {
                                                   exportFormat =
                                                       newSelect.toString();
                                                 });
-                                                ;
+                                              }),
+                                              SizedBox(width: 10.0),
+                                          Text("MD"),
+                                          Radio(
+                                              value: exportFormatOptions[2],
+                                              groupValue: exportFormat,
+                                              onChanged: (Object? newSelect) {
+                                                setState(() {
+                                                  exportFormat =
+                                                      newSelect.toString();
+                                                });
                                               })
                                         ]),
                                         SizedBox(height: 10.0),
@@ -240,6 +252,10 @@ class _ExportDialogState extends State<ExportDialog> {
                                                   mdtopdf(widget.markdownTextExport, pathParameter.text, true);
                                                   } else if (exportFormat == exportFormatOptions[1]) {
                                                   mdtopdf(widget.markdownTextExport, pathParameter.text, false);
+                                                  } else {
+                                                    File(pathParameter.text).writeAsString(widget.markdownTextExport).then((value) {
+                                                      Navigator.of(widget.dialogContext).pop();
+                                                    });
                                                   }
                                                 },
                                                 icon: Icon(Icons.save),
