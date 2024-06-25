@@ -212,8 +212,8 @@ class Styler {
     return pw.TextSpan(children: r);
   }
 
-  pw.TextStyle? s = null;
-  pw.Divider? f = null;
+  pw.TextStyle? s;
+  pw.Divider? f;
 
   // I only implmenented necessary ones, but follow the pattern
 
@@ -239,7 +239,7 @@ class Styler {
                 text: await inlineChildren(
                     e,
                     Style(
-                        boxDecoration: pw.BoxDecoration(
+                        boxDecoration: const pw.BoxDecoration(
                           color: PdfColors.grey200,
                           borderRadius:
                               pw.BorderRadius.all(pw.Radius.circular(3)),
@@ -267,7 +267,7 @@ class Styler {
           // blocks can contain blocks or spans
           case "ul":
           case "ol":
-            var ln;
+            int ln;
             final cl = e.attributes["start"];
             if (cl != null) {
               ln = int.parse(cl) - 1;
@@ -299,7 +299,7 @@ class Styler {
                   pw.SizedBox(width: 20, height: 20, child: bullet),
                   pw.Expanded(
                       child: pw.Padding(
-                          padding: pw.EdgeInsets.only(left: 10),
+                          padding: const pw.EdgeInsets.only(left: 10),
                           child: pw.Column(
                               crossAxisAlignment: pw.CrossAxisAlignment.start,
                               children: wl)))
@@ -356,8 +356,8 @@ class Styler {
                   child: pw.Row(
                       children: await widgetChildren(
                         e, Style(font: pw.Font.courier()))),
-                  padding: pw.EdgeInsets.all(5),
-                  decoration: pw.BoxDecoration(
+                  padding: const pw.EdgeInsets.all(5),
+                  decoration: const pw.BoxDecoration(
                       borderRadius: pw.BorderRadius.all(pw.Radius.circular(3)),
                       color: PdfColors.grey200))
             ]);
@@ -386,7 +386,7 @@ class Styler {
                   c as Element;
                   if (c.localName == "th") {
                     cellfill = PdfColors.grey300;
-                    border = pw.Border(
+                    border = const pw.Border(
                         bottom: pw.BorderSide(width: 2),
                         top: pw.BorderSide(color: PdfColors.white));
                     ws = await widgetChildren(
@@ -416,7 +416,7 @@ class Styler {
           case "p":
             return Chunk(widget: await widgetChildren(e, Style()));
           default:
-            print("${e.localName} is unknown");
+           // print("${e.localName} is unknown");
             return Chunk(widget: await widgetChildren(e, Style()));
         }
       case Node.ENTITY_NODE:
@@ -429,27 +429,27 @@ class Styler {
       case Node.DOCUMENT_FRAGMENT_NODE:
       case Node.DOCUMENT_NODE:
       case Node.DOCUMENT_TYPE_NODE:
-        print("${e.nodeType} is unknown node type");
+        //print("${e.nodeType} is unknown node type");
     }
     return Chunk();
   }
 }
 
 //mdtopdf(String path, String out) async {
-mdtopdf(String input, String export_path, bool htmlOrPdf) async {
+mdtopdf(String input, String exportPath, bool htmlOrPdf) async {
  // final md2 = await File(path).readAsString();
  String md2 = input;
   var htmlx = md.markdownToHtml(md2,
       inlineSyntaxes: [md.InlineHtmlSyntax()],
       blockSyntaxes: [
         const md.TableSyntax(),
-        md.FencedCodeBlockSyntax(),
-        md.HeaderWithIdSyntax(),
-        md.SetextHeaderWithIdSyntax(),
+        const md.FencedCodeBlockSyntax(),
+        const md.HeaderWithIdSyntax(),
+        const md.SetextHeaderWithIdSyntax(),
       ],
       extensionSet: md.ExtensionSet.gitHubWeb);
       if (htmlOrPdf){
-  File("$export_path.html").writeAsString(htmlx);
+  File("$exportPath.html").writeAsString(htmlx);
   return;
       }
   var document = parse(htmlx);
@@ -462,7 +462,7 @@ mdtopdf(String input, String export_path, bool htmlOrPdf) async {
   doc.addPage(pw.MultiPage(pageFormat: p.PdfPageFormat.a4,
     build: (context) => ch.widget ?? []));
   if (!htmlOrPdf){
-  File(export_path).writeAsBytes(await doc.save());
+  File(exportPath).writeAsBytes(await doc.save());
   }
 }
 
@@ -474,9 +474,9 @@ mdToWidgets(String input) async{
       inlineSyntaxes: [md.InlineHtmlSyntax()],
       blockSyntaxes: [
         const md.TableSyntax(),
-        md.FencedCodeBlockSyntax(),
-        md.HeaderWithIdSyntax(),
-        md.SetextHeaderWithIdSyntax(),
+        const md.FencedCodeBlockSyntax(),
+        const md.HeaderWithIdSyntax(),
+        const md.SetextHeaderWithIdSyntax(),
       ],
       extensionSet: md.ExtensionSet.gitHubWeb);
   var document = parse(htmlx);

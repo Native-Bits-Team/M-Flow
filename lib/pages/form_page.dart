@@ -7,8 +7,8 @@ import 'package:m_flow/dependencies/md2pdf.dart';
 
 class FormPage extends StatefulWidget {
   
-  String initText = "";
-  FormPage({Key? key, required String this.initText}) : super(key: key);  // '?': Denotes that key can be of type 'null' or 'key'...
+  final String initText;
+  const FormPage({super.key, required this.initText});  // '?': Denotes that key can be of type 'null' or 'key'...
   // We can choose not to provide a Key when instantiating FormPage...
   //final String initText = "";
   @override
@@ -49,11 +49,11 @@ class _FormPageState extends State<FormPage> {
         toolbarHeight: 50.0,
         // title: Text("First Document!"),
         centerTitle: true,
-        titleTextStyle: TextStyle(color: Colors.white),
+        titleTextStyle: const TextStyle(color: Colors.white),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 30.0),
-            child: IconButton(onPressed: () {}, icon: Icon(Icons.home, color: Colors.white, size: 25.0,)),
+            child: IconButton(onPressed: () {}, icon: const Icon(Icons.home, color: Colors.white, size: 25.0,)),
           ),
         ],
       ),
@@ -65,14 +65,14 @@ class _FormPageState extends State<FormPage> {
           children: [
             // Left form
             Expanded(
-              child: Container(
-                height: double.infinity,
+             // child: Container(
+               // height: double.infinity,
                 child: Column(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: leftController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.lightBlue),
                           ),
@@ -86,41 +86,41 @@ class _FormPageState extends State<FormPage> {
                         minLines: 50,
                       ),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        IconButton(onPressed: () {}, icon: Icon(Icons.arrow_left)),
-                        IconButton(onPressed: () {}, icon: Icon(Icons.add)),
-                        IconButton(onPressed: () {}, icon: Icon(Icons.arrow_right)),
+                        IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_left)),
+                        IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
+                        IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_right)),
                       ],
                     ),
                   ],
                 ),
               ),
-            ),
+          //  ),
 
             // Spacer
-            SizedBox(width: 50),
+            const SizedBox(width: 50),
 
             // Right form (PreviewPanel)
             Expanded(
-              child: Container(
-                height: double.infinity,
+            //  child: Container(
+              //  height: double.infinity,
                 child: Column(
                   children: [
                     Expanded(
                       child: PreviewPanel(markdownText: markdownText),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton.icon(
                           onPressed: () {showDialog(context: context, builder: (BuildContext context) {return ExportDialog(dialogContext: context, markdownTextExport: markdownText);});},
-                          label: Text("Export"),
-                          icon: Icon(Icons.save),
-                          style: ButtonStyle(
+                          label: const Text("Export"),
+                          icon: const Icon(Icons.save),
+                          style: const ButtonStyle(
                             backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 183, 232, 255)),
                             foregroundColor: WidgetStatePropertyAll(Colors.white),
                           ),
@@ -129,7 +129,7 @@ class _FormPageState extends State<FormPage> {
                     ),
                   ],
                 ),
-              ),
+            //  ),
             ),
           ],
         ),
@@ -143,7 +143,7 @@ class PreviewPanel extends StatelessWidget {
   // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
   
   // Required keyword ensures that this parameter must be provided when constructing an instance of PreviewPanel...
-  const PreviewPanel({Key? key, required this.markdownText}) : super(key: key); 
+  const PreviewPanel({super.key, required this.markdownText}); 
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +154,7 @@ class PreviewPanel extends StatelessWidget {
       elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Markdown(data: markdownText, styleSheet: MarkdownStyleSheet(code: TextStyle(backgroundColor: Colors.transparent),codeblockDecoration: BoxDecoration(color: Colors.black26) ),),
+        child: Markdown(data: markdownText, styleSheet: MarkdownStyleSheet(code: const TextStyle(backgroundColor: Colors.transparent),codeblockDecoration: const BoxDecoration(color: Colors.black26) ),),
       ),
     );
   }
@@ -167,7 +167,7 @@ class ExportDialog extends StatefulWidget {
   final BuildContext dialogContext;
   final String markdownTextExport;
 
-  ExportDialog({Key? key, required this.dialogContext, required this.markdownTextExport}) : super(key: key);
+  const ExportDialog({super.key, required this.dialogContext, required this.markdownTextExport});
 
   @override
   State<ExportDialog> createState() => _ExportDialogState();
@@ -181,26 +181,26 @@ class _ExportDialogState extends State<ExportDialog> {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-                                      title: Text("Export Parameters"),
+                                      title: const Text("Export Parameters"),
                                       elevation: 3.0,
-                                      contentPadding: EdgeInsets.all(24.0),
+                                      contentPadding: const EdgeInsets.all(24.0),
                                       children: [
                                         Row(children: [
-                                          Text("Export Path: ",
+                                          const Text("Export Path: ",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold)),
-                                          SizedBox(width: 30.0),
+                                          const SizedBox(width: 30.0),
                                           Expanded(
                                               child: TextField(
                                                   controller: pathParameter))
                                         ]),
-                                        SizedBox(height: 10.0),
+                                        const SizedBox(height: 10.0),
                                         Row(children: [
-                                          Text("File Format: ",
+                                          const Text("File Format: ",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold)),
-                                          SizedBox(width: 10),
-                                          Text("HTML"),
+                                          const SizedBox(width: 10),
+                                          const Text("HTML"),
                                           Radio(
                                               value: exportFormatOptions[0],
                                               groupValue: exportFormat,
@@ -210,8 +210,8 @@ class _ExportDialogState extends State<ExportDialog> {
                                                       newSelect.toString();
                                                 });
                                               }),
-                                          SizedBox(width: 10.0),
-                                          Text("PDF"),
+                                          const SizedBox(width: 10.0),
+                                          const Text("PDF"),
                                           Radio(
                                               value: exportFormatOptions[1],
                                               groupValue: exportFormat,
@@ -221,8 +221,8 @@ class _ExportDialogState extends State<ExportDialog> {
                                                       newSelect.toString();
                                                 });
                                               }),
-                                              SizedBox(width: 10.0),
-                                          Text("MD"),
+                                              const SizedBox(width: 10.0),
+                                          const Text("MD"),
                                           Radio(
                                               value: exportFormatOptions[2],
                                               groupValue: exportFormat,
@@ -233,7 +233,7 @@ class _ExportDialogState extends State<ExportDialog> {
                                                 });
                                               })
                                         ]),
-                                        SizedBox(height: 10.0),
+                                        const SizedBox(height: 10.0),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
@@ -244,8 +244,8 @@ class _ExportDialogState extends State<ExportDialog> {
                                                   Navigator.of(widget.dialogContext)
                                                       .pop(null);
                                                 },
-                                                icon: Icon(Icons.cancel),
-                                                label: Text("Cancel")),
+                                                icon: const Icon(Icons.cancel),
+                                                label: const Text("Cancel")),
                                             TextButton.icon(
                                                 onPressed: () {
                                                   if (exportFormat == exportFormatOptions[0]){
@@ -258,8 +258,8 @@ class _ExportDialogState extends State<ExportDialog> {
                                                     });
                                                   }
                                                 },
-                                                icon: Icon(Icons.save),
-                                                label: Text("Export"))
+                                                icon: const Icon(Icons.save),
+                                                label: const Text("Export"))
                                           ],
                                         ),
                                       ]);
