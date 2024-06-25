@@ -4,8 +4,10 @@
 
 //import 'dart:developer';
 //import 'dart:convert';
+//import 'dart:collection';
 import 'dart:io';
 import 'dart:typed_data';
+//import 'package:flutter/material.dart';
 //import 'package:flutter/material.dart';
 //import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +18,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:pdf/pdf.dart' as p;
 import 'package:pdf/pdf.dart';
 import 'package:http/http.dart' as http;
-import 'package:pdf/widgets.dart';
+//import 'package:pdf/widgets.dart';
 
 // computed style is a stack, each time we encounter an element like <p>... we push its style onto the stack, then pop it off at </p>
 // the top of the stack merges all of the styles of the parents.
@@ -435,7 +437,6 @@ class Styler {
 
 //mdtopdf(String path, String out) async {
 mdtopdf(String input, String export_path, bool htmlOrPdf) async {
-  print(Directory.current);
  // final md2 = await File(path).readAsString();
  String md2 = input;
   var htmlx = md.markdownToHtml(md2,
@@ -449,6 +450,7 @@ mdtopdf(String input, String export_path, bool htmlOrPdf) async {
       extensionSet: md.ExtensionSet.gitHubWeb);
       if (htmlOrPdf){
   File("$export_path.html").writeAsString(htmlx);
+  return;
       }
   var document = parse(htmlx);
   if (document.body == null) {
@@ -456,9 +458,32 @@ mdtopdf(String input, String export_path, bool htmlOrPdf) async {
   }
   Chunk ch = await Styler().format(document.body!);  
   var doc = pw.Document();
-  doc.addPage(pw.MultiPage(build: (context) => ch.widget ?? []));
+
+  doc.addPage(pw.MultiPage(pageFormat: p.PdfPageFormat.a4,
+    build: (context) => ch.widget ?? []));
   if (!htmlOrPdf){
   File(export_path).writeAsBytes(await doc.save());
   }
 }
 
+
+mdToWidgets(String input) async{
+
+   String md2 = input;
+  var htmlx = md.markdownToHtml(md2,
+      inlineSyntaxes: [md.InlineHtmlSyntax()],
+      blockSyntaxes: [
+        const md.TableSyntax(),
+        md.FencedCodeBlockSyntax(),
+        md.HeaderWithIdSyntax(),
+        md.SetextHeaderWithIdSyntax(),
+      ],
+      extensionSet: md.ExtensionSet.gitHubWeb);
+  var document = parse(htmlx);
+  if (document.body == null) {
+    return;
+  }
+  Chunk ch = await Styler().format(document.body!);  
+
+  return ch.widget;
+}

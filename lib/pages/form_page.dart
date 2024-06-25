@@ -4,9 +4,11 @@ import 'package:m_flow/dependencies/md2pdf.dart';
 
 
 class FormPage extends StatefulWidget {
-  const FormPage({Key? key}) : super(key: key);  // '?': Denotes that key can be of type 'null' or 'key'...
+  
+  String initText = "";
+  FormPage({Key? key, required String this.initText}) : super(key: key);  // '?': Denotes that key can be of type 'null' or 'key'...
   // We can choose not to provide a Key when instantiating FormPage...
-
+  //final String initText = "";
   @override
   State<FormPage> createState() => _FormPageState();
 }
@@ -18,6 +20,8 @@ class _FormPageState extends State<FormPage> {
   @override
   void initState() {
     super.initState();
+    markdownText = widget.initText;
+    leftController.text = markdownText;
     leftController.addListener(_updateRightField);
   }
 
@@ -31,6 +35,7 @@ class _FormPageState extends State<FormPage> {
   void _updateRightField() {
     setState(() {
       markdownText = leftController.text;  // Assigned user's input(left-form) to 'markdownText' variable...
+     // GetPageAmount(markdownText);
     });
   }
 
