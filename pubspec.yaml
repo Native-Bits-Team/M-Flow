@@ -7,6 +7,7 @@ environment:
   sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
+  file_picker: ^8.0.5
   flutter:
     sdk: flutter
   flutter_markdown: ^0.6.10
@@ -28,4 +29,4 @@ flutter:
 assets:
   trim: "assets/fonts/trim/trim.ttf"
   rustic: "assets/fonts/RusticBlackShadow/RusticBlackShadow.ttf"
-
+  githubTheme: "assets/themes/github.json"

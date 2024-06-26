@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -18,6 +19,9 @@ class FormPage extends StatefulWidget {
 class _FormPageState extends State<FormPage> {
   TextEditingController leftController = TextEditingController();
   String markdownText = "";  // Initialized an empty variable of type 'String' to store markdown text...
+  
+  Color? themeBackgroundColor; // Maybe replace with global themer
+
 
   @override
   void initState() {
@@ -43,7 +47,12 @@ class _FormPageState extends State<FormPage> {
 
   @override
   Widget build(BuildContext context) {
+   // if (themeBackgroundColor == null){
+    //File("assets/themes/github.json").readAsString().then((theme){
+    //});
+    //}
     return Scaffold(
+      backgroundColor: themeBackgroundColor,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 183, 232, 255),
         toolbarHeight: 50.0,
@@ -115,16 +124,26 @@ class _FormPageState extends State<FormPage> {
                     const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
+                      
+                      children: [TextButton.icon(
+                          onPressed: () {showDialog(context: context, builder: (BuildContext context) {return ExportDialog(dialogContext: context, markdownTextExport: markdownText);});},
+                          label: const Text("Apperance"),
+                          icon: const Icon(Icons.icecream),
+                          style: const ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 106, 228, 191)),
+                            foregroundColor: WidgetStatePropertyAll(Colors.white),
+                          ),
+                        ),
+                        SizedBox(width: 16.0,),
                         TextButton.icon(
                           onPressed: () {showDialog(context: context, builder: (BuildContext context) {return ExportDialog(dialogContext: context, markdownTextExport: markdownText);});},
                           label: const Text("Export"),
                           icon: const Icon(Icons.save),
                           style: const ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 183, 232, 255)),
+                            backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 71, 146, 180)),
                             foregroundColor: WidgetStatePropertyAll(Colors.white),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ],
@@ -149,12 +168,15 @@ class PreviewPanel extends StatelessWidget {
   Widget build(BuildContext context) {
 
     // Card: A Material Design Card...
+    
+
     return Card(
       shadowColor: Colors.grey,
       elevation: 1.0,
+     // color: Colors.blueGrey[900],
       child: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Markdown(data: markdownText, styleSheet: MarkdownStyleSheet(code: const TextStyle(backgroundColor: Colors.transparent),codeblockDecoration: const BoxDecoration(color: Colors.black26) ),),
+        child: Markdown(data: markdownText, styleSheet: build_style()),
       ),
     );
   }
@@ -265,3 +287,17 @@ class _ExportDialogState extends State<ExportDialog> {
                                       ]);
   }
 }
+
+
+
+MarkdownStyleSheet build_style(){
+  return MarkdownStyleSheet(
+  code: const TextStyle(backgroundColor: Colors.transparent),
+  codeblockDecoration: const BoxDecoration(color: Colors.black26),
+  h1: TextStyle(fontWeight: FontWeight.bold),
+  strong: TextStyle(fontWeight: FontWeight.bold),
+  
+  );
+}
+
+
