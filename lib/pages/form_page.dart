@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -262,7 +261,6 @@ class _ExportDialogState extends State<ExportDialog> {
                                           children: [
                                             TextButton.icon(
                                                 onPressed: () {
-                                                  
                                                   Navigator.of(widget.dialogContext)
                                                       .pop(null);
                                                 },
@@ -296,6 +294,8 @@ MarkdownStyleSheet build_style(){
   codeblockDecoration: const BoxDecoration(color: Colors.black26),
   h1: TextStyle(fontWeight: FontWeight.bold),
   strong: TextStyle(fontWeight: FontWeight.bold),
+ // em: TextStyle(fontWeight: FontWeight.bold)
+  
   
   );
 }
