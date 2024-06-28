@@ -40,3 +40,4 @@ app.*.map.json
 
 *.pdf
 *.html
+.vscode
