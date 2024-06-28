@@ -4,18 +4,59 @@
 
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:m_flow/components/profile_drawer.dart';
 import 'package:m_flow/pages/form_page.dart';
+import 'package:m_flow/pages/profile_page.dart';
 import 'package:screenshot/screenshot.dart';
 
 
-class DashBoard extends StatelessWidget{
+class DashBoard extends StatefulWidget{
   const DashBoard({super.key});
-  
+
+  @override
+  State<DashBoard> createState() => _DashBoardState();
+}
+
+class _DashBoardState extends State<DashBoard> {
+  // **-------------for Auth...
+  final user = FirebaseAuth.instance.currentUser!;
+
+  // method for signing-out User
+  void signOut(){
+    FirebaseAuth.instance.signOut();
+  }
+
+  // method to go to profile page
+  void LoadProfilePage(){
+    // drawer -> pop
+    Navigator.pop(context);
+
+    // load profile-page
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context)=> const ProfilePage(),
+      ));
+  }
+
+  // **-------------for Auth...
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // **-------------for Auth...
+      appBar: AppBar(),
+
+      // **------------for Auth...
+
+      drawer: ProfileDrawer(
+        onProfileTap: LoadProfilePage,
+        onLogoutTap: signOut,
+      ),
+      
+
       body: Padding(padding: const EdgeInsets.all(30.0), child: Column(children: [Expanded(child: Card(child: TextButton.icon(onPressed: (){}, label: const Text("New Document")))),
         const Expanded(child: ProjectGrid())]))
     );
@@ -33,6 +74,7 @@ class DocPreview extends StatefulWidget {
 class _DocPreviewState extends State<DocPreview> {
   Image? previewImageBytes;
   String test = ""; // This is temporary
+
   @override
   Widget build(BuildContext context) {
     if (previewImageBytes == null){

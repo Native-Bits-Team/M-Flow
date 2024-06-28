@@ -31,6 +31,27 @@
 
   <title>m_flow</title>
   <link rel="manifest" href="manifest.json">
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "firebase/app";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCesQHT--VbfUq6Ti3pzEyzkaTsvEd5aoM",
+      authDomain: "m-flow-a2d00.firebaseapp.com",
+      projectId: "m-flow-a2d00",
+      storageBucket: "m-flow-a2d00.appspot.com",
+      messagingSenderId: "65057465178",
+      appId: "1:65057465178:web:de041faa8be3be012cc963"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+  </script> 
+  
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
