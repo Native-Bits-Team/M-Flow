@@ -5,21 +5,65 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:m_flow/components/profile_drawer.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:m_flow/functions/json_db.dart';
+
 import 'package:m_flow/pages/form_page.dart';
+import 'package:m_flow/pages/profile_page.dart';
 import 'package:screenshot/screenshot.dart';
 
+class DashBoard extends StatefulWidget{
 
-
-class DashBoard extends StatelessWidget{
   const DashBoard({super.key});
-  
+
+  @override
+  State<DashBoard> createState() => _DashBoardState();
+}
+
+class _DashBoardState extends State<DashBoard> {
+  // **-------------for Auth...
+  final user = FirebaseAuth.instance.currentUser!;
+
+  // method for signing-out User
+  void signOut(){
+    FirebaseAuth.instance.signOut();
+  }
+
+  // method to go to profile page
+  void LoadProfilePage(){
+    // drawer -> pop
+    Navigator.pop(context);
+
+    // load profile-page
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context)=> const ProfilePage(),
+      ));
+  }
+
+  // **-------------for Auth...
   @override
   Widget build(BuildContext context) {
+    // To provide the 'join as a guest' feature...
+    bool isAnonymous = FirebaseAuth.instance.currentUser?.isAnonymous ?? false;
+
+
     return Scaffold(
+      // **-------------for Auth...
+      appBar: AppBar(),
+
+      // **------------for Auth...
+
+      drawer: ProfileDrawer(
+        onProfileTap: isAnonymous ? (){} : LoadProfilePage, // if user is anonymous, disable the profile button...
+        onLogoutTap: signOut,
+      ),
+      
       body: Padding(padding: const EdgeInsets.all(30.0), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch ,children: [Card(child: Padding(padding: EdgeInsets.all(30.0), child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
         TextButton.icon(icon: Icon(Icons.add), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
           FilePicker fP = FilePicker.platform;
@@ -65,10 +109,9 @@ class DocPreview extends StatefulWidget {
 class _DocPreviewState extends State<DocPreview> {
   Image? previewImageBytes;
   String test = ""; // This is temporary
+
   @override
   Widget build(BuildContext context) {
-   // print("build");
-   // print(widget.projectPath);
 
     if (previewImageBytes == null && widget.projectPath != ""){
     ScreenshotController sController = ScreenshotController();
