@@ -45,6 +45,10 @@ class _DashBoardState extends State<DashBoard> {
   // **-------------for Auth...
   @override
   Widget build(BuildContext context) {
+    // To provide the 'join as a guest' feature...
+    bool isAnonymous = FirebaseAuth.instance.currentUser?.isAnonymous ?? false;
+
+
     return Scaffold(
       // **-------------for Auth...
       appBar: AppBar(),
@@ -52,7 +56,7 @@ class _DashBoardState extends State<DashBoard> {
       // **------------for Auth...
 
       drawer: ProfileDrawer(
-        onProfileTap: LoadProfilePage,
+        onProfileTap: isAnonymous ? (){} : LoadProfilePage, // if user is anonymous, disable the profile button...
         onLogoutTap: signOut,
       ),
       
@@ -77,6 +81,7 @@ class _DocPreviewState extends State<DocPreview> {
 
   @override
   Widget build(BuildContext context) {
+
     if (previewImageBytes == null){
     ScreenshotController sController = ScreenshotController();
     File("test.md").readAsString().then((text){

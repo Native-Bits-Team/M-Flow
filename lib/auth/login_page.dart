@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:m_flow/components/my_button.dart'; // Custom button widget.
 import 'package:m_flow/components/my_textfield.dart'; // Custom textfield widget.
 import 'package:m_flow/components/logo.dart'; // Custom logo widget.
+import 'package:m_flow/pages/dashboard.dart'; 
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap; // Callback function to switch to registration page.
@@ -87,7 +88,17 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
+  // Anonymous sign in method
+  void joinAsGuest() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
+      // Navigate to dashboard
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const DashBoard()));
+    } catch (e) {
+      print('Failed to sign in anonymously: $e');
+    }
+    if (context.mounted) Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +111,8 @@ class _LoginPageState extends State<LoginPage> {
           width: 110,
           height: 50, 
           child: FloatingActionButton.extended(
-            onPressed: () {
-              // Action when FAB is pressed
+            onPressed: joinAsGuest,
 
-            },
             backgroundColor: Colors.blue.shade200, // Background color of FAB
             shape: ContinuousRectangleBorder(
               borderRadius: BorderRadius.circular(12), // Rounded corners for the FAB

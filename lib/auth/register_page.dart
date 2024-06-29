@@ -4,6 +4,7 @@ import 'package:m_flow/components/my_button.dart';
 import 'package:m_flow/components/my_textfield.dart';
 import 'package:m_flow/components/logo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:m_flow/pages/dashboard.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -51,14 +52,14 @@ class _RegisterPageState extends State<RegisterPage> {
         email: emailController.text, 
         password: passwordController.text,
       );
+      // pop the loading circle
+      if (context.mounted) Navigator.pop(context);
 
       // Create a document for the user in Firestore under 'Users' collection...
       FirebaseFirestore.instance.collection('Users').doc(userCredential.user!.email).set({
         'username': emailController.text.split('@')[0],
         'bio': 'Empty bio...' // Default bio
       }); 
-      // pop the loading circle
-      if (context.mounted) Navigator.pop(context);
 
 
     } on FirebaseAuthException catch (e) {
@@ -103,6 +104,19 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  // Anonymous sign in method
+  void joinAsGuest() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
+      // Navigate to dashboard
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const DashBoard()));
+    } catch (e) {
+      print('Failed to sign in anonymously: $e');
+    }
+    if (context.mounted) Navigator.pop(context);
+  }
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,9 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
           width: 110,
           height: 50, 
           child: FloatingActionButton.extended(
-            onPressed: () {
-              // Action when FAB is pressed
-            },
+            onPressed: joinAsGuest,
             backgroundColor: Colors.blue.shade200, // Background color of FAB
             shape: ContinuousRectangleBorder(
               borderRadius: BorderRadius.circular(12), // Rounded corners for the FAB
