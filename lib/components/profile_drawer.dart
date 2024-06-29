@@ -59,8 +59,6 @@ class ProfileDrawer extends StatelessWidget {
               onTap: onLogoutTap,
             ),
           ),
-
-
         ],
       ),
     );

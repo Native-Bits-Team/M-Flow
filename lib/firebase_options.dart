@@ -72,5 +72,4 @@ class DefaultFirebaseOptions {
     authDomain: 'm-flow-a2d00.firebaseapp.com',
     storageBucket: 'm-flow-a2d00.appspot.com',
   );
-
 }

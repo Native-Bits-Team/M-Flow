@@ -31,7 +31,7 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
       return LoginPage(
         onTap: Switchbw,
       ); // Passes switchBetweenPages method as onTap callback to LoginPage.
-    }  
+    }
     else {
       return RegisterPage(
         onTap: Switchbw, // Passes switchBetweenPages method as onTap callback to RegisterPage.
