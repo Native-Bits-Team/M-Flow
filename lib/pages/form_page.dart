@@ -2,8 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/dependencies/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
+import 'package:m_flow/functions/mark_down_styler.dart';
+
+_FormPageState? temp;
 
 
 class FormPage extends StatefulWidget {
@@ -20,9 +24,10 @@ class FormPage extends StatefulWidget {
 class _FormPageState extends State<FormPage> {
   TextEditingController leftController = TextEditingController();
   String markdownText = "";  // Initialized an empty variable of type 'String' to store markdown text...
-  
+  MarkdownStyleSheet markdownStyle = MarkdownStyleSheet();
   Color? themeBackgroundColor; // Maybe replace with global themer
-
+  Color? formPageBackgroundColor;
+  bool stopper = true;
 
   @override
   void initState() {
@@ -47,17 +52,32 @@ class _FormPageState extends State<FormPage> {
   }
 
   void updateStyle() {
-    
+    buildMarkdownStyle().then((markdownStyleValue){
+      getBackgroundColors().then((backgroundColors){
+      setState(() {
+        markdownStyle = markdownStyleValue;
+        themeBackgroundColor = backgroundColors[0];
+        formPageBackgroundColor = backgroundColors[1];
+
+      });
+
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (stopper){
+      stopper = false;
+      updateStyle();
+    }
    // if (themeBackgroundColor == null){
     //File("assets/themes/github.json").readAsString().then((theme){
     //});
     //}
+    temp = this;
     return Scaffold(
-      backgroundColor: themeBackgroundColor,
+      backgroundColor: formPageBackgroundColor,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 183, 232, 255),
         toolbarHeight: 50.0,
@@ -124,14 +144,14 @@ class _FormPageState extends State<FormPage> {
                 child: Column(
                   children: [
                     Expanded(
-                      child: PreviewPanel(markdownText: markdownText),
+                      child: PreviewPanel(markdownText: markdownText, style: markdownStyle, BackgroundColor: themeBackgroundColor),
                     ),
                     const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       
                       children: [TextButton.icon(
-                          onPressed: () {showDialog(context: context, builder: (BuildContext context) {return ParameterDialog(dialogContext: context, formContext: widget.widgetState);});},
+                          onPressed: () {showDialog(context: context, builder: (BuildContext context) {return ParameterDialog(dialogContext: context);});},
                           label: const Text("Apperance"),
                           icon: const Icon(Icons.icecream),
                           style: const ButtonStyle(
@@ -167,8 +187,9 @@ class PreviewPanel extends StatelessWidget {
   // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
   
   // Required keyword ensures that this parameter must be provided when constructing an instance of PreviewPanel...
-  PreviewPanel({super.key, required this.markdownText}); 
-  MarkdownStyleSheet style = MarkdownStyleSheet();
+  PreviewPanel({super.key, required this.markdownText, required this.style, this.BackgroundColor}); 
+  MarkdownStyleSheet style;
+  Color? BackgroundColor;
   @override
   Widget build(BuildContext context) {
 
@@ -177,7 +198,7 @@ class PreviewPanel extends StatelessWidget {
     return Card(
       shadowColor: Colors.grey,
       elevation: 1.0,
-     // color: Colors.blueGrey[900],
+      color: BackgroundColor,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Markdown(data: markdownText, styleSheet: style),
@@ -323,32 +344,51 @@ class _ExportDialogState extends State<ExportDialog> {
 }
 
 
-Color makeColor(int r, int g, int b){
-  return Color.fromARGB(255, r, g, b);
-}
 
-Future<MarkdownStyleSheet> build_style() async{
+Future<MarkdownStyleSheet> buildMarkdownStyle() async{
   Map<String, dynamic> themeValues = await loadThemeFile("assets/themes/github.json");
-  Color codeblockDecorationValue = makeColor(themeValues["codeblockDecoration"]["R"], themeValues["codeblockDecoration"]["G"], themeValues["codeblockDecoration"]["B"]);
+  print("Generating Style..");
+  //Color codeblockDecorationValue = makeColorJson(themeValues["codeblockDecoration"]);
   
+  var h1Style;
+  var pStyle;
+
+  
+
+  themeValues.forEach((key, value){
+    if (key == "h1"){
+      h1Style = makeTextStyleJson(value);
+    }
+    if (key == "p"){
+      pStyle = makeTextStyleJson(value);
+
+    }
+  });
+
+
   return MarkdownStyleSheet(
   code: const TextStyle(backgroundColor: Colors.transparent, fontWeight: FontWeight.bold
   ),
-  codeblockDecoration: BoxDecoration(color: codeblockDecorationValue),
-  h1: TextStyle(fontWeight: FontWeight.bold),
-  strong: TextStyle(fontWeight: FontWeight.bold),
+  codeblockDecoration: BoxDecoration(color: Colors.blue),
+  h1: h1Style,
+  p: pStyle
+  //strong: TextStyle(fontWeight: FontWeight.bold),
   );
 }
 
 
 
+Future<List<Color>> getBackgroundColors() async{
+    Map<String, dynamic> themeValues = await loadThemeFile("assets/themes/github.json");
+    return [Color(HexColor(themeValues["backgroundColor"]).value),Color(HexColor(themeValues["pageBackgroundColor"]).value)];
+}
 
 
 class ParameterDialog extends StatefulWidget {
 
   final BuildContext dialogContext;
-  _FormPageState? formContext;
-  ParameterDialog({super.key, required this.dialogContext, required this.formContext});
+  //_FormPageState? formContext;
+  ParameterDialog({super.key, required this.dialogContext});//, required this.formContext});
 
   @override
   State<ParameterDialog> createState() => _ParameterDialogState();
@@ -368,7 +408,7 @@ class _ParameterDialogState extends State<ParameterDialog> {
                                         Expanded(child: DropdownMenu(label: Text("Theme: "),
                                       trailingIcon: Icon(Icons.arrow_drop_down),
                                       onSelected: (valueName){
-                                        print(widget.dialogContext);
+                                        temp!.updateStyle();
                                       },
                                         dropdownMenuEntries: [DropdownMenuEntry(value: "github", label: "Github Theme")]))
                                         ]),

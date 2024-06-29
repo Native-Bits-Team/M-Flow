@@ -1,13 +1,15 @@
 {
-    "mainBackground": {
-        "R": 250,
-        "G": 32,
-        "B": 2
+    "backgroundColor": "0d1117",
+    "pageBackgroundColor": "2c3544",
+    "h1": {
+        "fontWeight" : "600",
+        "fontSize" : "32",
+        "color" : "e6edf3"
     },
-    "codeblockDecoration": {
-        "R": 250,
-        "G": 32,
-        "B": 2
+    "p":{
+        "fontSize" : "16",
+        "color" : "e6edf3"
+
     }
 
 }
