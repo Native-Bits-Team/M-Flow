@@ -1,0 +1,17 @@
+{
+    "user": {
+        "name": "user"
+    },
+    "settings": {
+        "signature": false,
+        "compress": false,
+        "deflat": false,
+        "lastFormat": "pdf",
+        "lastTheme": "github",
+        "lastNameUsed": ""
+    },
+    "projects": {
+        "recentOpen": {},
+        "list": {}
+    }
+}

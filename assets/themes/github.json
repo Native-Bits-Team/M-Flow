@@ -1,3 +1,13 @@
 {
-    "mainBackground": "Color.fromARGB(255,179,20,255)"
+    "mainBackground": {
+        "R": 250,
+        "G": 32,
+        "B": 2
+    },
+    "codeblockDecoration": {
+        "R": 250,
+        "G": 32,
+        "B": 2
+    }
+
 }

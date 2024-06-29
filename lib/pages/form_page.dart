@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:m_flow/dependencies/md2pdf.dart';
+import 'package:m_flow/functions/json_db.dart';
 
 
 class FormPage extends StatefulWidget {
   
   final String initText;
+
   const FormPage({super.key, required this.initText});  // '?': Denotes that key can be of type 'null' or 'key'...
   // We can choose not to provide a Key when instantiating FormPage...
   //final String initText = "";
@@ -42,6 +44,10 @@ class _FormPageState extends State<FormPage> {
       markdownText = leftController.text;  // Assigned user's input(left-form) to 'markdownText' variable...
      // GetPageAmount(markdownText);
     });
+  }
+
+  void updateStyle() {
+    
   }
 
   @override
@@ -125,7 +131,7 @@ class _FormPageState extends State<FormPage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       
                       children: [TextButton.icon(
-                          onPressed: () {showDialog(context: context, builder: (BuildContext context) {return ExportDialog(dialogContext: context, markdownTextExport: markdownText);});},
+                          onPressed: () {showDialog(context: context, builder: (BuildContext context) {return ParameterDialog(dialogContext: context, formContext: widget.widgetState);});},
                           label: const Text("Apperance"),
                           icon: const Icon(Icons.icecream),
                           style: const ButtonStyle(
@@ -161,13 +167,12 @@ class PreviewPanel extends StatelessWidget {
   // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
   
   // Required keyword ensures that this parameter must be provided when constructing an instance of PreviewPanel...
-  const PreviewPanel({super.key, required this.markdownText}); 
-
+  PreviewPanel({super.key, required this.markdownText}); 
+  MarkdownStyleSheet style = MarkdownStyleSheet();
   @override
   Widget build(BuildContext context) {
 
     // Card: A Material Design Card...
-    
 
     return Card(
       shadowColor: Colors.grey,
@@ -175,7 +180,7 @@ class PreviewPanel extends StatelessWidget {
      // color: Colors.blueGrey[900],
       child: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Markdown(data: markdownText, styleSheet: build_style()),
+        child: Markdown(data: markdownText, styleSheet: style),
       ),
     );
   }
@@ -198,9 +203,11 @@ class _ExportDialogState extends State<ExportDialog> {
   List<String> exportFormatOptions = ["HTML", "PDF", "MD"]; 
   String exportFormat = "PDF";
   TextEditingController pathParameter =TextEditingController(text: "document_1.pdf");
+  TextEditingController authorName =TextEditingController(text: "Mr. YOU");
 
   @override
   Widget build(BuildContext context) {
+
     return SimpleDialog(
                                       title: const Text("Export Parameters"),
                                       elevation: 3.0,
@@ -256,6 +263,35 @@ class _ExportDialogState extends State<ExportDialog> {
                                         ]),
                                         const SizedBox(height: 10.0),
                                         Row(
+                                          children: [
+                                          const Text("Document Title: ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          const SizedBox(width: 30.0),
+                                          Expanded(
+                                              child: TextField(
+                                                  controller: pathParameter))
+                                        ]),
+                                        Row(children: [
+                                          const Text("Author Name: ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          const SizedBox(width: 30.0),
+                                          Expanded(
+                                              child: TextField(
+                                                  controller: pathParameter))
+                                        ]),
+                                        Row(children: [
+                                          const Text("Document Subject: ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          const SizedBox(width: 30.0),
+                                          Expanded(
+                                              child: TextField(
+                                                  controller: pathParameter))
+                                        ]),    
+                                        const SizedBox(height: 10.0),
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
                                           children: [
@@ -287,17 +323,75 @@ class _ExportDialogState extends State<ExportDialog> {
 }
 
 
+Color makeColor(int r, int g, int b){
+  return Color.fromARGB(255, r, g, b);
+}
 
-MarkdownStyleSheet build_style(){
+Future<MarkdownStyleSheet> build_style() async{
+  Map<String, dynamic> themeValues = await loadThemeFile("assets/themes/github.json");
+  Color codeblockDecorationValue = makeColor(themeValues["codeblockDecoration"]["R"], themeValues["codeblockDecoration"]["G"], themeValues["codeblockDecoration"]["B"]);
+  
   return MarkdownStyleSheet(
-  code: const TextStyle(backgroundColor: Colors.transparent),
-  codeblockDecoration: const BoxDecoration(color: Colors.black26),
+  code: const TextStyle(backgroundColor: Colors.transparent, fontWeight: FontWeight.bold
+  ),
+  codeblockDecoration: BoxDecoration(color: codeblockDecorationValue),
   h1: TextStyle(fontWeight: FontWeight.bold),
   strong: TextStyle(fontWeight: FontWeight.bold),
- // em: TextStyle(fontWeight: FontWeight.bold)
-  
-  
   );
 }
 
+
+
+
+
+class ParameterDialog extends StatefulWidget {
+
+  final BuildContext dialogContext;
+  _FormPageState? formContext;
+  ParameterDialog({super.key, required this.dialogContext, required this.formContext});
+
+  @override
+  State<ParameterDialog> createState() => _ParameterDialogState();
+}
+
+class _ParameterDialogState extends State<ParameterDialog> {
+
+  @override
+  Widget build(BuildContext context) {
+
+    return SimpleDialog(
+                                      title: const Text("Apperance Parameters"),
+                                      elevation: 3.0,
+                                      contentPadding: const EdgeInsets.all(24.0),
+                                      children: [
+                                        Row(children: [
+                                        Expanded(child: DropdownMenu(label: Text("Theme: "),
+                                      trailingIcon: Icon(Icons.arrow_drop_down),
+                                      onSelected: (valueName){
+                                        print(widget.dialogContext);
+                                      },
+                                        dropdownMenuEntries: [DropdownMenuEntry(value: "github", label: "Github Theme")]))
+                                        ]),
+                                        const SizedBox(height: 20.0),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            TextButton.icon(
+                                                onPressed: () {
+                                                  Navigator.of(widget.dialogContext)
+                                                      .pop(null);
+                                                },
+                                                icon: const Icon(Icons.cancel),
+                                                label: const Text("Cancel")),
+                                            TextButton.icon(
+                                                onPressed: () {
+                                                 
+                                                },
+                                                icon: const Icon(Icons.save),
+                                                label: const Text("Save"))
+                                          ],
+                                        ),]);
+  }
+}
 

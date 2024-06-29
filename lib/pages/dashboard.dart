@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/form_page.dart';
@@ -27,6 +28,7 @@ class DashBoard extends StatelessWidget{
             if (result!.files[0].path == ""){
               return;
             }
+            addRecentOpen(result.files[0].path, result.files[0].name);
             File(result.files[0].path as String).readAsString().then((data){
 Navigator.push(context, MaterialPageRoute(builder: (context){
         return FormPage(initText: data);
@@ -55,9 +57,10 @@ Navigator.push(context, MaterialPageRoute(builder: (context){
 
 
 class DocPreview extends StatefulWidget {
-  DocPreview({super.key, projectPath, projectName});
+  DocPreview({super.key, projectPath, projectName, parentHandle});
   String projectPath = "";
   String projectName = "Unknown";
+  late final _ProjectGridState parentHandle; // Should be removed
   @override
   State<DocPreview> createState() => _DocPreviewState();
 }
@@ -88,6 +91,10 @@ class _DocPreviewState extends State<DocPreview> {
 
       
       showMenu(context: context, position: const RelativeRect.fromLTRB(10.0, 10.0, 30.0, 30.0), items: [PopupMenuItem(onTap: (){
+          removeRecentOpen(widget.projectPath, widget.projectName).then((){
+            widget.parentHandle.updatePreviews();
+          });
+          
         
       },child: const Text("Delete"))]);
       
@@ -106,7 +113,8 @@ class ProjectGrid extends StatefulWidget {
   ProjectGrid({super.key});
   List<String> pathPreview = [];
   List<String> namePreview = [];
-  int previewLength = 0; // temporarly
+ // int previewLength = 0; // temporarly
+  bool init = false;
 
   @override
   State<ProjectGrid> createState() => _ProjectGridState();
@@ -117,37 +125,54 @@ class _ProjectGridState extends State<ProjectGrid> {
 
   @override
   Widget build(BuildContext context) {
-          List<String> pathPreviewTemp = [];
-          List<String> namePreviewTemp = [];
-
-    if (widget.previewLength == 0){
-
-    File("test.json").readAsString().then((onValue){
-      
-      var d = jsonDecode(onValue) as Map<String, dynamic>;
-      int size = d["projects"].length;
-      widget.previewLength = size;
-      for (int k=0; k < size; ++k){
-                pathPreviewTemp.add(d["projects"][k.toString()]["filePath"]);
-                namePreviewTemp.add(d["projects"][k.toString()]["projectName"]);
-
-    }
-    setState(() {
-                widget.pathPreview.addAll(pathPreviewTemp);
-                widget.namePreview.addAll(namePreviewTemp);
-
-    });
-    });
-    
-    }
-    //print(widget.pathPreview.first.projectPath);
-    List<DocPreview> childPreview = [];
-    for (int j = 0 ; j < widget.pathPreview.length; ++j){
+          List<DocPreview> childPreview = [];
+    //if (!widget.init){
+      //widget.init = true;
+      updatePreviews();
+    //}
+        for (int j = 0 ; j < widget.pathPreview.length; ++j){
       childPreview.add(DocPreview());
       childPreview[j].projectPath = widget.pathPreview[j];
       childPreview[j].projectName = widget.namePreview[j];
+      childPreview[j].parentHandle = this;
     }
+  print(childPreview);
 
     return GridView(gridDelegate: gridDelegateRef, children: childPreview);
   }
+
+  void updatePreviews(){
+    print("Called");
+  List<String> pathPreviewTemp = [];
+  List<String> namePreviewTemp = [];
+
+ //   widget.pathPreview = [];
+   // widget.pathPreview = []; // we should dispose children?
+File("user.json").readAsString().then((onValue){
+      
+      var d = jsonDecode(onValue) as Map<String, dynamic>;
+      var list =  d["projects"]["recentOpen"];
+     // int size = list.length;
+     //widget.previewLength = size;
+     list.forEach((key, value){ // maybe we should save the data as json too, rather then a list
+                pathPreviewTemp.add(list[key]["filePath"]);
+                namePreviewTemp.add(list[key]["fileName"]);
+     });
+
+     if (pathPreviewTemp.toString() == widget.pathPreview.toString() && namePreviewTemp.toString() == widget.namePreview.toString()){
+      return;
+     } else {
+      print(pathPreviewTemp.toString());
+      print(widget.pathPreview.toString());
+      setState(() {
+      
+      widget.pathPreview = pathPreviewTemp;
+      widget.namePreview = namePreviewTemp;
+
+    });
+     }
+    
+    });
+    }
+  
 }

@@ -457,10 +457,17 @@ mdtopdf(String input, String exportPath, bool htmlOrPdf) async {
     return;
   }
   Chunk ch = await Styler().format(document.body!);  
-  var doc = pw.Document();
+  var doc = pw.Document(
+    compress: true,
+    version: p.PdfVersion.pdf_1_5,
+    title: "TESTING TITLE",
+    author: "Me",
+    creator: "SOMEONE"
+  );
 
   doc.addPage(pw.MultiPage(pageFormat: p.PdfPageFormat.a4,
     build: (context) => ch.widget ?? []));
+
   if (!htmlOrPdf){
   File(exportPath).writeAsBytes(await doc.save());
   }
