@@ -7,6 +7,7 @@ environment:
   sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
+  file_picker: ^8.0.5
   flutter:
     sdk: flutter
   firebase_core: ^3.1.1
@@ -29,8 +30,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  
-  assets:
-    - lib/images/
-  # trim: "assets/fonts/trim/trim.ttf"
-  # rustic: "assets/fonts/RusticBlackShadow/RusticBlackShadow.ttf"
+assets:
+  - lib/images/
+  trim: "assets/fonts/trim/trim.ttf"
+  rustic: "assets/fonts/RusticBlackShadow/RusticBlackShadow.ttf"
+  githubTheme: "assets/themes/github.json"
