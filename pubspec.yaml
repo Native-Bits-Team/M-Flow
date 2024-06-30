@@ -30,8 +30,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-assets:
-  - lib/images/
-  trim: "assets/fonts/trim/trim.ttf"
-  rustic: "assets/fonts/RusticBlackShadow/RusticBlackShadow.ttf"
-  githubTheme: "assets/themes/github.json"
+  assets:
+    - lib/images/
+    - "assets/fonts/trim/trim.ttf"
+    - "assets/fonts/RusticBlackShadow/RusticBlackShadow.ttf"
+    - "assets/themes/github.json"

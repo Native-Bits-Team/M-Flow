@@ -1,7 +1,3 @@
-
-
-
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -72,30 +68,25 @@ class _DashBoardState extends State<DashBoard> {
               return;
             }
             File(result.files[0].path as String).readAsString().then((data){
-Navigator.push(context, MaterialPageRoute(builder: (context){
-        return FormPage(initText: data);
-      }));
+              Navigator.push(context, MaterialPageRoute(builder: (context){
+                return FormPage(initText: data);
+                }));
+              });
             });
-            
-          });
-        },
-         label: const Text("Open Document")),
-        SizedBox(height: 20),
-        TextButton.icon(icon: Icon(Icons.add), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
-Navigator.push(context, MaterialPageRoute(builder: (context){
-        //addNewValue("projects", {"projectName": "Unknown", "filePath" : "README.md"});
-        return FormPage(initText: "");
-      }));
-
-        }, label: const Text("New Document"))
-
-        
-        
-        ]))), SizedBox(height: 30),
-        Expanded(child: ProjectGrid())]))
-    );
-  }
-}
+            },
+            label: const Text("Open Document")),
+            SizedBox(height: 20),
+            TextButton.icon(icon: Icon(Icons.add), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context){
+                //addNewValue("projects", {"projectName": "Unknown", "filePath" : "README.md"});
+                return FormPage(initText: "");
+                }));
+              }, label: const Text("New Document"))
+            ]))), SizedBox(height: 30),
+            Expanded(child: ProjectGrid())]))
+            );
+          }
+        }
 
 
 class DocPreview extends StatefulWidget {
@@ -178,8 +169,7 @@ class _ProjectGridState extends State<ProjectGrid> {
     setState(() {
                 widget.pathPreview.addAll(pathPreviewTemp);
                 widget.namePreview.addAll(namePreviewTemp);
-
-    });
+            });
     });
     
     }

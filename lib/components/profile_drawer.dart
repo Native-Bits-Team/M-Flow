@@ -43,7 +43,7 @@ class ProfileDrawer extends StatelessWidget {
               Tiles(
                 icon: Icons.person, 
                 text: 'Profile', 
-                onTap: onProfileTap,
+                onTap: onProfileTap, //-> **(go to lib/pages/dashboard.dart)**
               ),
 
               //-> **(go to lib/components/tiles.dart)**

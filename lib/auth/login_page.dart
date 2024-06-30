@@ -39,45 +39,46 @@ class _LoginPageState extends State<LoginPage> {
       email: emailController.text, 
       password: passwordController.text,
       );
-      // Dismiss the loading indicator.
-      if (context.mounted) {
-        Navigator.pop(context);
+      // Check if the widget is still mounted before dismissing the dialog
+      if (mounted) {
+        Navigator.pop(context); 
       }
 
     } on FirebaseAuthException catch (e) {
       // Handle Firebase authentication exceptions.
 
-      // Dismiss the loading indicator.
-      if (context.mounted) {
-        Navigator.pop(context);
+      // Check if the widget is still mounted before dismissing the dialog
+      if (mounted) {
+        Navigator.pop(context); 
       }
+
       // print(e.code);
       
       // Display appropriate error message based on the error code.
       if (e.code == 'invalid-email') {
-        invalidCredentialMsg(); // Show invalid email error message.
+        invalidCredentialMsg('Invalid Email!'); // Show invalid email error message.
       } 
       
       else if (e.code == 'unknown-error') {
-        invalidCredentialMsg(); // Show unknown error message.
+        invalidCredentialMsg('Invalid Credentials!'); // Show unknown error message.
       }
     }
 
   }
 
   // invalid credentials message
-  void invalidCredentialMsg() {
+  void invalidCredentialMsg(String message) {
     showDialog(
       context: context, 
       builder: (context) {
-        return const AlertDialog(
+        return AlertDialog(
           backgroundColor: Color.fromARGB(255, 193, 227, 244),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.zero),
             side: BorderSide(color: Colors.white, width: 2.0),
           ),
           title: Center(
-            child: Text('Invalid Credentials!',
+            child: Text(message,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -90,14 +91,36 @@ class _LoginPageState extends State<LoginPage> {
 
   // Anonymous sign in method
   void joinAsGuest() async {
+    // show loading circle
+    showDialog(
+      context: context,
+      // barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (context){
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+    );
+
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
+      await FirebaseAuth.instance.signInAnonymously();
+
+      // Dismiss the loading indicator after successful sign-in
+      if (mounted) {
+        Navigator.pop(context);
+      }
+
       // Navigate to dashboard
       Navigator.push(context, MaterialPageRoute(builder: (context) => const DashBoard()));
-    } catch (e) {
-      print('Failed to sign in anonymously: $e');
+
+    } on FirebaseAuthException catch (e) {
+
+      // Dismiss the loading indicator after an error
+      Navigator.pop(context);
+
+      print('error: $e');
+      invalidCredentialMsg('Failed to sign in anonymously!');
     }
-    if (context.mounted) Navigator.pop(context);
   }
 
   @override

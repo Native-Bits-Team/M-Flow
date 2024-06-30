@@ -52,8 +52,12 @@ class _RegisterPageState extends State<RegisterPage> {
         email: emailController.text, 
         password: passwordController.text,
       );
-      // pop the loading circle
-      if (context.mounted) Navigator.pop(context);
+
+      // Check if the widget is still mounted before dismissing the dialog
+      if (mounted) {
+        Navigator.pop(context); 
+      }
+      
 
       // Create a document for the user in Firestore under 'Users' collection...
       FirebaseFirestore.instance.collection('Users').doc(userCredential.user!.email).set({
@@ -63,8 +67,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
 
     } on FirebaseAuthException catch (e) {
-      // pop the loading circle
-      Navigator.pop(context);
+      // Check if the widget is still mounted before dismissing the dialog
+      if (mounted) {
+        Navigator.pop(context); 
+      }
+      
       
       // Handle different error codes and show appropriate messages
       if (e.code == 'invalid-email') {
@@ -106,16 +113,40 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // Anonymous sign in method
   void joinAsGuest() async {
+    // show loading circle
+    showDialog(
+      context: context,
+      // barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (context){
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+    );
+
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
+      await FirebaseAuth.instance.signInAnonymously();
+
+      // Dismiss the loading indicator after successful sign-in
+      if (mounted) {
+        Navigator.pop(context);
+      }
+
       // Navigate to dashboard
       Navigator.push(context, MaterialPageRoute(builder: (context) => const DashBoard()));
-    } catch (e) {
-      print('Failed to sign in anonymously: $e');
+
+
+    } on FirebaseAuthException catch (e) {
+
+      // Dismiss the loading indicator after successful sign-in
+      if (mounted) {
+        Navigator.pop(context);
+      }
+
+      print('error: $e');
+      invalidCredentialMsg('Failed to sign in anonymously!');
     }
-    if (context.mounted) Navigator.pop(context);
   }
-  
 
   @override
   Widget build(BuildContext context) {
