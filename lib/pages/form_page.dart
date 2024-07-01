@@ -269,7 +269,7 @@ class PreviewPanel extends StatelessWidget {
       color: BackgroundColor,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Markdown(data: markdownText, styleSheet: style),
+        child: Markdown(data: markdownText, styleSheet: style,),
       ),
     );
   }
@@ -403,24 +403,37 @@ Future<MarkdownStyleSheet> buildMarkdownStyle() async {
   Map<String, dynamic> themeValues = await loadThemeFile("assets/themes/github.json");
   
 
+  TextStyle? h1Style;
+  TextStyle? pStyle;
+  TextStyle? aStyle;
+  TextStyle? codeStyle;
+  Decoration? codeblockDecoration;
 
-  var h1Style;
-  var pStyle;
 
-  themeValues.forEach((key, value) {
-    if (key == "h1") {
+  themeValues.forEach((key, value){
+    if (key == "h1"){
       h1Style = makeTextStyleJson(value);
     }
     if (key == "p") {
       pStyle = makeTextStyleJson(value);
     }
+    if (key == "a"){
+      aStyle = makeTextStyleJson(value);
+    }
+    if (key == "code"){
+      codeStyle = makeTextStyleJson(value);
+    }
+    if (key == "codeblockDecoration"){
+      codeblockDecoration = makeBoxDecorationJson(value);
+    }
   });
 
   return MarkdownStyleSheet(
-    code: const TextStyle(backgroundColor: Colors.transparent, fontWeight: FontWeight.bold),
-    codeblockDecoration: BoxDecoration(color: Colors.blue),
-    h1: h1Style,
-    p: pStyle,
+  code: codeStyle,
+  codeblockDecoration: codeblockDecoration,
+  h1: h1Style,
+  p: pStyle,
+  a: aStyle,
   );
 }
 
