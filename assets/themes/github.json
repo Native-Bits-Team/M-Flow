@@ -1,15 +1,30 @@
 {
     "backgroundColor": "0d1117",
+    
     "pageBackgroundColor": "2c3544",
+    
     "h1": {
         "fontWeight" : "600",
         "fontSize" : "32",
-        "color" : "e6edf3"
+        "color" : "e6edf3",
+        "decoration": "underline",
+        "decorationColor": "30363db3",
+        "decorationThickness": "1"
     },
     "p":{
         "fontSize" : "16",
         "color" : "e6edf3"
-
+    },
+    "a":{
+        "fontSize" : "16",
+        "color" : "4493f8"
+    },
+    "code": {
+        "backgroundColor" : "4493f8",
+        "color" : "e6edf3"
+    },
+    "codeblockDecoration": {
+        "color": "2c3544"
     }
 
 }

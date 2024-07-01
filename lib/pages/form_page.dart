@@ -194,14 +194,13 @@ class PreviewPanel extends StatelessWidget {
   Widget build(BuildContext context) {
 
     // Card: A Material Design Card...
-
     return Card(
       shadowColor: Colors.grey,
       elevation: 1.0,
       color: BackgroundColor,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Markdown(data: markdownText, styleSheet: style),
+        child: Markdown(data: markdownText, styleSheet: style,),
       ),
     );
   }
@@ -350,10 +349,16 @@ Future<MarkdownStyleSheet> buildMarkdownStyle() async{
   print("Generating Style..");
   //Color codeblockDecorationValue = makeColorJson(themeValues["codeblockDecoration"]);
   
-  var h1Style;
-  var pStyle;
+ // if (styleSheet.codeblockTextBackgroundColor!){
+   // styleSheet.code.background.color = Colors.transparent;
+  //}
 
-  
+  TextStyle? h1Style;
+  TextStyle? pStyle;
+  TextStyle? aStyle;
+  TextStyle? codeStyle;
+  Decoration? codeblockDecoration;
+
 
   themeValues.forEach((key, value){
     if (key == "h1"){
@@ -361,18 +366,25 @@ Future<MarkdownStyleSheet> buildMarkdownStyle() async{
     }
     if (key == "p"){
       pStyle = makeTextStyleJson(value);
-
+    }
+    if (key == "a"){
+      aStyle = makeTextStyleJson(value);
+    }
+    if (key == "code"){
+      codeStyle = makeTextStyleJson(value);
+    }
+    if (key == "codeblockDecoration"){
+      codeblockDecoration = makeBoxDecorationJson(value);
     }
   });
 
 
   return MarkdownStyleSheet(
-  code: const TextStyle(backgroundColor: Colors.transparent, fontWeight: FontWeight.bold
-  ),
-  codeblockDecoration: BoxDecoration(color: Colors.blue),
+  code: codeStyle,
+  codeblockDecoration: codeblockDecoration,
   h1: h1Style,
-  p: pStyle
-  //strong: TextStyle(fontWeight: FontWeight.bold),
+  p: pStyle,
+  a: aStyle,
   );
 }
 
