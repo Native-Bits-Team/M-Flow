@@ -67,14 +67,25 @@ class _FormPageState extends State<FormPage> {
   String getUserInput() {
     String userInput = leftController.text;  // Get the entire user input
 
-    if (userInput.startsWith('m\$ ')){
-      userInput = userInput.replaceFirst('m\$ ', '\u200B');
-      // applyMarkdownStyleToLine();
+    // Split the input into lines
+    List<String> lines = userInput.split('\n');
+
+    // Iterate through each line and replace 'm$ ' with a zero-width space if it is at the start of the line
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith('m\$ ')) {
+        lines[i] = lines[i].replaceFirst('m\$ ', '\u200B'); // Unicode character for a zero-width space (ZWSP). 
+        // It is a non-printing character that doesn't produce any visible space or mark, but it is still present in the text
+      }
     }
-    // Print or use the userInput and lines as needed
+
+    // Join the lines back together
+    userInput = lines.join('\n');
+
+    // Print or use the userInput as needed
     // print('User Input: $userInput');
     return userInput;
   }
+
 
   //  THIS METHOD DIDN'T WORKED OUT...
   // void applyMarkdownStyleToLine(int lineIndex) {
