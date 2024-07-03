@@ -20,11 +20,13 @@
         "color" : "4493f8"
     },
     "code": {
-        "backgroundColor" : "4493f8",
-        "color" : "e6edf3"
+        "fontSize": "17",
+        "backgroundColor" : "B9B3B2",
+        "color" : "000000"
     },
     "codeblockDecoration": {
-        "color": "2c3544"
+        "color": "B9B3B2",
+        "borderRadius": "7"
     }
 
 }

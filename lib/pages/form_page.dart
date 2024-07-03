@@ -86,30 +86,6 @@ class _FormPageState extends State<FormPage> {
     return userInput;
   }
 
-
-  //  THIS METHOD DIDN'T WORKED OUT...
-  // void applyMarkdownStyleToLine(int lineIndex) {
-  //   setState(() {
-  //     List<String> lines = markdownText.split('\n');
-
-  //     if (lineIndex < lines.length) {
-  //       String line = lines[lineIndex];
-
-  //       // Check if the line contains "cs$" and "ce$" markers
-  //       if (line.contains("cs\$")) {
-  //         // Replace "ce$" with a placeholder that hides it visually
-  //         String updatedLine = line.replaceAll("ce\$", ""); // Replace with empty string or another placeholder
-
-  //         // Update the line in the list
-  //         lines[lineIndex] = updatedLine;
-
-  //         // Update UI with the updated markdownText
-  //         markdownText = lines.join('\n');
-  //       }
-  //     }
-  //   });
-  // }
-
   
   @override
   Widget build(BuildContext context) {
@@ -428,11 +404,22 @@ Future<MarkdownStyleSheet> buildMarkdownStyle() async {
   });
 
   return MarkdownStyleSheet(
-  code: codeStyle,
-  codeblockDecoration: codeblockDecoration,
-  h1: h1Style,
-  p: pStyle,
-  a: aStyle,
+    code: codeStyle,
+    codeblockDecoration: codeblockDecoration,
+    h1: h1Style,
+    p: pStyle,
+    a: aStyle,
+  );
+}
+
+// Added this code to apply the code-box-decoration
+BoxDecoration? makeBoxDecorationJson(Map<String, dynamic> value) {
+  Color color = HexColor(value['color']);
+  double borderRadius = double.tryParse(value['borderRadius']?.toString() ?? '0') ?? 0; // Convert to double and set to 0 if not specified or invalid
+
+  return BoxDecoration(
+    color: color,
+    borderRadius: BorderRadius.circular(borderRadius),
   );
 }
 
