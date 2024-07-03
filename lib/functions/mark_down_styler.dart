@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:hexcolor/hexcolor.dart';
 /*
 Color makeColorJson(Map<String, dynamic> colorJson){
@@ -60,11 +59,15 @@ TextStyle makeTextStyleJson(Map<String, dynamic> value){
   double? height;
   TextLeadingDistribution? leadingDistribution;
   Locale? locale;
-  Paint? background;
+  Paint background = Paint();
   Paint? foreground;
   List<Shadow>? shadows;
   List<FontFeature> fontFeatures;
   List<FontVariation> fontVariations;
+/////
+///
+
+background.color = Colors.transparent;
 
   value.forEach((key, value){
     if (key == "fontWeight"){
@@ -77,11 +80,57 @@ TextStyle makeTextStyleJson(Map<String, dynamic> value){
 
     if (key == "color"){
       color = Color(HexColor(value).value);
+     // background.colorFilter = ColorFilter.mode(Color(HexColor(value).value), BlendMode.srcOver);
+
+    }
+    if (key == "decoration"){
+        decoration = TextDecoration.underline;
+    }
+    if (key == "decorationColor"){
+      decorationColor = Color(HexColor(value).value);
+    }
+    if (key == "decorationThickness"){
+      decorationThickness = double.parse(value);
+    }
+    if (key == "backgroundColor"){
+     // background.blendMode = BlendMode.dstOver;
+      background.color = Color(HexColor(value).value);
     }
 
+    if (key == "foregroundColor"){
+      foreground = Paint();
+      foreground!.color = Color(HexColor(value).value);
+    }
 
   });
 
 
-  return TextStyle(fontWeight: fontWeight, fontSize: fontSize, color: color);
+  return TextStyle(fontWeight: fontWeight, 
+  fontSize: fontSize,
+  color: color, 
+  decoration: decoration,
+  decorationColor: decorationColor,
+  decorationThickness: decorationThickness,
+  background: background,
+  foreground: foreground);
+}
+
+Decoration makeBoxDecorationJson(Map<String, dynamic> value){
+  Color? color;
+  DecorationImage? image;
+  BoxBorder? border;
+  BorderRadiusGeometry? borderRadius;
+  List<BoxShadow>? boxShadow;
+  Gradient? gradient;
+  BlendMode? backgroundBlendMode;
+
+  //BoxShape shape = BoxShape.rectangle;
+
+  value.forEach((key, value){
+    if (key == "color"){
+      color = Color(HexColor(value).value);
+    }
+  });
+  //return ColoredBox();
+  return BoxDecoration(color: color);
 }
