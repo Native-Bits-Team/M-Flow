@@ -81,7 +81,6 @@ background.color = Colors.transparent;
     if (key == "color"){
       color = Color(HexColor(value).value);
      // background.colorFilter = ColorFilter.mode(Color(HexColor(value).value), BlendMode.srcOver);
-
     }
     if (key == "decoration"){
         decoration = TextDecoration.underline;
@@ -96,7 +95,6 @@ background.color = Colors.transparent;
      // background.blendMode = BlendMode.dstOver;
       background.color = Color(HexColor(value).value);
     }
-
     if (key == "foregroundColor"){
       foreground = Paint();
       foreground!.color = Color(HexColor(value).value);
@@ -116,10 +114,12 @@ background.color = Colors.transparent;
 }
 
 Decoration makeBoxDecorationJson(Map<String, dynamic> value){
+
+  double borderRadiusValue = 0;
+
   Color? color;
   DecorationImage? image;
   BoxBorder? border;
-  BorderRadiusGeometry? borderRadius;
   List<BoxShadow>? boxShadow;
   Gradient? gradient;
   BlendMode? backgroundBlendMode;
@@ -130,7 +130,13 @@ Decoration makeBoxDecorationJson(Map<String, dynamic> value){
     if (key == "color"){
       color = Color(HexColor(value).value);
     }
+    if (key == "borderRadius"){
+      borderRadiusValue = double.parse(value); // Idea: adding a check for validity of the value
+    }
   });
   //return ColoredBox();
-  return BoxDecoration(color: color);
+
+  BorderRadiusGeometry? borderRadius = BorderRadius.circular(borderRadiusValue);
+
+  return BoxDecoration(color: color, borderRadius: borderRadius);
 }

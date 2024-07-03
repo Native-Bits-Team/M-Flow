@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:m_flow/dependencies/flutter_markdown/lib/flutter_markdown.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/form_page.dart';
 import 'package:screenshot/screenshot.dart';
@@ -162,8 +162,6 @@ File("user.json").readAsString().then((onValue){
      if (pathPreviewTemp.toString() == widget.pathPreview.toString() && namePreviewTemp.toString() == widget.namePreview.toString()){
       return;
      } else {
-      print(pathPreviewTemp.toString());
-      print(widget.pathPreview.toString());
       setState(() {
       
       widget.pathPreview = pathPreviewTemp;

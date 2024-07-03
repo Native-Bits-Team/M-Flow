@@ -6,7 +6,7 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
+// TODO: change resolution
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
