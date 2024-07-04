@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:m_flow/pages/dashboard.dart';
 import 'package:m_flow/pages/form_page.dart';
+import 'package:m_flow/pages/settings.dart';
 
 void main() => runApp(MyApp());
 

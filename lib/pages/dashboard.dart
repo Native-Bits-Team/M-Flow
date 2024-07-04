@@ -21,7 +21,7 @@ class DashBoard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(padding: const EdgeInsets.all(30.0), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch ,children: [Card(child: Padding(padding: EdgeInsets.all(30.0), child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+      body: Padding(padding: const EdgeInsets.all(30.0), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch ,children: [Card(child: Padding(padding: EdgeInsets.all(30.0), child: Row(children: [Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
         TextButton.icon(icon: Icon(Icons.add), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
           FilePicker fP = FilePicker.platform;
           fP.pickFiles(dialogTitle: "Open Document", initialDirectory: "~/", type: FileType.custom, allowedExtensions: ["md"]).then((result){
@@ -46,11 +46,14 @@ Navigator.push(context, MaterialPageRoute(builder: (context){
       }));
 
         }, label: const Text("New Document"))
-
-        
-        
-        ]))), SizedBox(height: 30),
-        Expanded(child: ProjectGrid())]))
+        ]),
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [TextButton.icon(label: Text("Load From URL"), icon: Icon(Icons.add), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
+  })])
+        ]))),
+         SizedBox(height: 30),
+        Expanded(child: ProjectGrid())]
+        )
+        )
     );
   }
 }

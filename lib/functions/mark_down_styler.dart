@@ -133,10 +133,38 @@ Decoration makeBoxDecorationJson(Map<String, dynamic> value){
     if (key == "borderRadius"){
       borderRadiusValue = double.parse(value); // Idea: adding a check for validity of the value
     }
+    if (key == "border"){
+      value.forEach((keyC, valueC){
+        if (keyC == "all"){
+          Color bColor = Colors.transparent;
+          double bWidth = 1.0;
+          double bSide = BorderSide.strokeAlignInside;
+          valueC.forEach((keyCC, valueCC){
+            if (keyCC == "color"){
+              bColor = valueCC;
+            }
+            if (keyCC == "width"){
+              bWidth = valueCC;
+            }
+            if (keyCC == "strokeAlign"){
+              if (valueCC == "strokeAlignCenter"){
+                bSide = BorderSide.strokeAlignCenter;
+              } else if (valueCC == "strokeAlignOutside"){
+                bSide = BorderSide.strokeAlignOutside;
+              } else {
+                bSide = BorderSide.strokeAlignInside;
+              }
+            }
+          });
+          border = Border.all(color: bColor, width: bWidth, strokeAlign: bSide);
+        }
+      });
+    }
+
+
   });
   //return ColoredBox();
 
   BorderRadiusGeometry? borderRadius = BorderRadius.circular(borderRadiusValue);
-
-  return BoxDecoration(color: color, borderRadius: borderRadius);
+  return BoxDecoration(color: color, borderRadius: borderRadius, border: border);
 }

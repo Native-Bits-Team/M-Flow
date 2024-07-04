@@ -1,0 +1,14 @@
+"all": {
+    "color"
+    "width"
+    //"style" Always solid
+    "strokeAlign"
+}
+
+
+
+Borderradius : {
+    all
+    sides
+    one
+}

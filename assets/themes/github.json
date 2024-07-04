@@ -27,6 +27,9 @@
     "codeblockDecoration": {
         "color": "161b22",
         "borderRadius" : "6"
+    },
+    "blockquoteDecoration": {
+        "color": "8d96a0"
     }
 
 }

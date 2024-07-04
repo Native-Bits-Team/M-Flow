@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:m_flow/dependencies/flutter_markdown/lib/flutter_markdown.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/dependencies/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/functions/mark_down_styler.dart';
+import 'package:m_flow/functions/string_utilities.dart';
 
 _FormPageState? temp;
 
@@ -149,6 +151,29 @@ class _FormPageState extends State<FormPage> {
             Expanded(
               child: Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(onPressed: () {                    
+                      }, icon: const Icon(Icons.format_bold), color: Colors.white60),
+                      IconButton(onPressed: () {
+                        if (leftController.selection.start == leftController.selection.end){
+                        leftController.text = addSidesToWord(leftController.text, leftController.selection.start, "*");
+                        } else{
+                        String newText = "*";
+                        newText += leftController.text.substring(leftController.selection.start, leftController.selection.end);
+                        newText += "*";
+                        leftController.text = leftController.text.replaceRange(leftController.selection.start, leftController.selection.end, newText);
+                        }
+                      }, icon: const Icon(Icons.format_italic)
+                      ,color: Colors.white60),
+                      IconButton(onPressed: () {}, icon: const Icon(Icons.format_underline), color: Colors.white60),
+                      IconButton(onPressed: () {}, icon: const Icon(Icons.code), color: Colors.white60),
+                      IconButton(onPressed: () {}, icon: const Icon(Icons.format_quote), color: Colors.white60),
+                      //IconButton(onPressed: () {}, icon: const Icon(Icons), color: Colors.white60),
+
+
+                    ]),
                   Expanded(
                     child: TextField(
                       controller: leftController,
@@ -408,7 +433,7 @@ Future<MarkdownStyleSheet> buildMarkdownStyle() async {
   TextStyle? aStyle;
   TextStyle? codeStyle;
   Decoration? codeblockDecoration;
-
+  Decoration? blockquoteDecoration;
 
   themeValues.forEach((key, value){
     if (key == "h1"){
@@ -426,6 +451,9 @@ Future<MarkdownStyleSheet> buildMarkdownStyle() async {
     if (key == "codeblockDecoration"){
       codeblockDecoration = makeBoxDecorationJson(value);
     }
+    if (key == "blockquoteDecoration"){
+      blockquoteDecoration = makeBoxDecorationJson(value);
+    }
   });
 
   return MarkdownStyleSheet(
@@ -434,6 +462,7 @@ Future<MarkdownStyleSheet> buildMarkdownStyle() async {
   h1: h1Style,
   p: pStyle,
   a: aStyle,
+  blockquoteDecoration: blockquoteDecoration,
   );
 }
 

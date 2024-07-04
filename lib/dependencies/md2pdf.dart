@@ -467,7 +467,6 @@ mdtopdf(String input, String exportPath, bool htmlOrPdf) async {
 
   doc.addPage(pw.MultiPage(pageFormat: p.PdfPageFormat.a4,
     build: (context) => ch.widget ?? []));
-
   if (!htmlOrPdf){
   File(exportPath).writeAsBytes(await doc.save());
   }
@@ -491,6 +490,16 @@ mdToWidgets(String input) async{
     return;
   }
   Chunk ch = await Styler().format(document.body!);  
+  var doc = pw.Document(
+    compress: true,
+    version: p.PdfVersion.pdf_1_5,
+    title: "TESTING TITLE",
+    author: "Me",
+    creator: "SOMEONE"
+  );
 
-  return ch.widget;
+  doc.addPage(pw.MultiPage(pageFormat: p.PdfPageFormat.a4,
+    build: (context) => ch.widget ?? []));
+  
+  print(doc.pages.length);
 }
