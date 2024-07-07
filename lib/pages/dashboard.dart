@@ -21,8 +21,8 @@ class DashBoard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(padding: const EdgeInsets.all(30.0), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch ,children: [Card(child: Padding(padding: EdgeInsets.all(30.0), child: Row(children: [Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
-        TextButton.icon(icon: Icon(Icons.add), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
+      body: Padding(padding: const EdgeInsets.all(30.0), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch ,children: [Card(child: Padding(padding: const EdgeInsets.all(30.0), child: Row(children: [Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+        TextButton.icon(icon: const Icon(Icons.add), style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
           FilePicker fP = FilePicker.platform;
           fP.pickFiles(dialogTitle: "Open Document", initialDirectory: "~/", type: FileType.custom, allowedExtensions: ["md"]).then((result){
             if (result!.files[0].path == ""){
@@ -38,19 +38,19 @@ Navigator.push(context, MaterialPageRoute(builder: (context){
           });
         },
          label: const Text("Open Document")),
-        SizedBox(height: 20),
-        TextButton.icon(icon: Icon(Icons.add), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
+        const SizedBox(height: 20),
+        TextButton.icon(icon: const Icon(Icons.add), style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
 Navigator.push(context, MaterialPageRoute(builder: (context){
         //addNewValue("projects", {"projectName": "Unknown", "filePath" : "README.md"});
-        return FormPage(initText: "");
+        return const FormPage(initText: "");
       }));
 
         }, label: const Text("New Document"))
         ]),
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [TextButton.icon(label: Text("Load From URL"), icon: Icon(Icons.add), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [TextButton.icon(label: const Text("Load From URL"), icon: const Icon(Icons.add), style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
   })])
         ]))),
-         SizedBox(height: 30),
+         const SizedBox(height: 30),
         Expanded(child: ProjectGrid())]
         )
         )

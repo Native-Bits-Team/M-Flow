@@ -407,10 +407,10 @@ class MarkdownStyleSheet {
     );
     // If either of textScaler or textScaleFactor is non-null, pass null for the
     // other instead of the previous value, since only one is allowed.
-    final TextScaler? newTextScaler =
-        textScaler ?? (textScaleFactor == null ? this.textScaler : null);
-    final double? nextTextScaleFactor =
-        textScaleFactor ?? (textScaler == null ? this.textScaleFactor : null);
+//    final TextScaler? newTextScaler =
+//        textScaler ?? (textScaleFactor == null ? this.textScaler : null);
+//    final double? nextTextScaleFactor =
+//        textScaleFactor ?? (textScaler == null ? this.textScaleFactor : null);
     return MarkdownStyleSheet(
       a: a ?? this.a,
       p: p ?? this.p,
@@ -467,8 +467,9 @@ class MarkdownStyleSheet {
       codeblockAlign: codeblockAlign ?? this.codeblockAlign,
       superscriptFontFeatureTag:
           superscriptFontFeatureTag ?? this.superscriptFontFeatureTag,
-      textScaler: newTextScaler,
-      textScaleFactor: nextTextScaleFactor,
+        textScaler: textScaler,
+//      textScaler: newTextScaler,
+//      textScaleFactor: nextTextScaleFactor,
     );
   }
 
@@ -530,13 +531,14 @@ class MarkdownStyleSheet {
       orderedListAlign: other.orderedListAlign,
       blockquoteAlign: other.blockquoteAlign,
       codeblockAlign: other.codeblockAlign,
-      textScaleFactor: other.textScaleFactor,
+//      textScaleFactor: other.textScaleFactor,
       superscriptFontFeatureTag: other.superscriptFontFeatureTag,
       // Only one of textScaler and textScaleFactor can be passed. If
       // other.textScaleFactor is non-null, then the sheet was created with a
       // textScaleFactor and the textScaler was derived from that, so should be
       // ignored so that the textScaleFactor continues to be set.
-      textScaler: other.textScaleFactor == null ? other.textScaler : null,
+//      textScaler: other.textScaleFactor == null ? other.textScaler : null,
+        textScaler: other.textScaler
     );
   }
 

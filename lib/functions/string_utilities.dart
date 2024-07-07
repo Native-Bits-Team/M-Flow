@@ -1,14 +1,17 @@
 
 
 String addSidesToWord(String text, int start, String symbol){
+  if (text.isEmpty){
+    return "";
+  }
   int start = 0;
   int index = start + 1;
-  int? end;
+  int end = text.length;
   bool findStart = false;
   bool findEnd = false;
   String split = "";
   for (int i=0; i < index; ++i){
-    findStart = text.startsWith(' ', start-i);
+    findStart = text.startsWith([' ','.','('] as Pattern, start-i);
     if (findStart){
       start = start-i+1; // +1 to remove the space itself
       break;
@@ -21,13 +24,18 @@ String addSidesToWord(String text, int start, String symbol){
       end = i-1; // -1 to remove the space itself
       break;
     }
-  }
-  if (end == null){
-    end = split.length;
+    if (i == split.length){
+      end = split.length;
+      break;
+    }
   }
   String newText = "*";
   newText += text.substring(start, start+end);
   newText += "*";
-  text.replaceRange(start, start+end, newText);
+  if (start == 0 && (start+end) == text.length){
+    return newText;
+  } else {
+  text.replaceRange(start, start+end, newText); // Bug: this doesn't replace everything if start == 0 and start+end == length
   return text;
+  }
 }

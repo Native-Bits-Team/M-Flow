@@ -28,6 +28,7 @@ class _FormPageState extends State<FormPage> {
   Color? themeBackgroundColor; // Maybe replace with global theme
   Color? formPageBackgroundColor;
   bool stopper = true;
+  double zoom = 1.0;
 
   @override
   void initState() {
@@ -51,7 +52,7 @@ class _FormPageState extends State<FormPage> {
   }
 
   void updateStyle() {
-    buildMarkdownStyle().then((markdownStyleValue) {
+    buildMarkdownStyle(zoom).then((markdownStyleValue) {
       getBackgroundColors().then((backgroundColors) {
         setState(() {
           markdownStyle = markdownStyleValue;
@@ -129,19 +130,11 @@ class _FormPageState extends State<FormPage> {
     return Scaffold(
       backgroundColor: formPageBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 183, 232, 255),
-        toolbarHeight: 50.0,
+        backgroundColor: Color.fromARGB(255, 5, 24, 32),
+        toolbarHeight: 40.0,
         centerTitle: true,
+        title: Text("Document #1"),
         titleTextStyle: const TextStyle(color: Colors.white),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 30.0),
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.home, color: Colors.white, size: 25.0),
-            ),
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(30),
@@ -190,10 +183,10 @@ class _FormPageState extends State<FormPage> {
                       ),
                       maxLines: null,
                       minLines: 50,
-                      style: TextStyle(color: const Color.fromARGB(255, 158, 209, 233)),
+                      style: const TextStyle(color: Color.fromARGB(255, 158, 209, 233)),
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  /*const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -201,7 +194,7 @@ class _FormPageState extends State<FormPage> {
                       IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
                       IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_right)),
                     ],
-                  ),
+                  ),*/
                 ],
               ),
             ),
@@ -211,14 +204,22 @@ class _FormPageState extends State<FormPage> {
             Expanded(
               child: Column(
                 children: [
+                  Row(children: [IconButton(onPressed: () {
+                    zoom += 0.2;
+                    temp!.updateStyle();
+                  }, icon: const Icon(Icons.zoom_in), color: Colors.white60),
+                  IconButton(onPressed: () {
+                    zoom -= 0.2;
+                    temp!.updateStyle();
+                  }, icon: const Icon(Icons.zoom_out), color: Colors.white60)]),
                   Expanded(
                     child: PreviewPanel(
                       markdownText: markdownText,
                       style: markdownStyle,
-                      BackgroundColor: themeBackgroundColor,
-                    ),
+                      backgroundColor: themeBackgroundColor
+                      ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -233,7 +234,7 @@ class _FormPageState extends State<FormPage> {
                         },
                         label: const Text("Apperance"),
                         icon: const Icon(Icons.icecream),
-                        style: ButtonStyle(
+                        style: const ButtonStyle(
                           backgroundColor: WidgetStatePropertyAll(
                               Color.fromARGB(255, 106, 228, 191)),
                           foregroundColor: WidgetStatePropertyAll(Colors.white),
@@ -254,7 +255,7 @@ class _FormPageState extends State<FormPage> {
                         },
                         label: const Text("Export"),
                         icon: const Icon(Icons.save),
-                        style: ButtonStyle(
+                        style: const ButtonStyle(
                           backgroundColor: WidgetStatePropertyAll(
                               Color.fromARGB(255, 71, 146, 180)),
                           foregroundColor: WidgetStatePropertyAll(Colors.white),
@@ -276,13 +277,13 @@ class PreviewPanel extends StatelessWidget {
   final String markdownText; // used to declare a variable that can only be assigned once...
   // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
   final MarkdownStyleSheet style;
-  final Color? BackgroundColor;
+  final Color? backgroundColor;
 
-  PreviewPanel({
+  const PreviewPanel({
     super.key,
     required this.markdownText,
     required this.style,
-    this.BackgroundColor,
+    this.backgroundColor,
   });
 
   @override
@@ -291,10 +292,10 @@ class PreviewPanel extends StatelessWidget {
     return Card(
       shadowColor: Colors.grey,
       elevation: 1.0,
-      color: BackgroundColor,
+      color: backgroundColor,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Markdown(data: markdownText, styleSheet: style,),
+        child: Markdown(data: markdownText, styleSheet: style),
       ),
     );
   }
@@ -424,7 +425,7 @@ class _ExportDialogState extends State<ExportDialog> {
   }
 }
 
-Future<MarkdownStyleSheet> buildMarkdownStyle() async {
+Future<MarkdownStyleSheet> buildMarkdownStyle(double zoom) async {
   Map<String, dynamic> themeValues = await loadThemeFile("assets/themes/github.json");
   
 
@@ -463,6 +464,7 @@ Future<MarkdownStyleSheet> buildMarkdownStyle() async {
   p: pStyle,
   a: aStyle,
   blockquoteDecoration: blockquoteDecoration,
+  textScaler: TextScaler.linear(zoom)
   );
 }
 
@@ -477,7 +479,7 @@ Future<List<Color>> getBackgroundColors() async {
 class ParameterDialog extends StatefulWidget {
   final BuildContext dialogContext;
 
-  ParameterDialog({super.key, required this.dialogContext});
+  const ParameterDialog({super.key, required this.dialogContext});
 
   @override
   State<ParameterDialog> createState() => _ParameterDialogState();
@@ -495,12 +497,12 @@ class _ParameterDialogState extends State<ParameterDialog> {
           children: [
             Expanded(
               child: DropdownMenu(
-                label: Text("Theme: "),
-                trailingIcon: Icon(Icons.arrow_drop_down),
+                label: const Text("Theme: "),
+                trailingIcon: const Icon(Icons.arrow_drop_down),
                 onSelected: (valueName) {
                   temp!.updateStyle();
                 },
-                dropdownMenuEntries: [
+                dropdownMenuEntries: const [
                   DropdownMenuEntry(value: "github", label: "Github Theme")
                 ],
               ),
