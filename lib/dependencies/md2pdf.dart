@@ -11,8 +11,8 @@ import 'dart:typed_data';
 //import 'package:flutter/material.dart';
 //import 'package:flutter/material.dart';
 //import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart' as w;
+//import 'package:flutter/services.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -500,7 +500,10 @@ FutureOr<Uint8List> generatePdfFromMD(String md2, p.PdfPageFormat format) async 
   return doc.save();
 }
 
-generatePdfImageFromMD(String md2, p.PdfPageFormat format) async {
+Future<w.Image?> generatePdfImageFromMD(String md2, p.PdfPageFormat format) async {
+  if (md2 == ""){
+    return null;
+  }
   var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()],
   blockSyntaxes: [const md.TableSyntax(),
   const md.FencedCodeBlockSyntax(),
@@ -513,14 +516,12 @@ generatePdfImageFromMD(String md2, p.PdfPageFormat format) async {
   Chunk ch = await Styler().format(document.body!);
   var doc = pw.Document(
     compress: true,
-    version: p.PdfVersion.pdf_1_5,
-    title: "TEST",
-    author: "Me",
-    creator: ""
-  );
+    version: p.PdfVersion.pdf_1_5,);
 
   doc.addPage(pw.MultiPage(pageFormat: format, build: (context) => ch.widget ?? []));
   Uint8List t = await doc.save();
-  pw.ImageProxy()
-  return PdfRasterImage(PdfRaster(400, 400, t)) as ImageProvider;
+  Stream<PdfRaster> r = Printing.raster(t); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
+  PdfRaster j = await r.first;
+  Uint8List k = await j.toPng();
+  return w.Image.memory(k,width: j.width.toDouble(), height: j.height.toDouble());
 }

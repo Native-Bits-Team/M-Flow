@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:m_flow/dependencies/flutter_markdown/lib/flutter_markdown.dart';
+import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/form_page.dart';
 import 'package:screenshot/screenshot.dart';

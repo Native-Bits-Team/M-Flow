@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:m_flow/dependencies/flutter_markdown/lib/flutter_markdown.dart';
+import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/dependencies/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
@@ -132,10 +132,10 @@ class _FormPageState extends State<FormPage> {
     return Scaffold(
       backgroundColor: formPageBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 5, 24, 32),
+        backgroundColor: const Color.fromARGB(255, 5, 24, 32),
         toolbarHeight: 40.0,
         centerTitle: true,
-        title: Text("Document #1"),
+        title: const Text("Document #1"),
         titleTextStyle: const TextStyle(color: Colors.white),
       ),
       body: Padding(
@@ -326,23 +326,22 @@ class _ExportDialogState extends State<ExportDialog> {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      title: const Text("Test"),
-      children: [],
-    );
-    return SimpleDialog(
       title: const Text("Export Parameters"),
       elevation: 3.0,
       contentPadding: const EdgeInsets.all(24.0),
       children: [
-  Expanded(child:
-        Row(children:[
         Row(children: [
+        Column(children: [
+          SizedBox(width: 300,child:
+          Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
           const Text("Export Path: ", style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(width: 30.0),
           Expanded(child: TextField(controller: pathParameter)),
-        ]),
+        ])),
         const SizedBox(height: 10.0),
-        Row(children: [
+        SizedBox(width: 300, child: Row(children: [
           const Text("File Format: ", style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(width: 10),
           const Text("HTML"),
@@ -377,31 +376,31 @@ class _ExportDialogState extends State<ExportDialog> {
               });
             },
           ),
-        ]),
+        ])),
         const SizedBox(height: 10.0),
-        Row(
+        SizedBox(width: 300, child: Row(
           children: [
             const Text("Document Title: ", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(width: 30.0),
             Expanded(child: TextField(controller: pathParameter)),
           ],
-        ),
-        Row(
+        )),
+        SizedBox(width: 300, child: Row(
           children: [
             const Text("Author Name: ", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(width: 30.0),
             Expanded(child: TextField(controller: pathParameter)),
           ],
-        ),
-        Row(
+        )),
+        SizedBox(width: 300, child: Row(
           children: [
             const Text("Document Subject: ", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(width: 30.0),
             Expanded(child: TextField(controller: pathParameter)),
           ],
-        ),
+        )),
         const SizedBox(height: 10.0),
-        Row(
+        SizedBox(width: 300, child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             TextButton.icon(
@@ -425,12 +424,13 @@ class _ExportDialogState extends State<ExportDialog> {
               },
               icon: const Icon(Icons.save),
               label: const Text("Export"),
-            ),
-          ],
-        ),
-        //SizedBox( width: 10, height:  10,child: PdfPreview(build: (f) => generatePdfFromMD(widget.markdownTextExport,f), enableScrollToPage: true))
+            )
+        
+        
+        ]))]),
+        Column(children: [SizedBox(width:300, child:DocumentPreview(widget.markdownTextExport))])        //SizedBox( width: 10, height:  10,child: PdfPreview(build: (f) => generatePdfFromMD(widget.markdownTextExport,f), enableScrollToPage: true))
         ])
-    )],
+        ],
     );
   }
 }
@@ -539,5 +539,29 @@ class _ParameterDialogState extends State<ParameterDialog> {
         ),
       ],
     );
+  }
+}
+
+
+class DocumentPreview extends StatefulWidget {
+  String Content = "";
+  DocumentPreview(this.Content, {super.key});
+  @override
+  State<DocumentPreview> createState() => _DocumentPreviewState();
+}
+
+class _DocumentPreviewState extends State<DocumentPreview> {
+  Image? previewImage;
+  @override
+  Widget build(BuildContext context) {
+    if (previewImage == null){
+      generatePdfImageFromMD(widget.Content, PdfPageFormat.a4).then((image){
+        setState(() {
+          previewImage = image;
+        });
+      });
+    }
+
+    return Container(width: 300, height: 300,child: Card(child:previewImage));
   }
 }
