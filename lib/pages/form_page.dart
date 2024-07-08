@@ -8,6 +8,8 @@ import 'package:m_flow/dependencies/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/functions/mark_down_styler.dart';
 import 'package:m_flow/functions/string_utilities.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 
 _FormPageState? temp;
 
@@ -324,10 +326,16 @@ class _ExportDialogState extends State<ExportDialog> {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
+      title: const Text("Test"),
+      children: [],
+    );
+    return SimpleDialog(
       title: const Text("Export Parameters"),
       elevation: 3.0,
       contentPadding: const EdgeInsets.all(24.0),
       children: [
+  Expanded(child:
+        Row(children:[
         Row(children: [
           const Text("Export Path: ", style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(width: 30.0),
@@ -420,7 +428,9 @@ class _ExportDialogState extends State<ExportDialog> {
             ),
           ],
         ),
-      ],
+        //SizedBox( width: 10, height:  10,child: PdfPreview(build: (f) => generatePdfFromMD(widget.markdownTextExport,f), enableScrollToPage: true))
+        ])
+    )],
     );
   }
 }

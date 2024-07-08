@@ -5,11 +5,13 @@
 //import 'dart:developer';
 //import 'dart:convert';
 //import 'dart:collection';
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 //import 'package:flutter/material.dart';
 //import 'package:flutter/material.dart';
 //import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
@@ -18,6 +20,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:pdf/pdf.dart' as p;
 import 'package:pdf/pdf.dart';
 import 'package:http/http.dart' as http;
+import 'package:printing/printing.dart';
 //import 'package:pdf/widgets.dart';
 
 // computed style is a stack, each time we encounter an element like <p>... we push its style onto the stack, then pop it off at </p>
@@ -436,9 +439,9 @@ class Styler {
 }
 
 //mdtopdf(String path, String out) async {
-mdtopdf(String input, String exportPath, bool htmlOrPdf) async {
+mdtopdf(String md2, String exportPath, bool htmlOrPdf) async {
  // final md2 = await File(path).readAsString();
- String md2 = input;
+// String md2 = input;
   var htmlx = md.markdownToHtml(md2,
       inlineSyntaxes: [md.InlineHtmlSyntax()],
       blockSyntaxes: [
@@ -462,7 +465,7 @@ mdtopdf(String input, String exportPath, bool htmlOrPdf) async {
     version: p.PdfVersion.pdf_1_5,
     title: "TESTING TITLE",
     author: "Me",
-    creator: "SOMEONE"
+    creator: ""
   );
 
   doc.addPage(pw.MultiPage(pageFormat: p.PdfPageFormat.a4,
@@ -473,33 +476,51 @@ mdtopdf(String input, String exportPath, bool htmlOrPdf) async {
 }
 
 
-mdToWidgets(String input) async{
+FutureOr<Uint8List> generatePdfFromMD(String md2, p.PdfPageFormat format) async {
+  var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()],
+  blockSyntaxes: [const md.TableSyntax(),
+  const md.FencedCodeBlockSyntax(),
+  const md.HeaderWithIdSyntax(),
+  const md.SetextHeaderWithIdSyntax()],
+  extensionSet: md.ExtensionSet.gitHubWeb);
 
-   String md2 = input;
-  var htmlx = md.markdownToHtml(md2,
-      inlineSyntaxes: [md.InlineHtmlSyntax()],
-      blockSyntaxes: [
-        const md.TableSyntax(),
-        const md.FencedCodeBlockSyntax(),
-        const md.HeaderWithIdSyntax(),
-        const md.SetextHeaderWithIdSyntax(),
-      ],
-      extensionSet: md.ExtensionSet.gitHubWeb);
   var document = parse(htmlx);
-  if (document.body == null) {
-    return;
-  }
-  Chunk ch = await Styler().format(document.body!);  
+
+  Chunk ch = await Styler().format(document.body!);
   var doc = pw.Document(
     compress: true,
     version: p.PdfVersion.pdf_1_5,
-    title: "TESTING TITLE",
+    title: "TEST",
     author: "Me",
-    creator: "SOMEONE"
+    creator: ""
   );
 
-  doc.addPage(pw.MultiPage(pageFormat: p.PdfPageFormat.a4,
-    build: (context) => ch.widget ?? []));
-  
-  print(doc.pages.length);
+  doc.addPage(pw.MultiPage(pageFormat: format, build: (context) => ch.widget ?? []));
+  print("TEST");
+  return doc.save();
+}
+
+generatePdfImageFromMD(String md2, p.PdfPageFormat format) async {
+  var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()],
+  blockSyntaxes: [const md.TableSyntax(),
+  const md.FencedCodeBlockSyntax(),
+  const md.HeaderWithIdSyntax(),
+  const md.SetextHeaderWithIdSyntax()],
+  extensionSet: md.ExtensionSet.gitHubWeb);
+
+  var document = parse(htmlx);
+
+  Chunk ch = await Styler().format(document.body!);
+  var doc = pw.Document(
+    compress: true,
+    version: p.PdfVersion.pdf_1_5,
+    title: "TEST",
+    author: "Me",
+    creator: ""
+  );
+
+  doc.addPage(pw.MultiPage(pageFormat: format, build: (context) => ch.widget ?? []));
+  Uint8List t = await doc.save();
+  pw.ImageProxy()
+  return PdfRasterImage(PdfRaster(400, 400, t)) as ImageProvider;
 }
