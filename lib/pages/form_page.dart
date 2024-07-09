@@ -150,7 +150,7 @@ class _FormPageState extends State<FormPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       IconButton(onPressed: () {                    
-                      }, icon: const Icon(Icons.format_bold), color: Colors.white60),
+                      }, icon: const Icon(Icons.format_bold)),
                       IconButton(onPressed: () {
                         if (leftController.selection.start == leftController.selection.end){
                         leftController.text = addSidesToWord(leftController.text, leftController.selection.start, "*");
@@ -160,14 +160,10 @@ class _FormPageState extends State<FormPage> {
                         newText += "*";
                         leftController.text = leftController.text.replaceRange(leftController.selection.start, leftController.selection.end, newText);
                         }
-                      }, icon: const Icon(Icons.format_italic)
-                      ,color: Colors.white60),
-                      IconButton(onPressed: () {}, icon: const Icon(Icons.format_underline), color: Colors.white60),
-                      IconButton(onPressed: () {}, icon: const Icon(Icons.code), color: Colors.white60),
-                      IconButton(onPressed: () {}, icon: const Icon(Icons.format_quote), color: Colors.white60),
-                      //IconButton(onPressed: () {}, icon: const Icon(Icons), color: Colors.white60),
-
-
+                      }, icon: const Icon(Icons.format_italic)),
+                      IconButton(onPressed: () {}, icon: const Icon(Icons.format_underline)),
+                      IconButton(onPressed: () {}, icon: const Icon(Icons.code)),
+                      IconButton(onPressed: () {}, icon: const Icon(Icons.format_quote)),
                     ]),
                   Expanded(
                     child: TextField(
@@ -206,14 +202,54 @@ class _FormPageState extends State<FormPage> {
             Expanded(
               child: Column(
                 children: [
-                  Row(children: [IconButton(onPressed: () {
+                  Row(
+                    children: [IconButton(onPressed: () {
                     zoom += 0.2;
                     temp!.updateStyle();
-                  }, icon: const Icon(Icons.zoom_in), color: Colors.white60),
+                  }, icon: const Icon(Icons.zoom_in)),
                   IconButton(onPressed: () {
                     zoom -= 0.2;
                     temp!.updateStyle();
-                  }, icon: const Icon(Icons.zoom_out), color: Colors.white60)]),
+                  }, icon: const Icon(Icons.zoom_out)),
+                Expanded(child: DropdownMenu(
+                //label: const Text("Theme: "),
+                trailingIcon: const Icon(Icons.arrow_drop_down),
+                initialSelection: "github",
+                onSelected: (valueName) {
+                  temp!.updateStyle();
+                },
+                dropdownMenuEntries: const [
+                  DropdownMenuEntry(value: "github", label: "Github Theme")
+                ],
+              )),
+              
+               IconButton(
+                    onPressed: () {
+
+                    }, icon: const Icon(Icons.save)),
+               IconButton(
+                    onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ExportDialog(
+                                dialogContext: context,
+                                markdownTextExport: markdownText,
+                              );
+                            },
+                          );}, icon: const Icon(Icons.save)),
+                
+                /*  IconButton(onPressed: () {
+                    showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ParameterDialog(dialogContext: context);
+                            },
+                          );
+                  }, icon: const Icon(Icons.icecream), color: Colors.greenAccent)
+                  */
+
+                  ]),
                   Expanded(
                     child: PreviewPanel(
                       markdownText: markdownText,
@@ -221,7 +257,7 @@ class _FormPageState extends State<FormPage> {
                       backgroundColor: themeBackgroundColor
                       ),
                   ),
-                  const SizedBox(height: 20),
+                 /* const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -242,7 +278,7 @@ class _FormPageState extends State<FormPage> {
                           foregroundColor: WidgetStatePropertyAll(Colors.white),
                         ),
                       ),
-                      const SizedBox(width: 16.0),
+                     const SizedBox(width: 16.0),
                       TextButton.icon(
                         onPressed: () {
                           showDialog(
@@ -264,7 +300,7 @@ class _FormPageState extends State<FormPage> {
                         ),
                       )
                     ],
-                  ),
+                  ),*/
                 ],
               ),
             ),
@@ -428,6 +464,7 @@ class _ExportDialogState extends State<ExportDialog> {
         
         
         ]))]),
+        SizedBox(width: 30,),
         Column(children: [SizedBox(width:300, child:DocumentPreview(widget.markdownTextExport))])        //SizedBox( width: 10, height:  10,child: PdfPreview(build: (f) => generatePdfFromMD(widget.markdownTextExport,f), enableScrollToPage: true))
         ])
         ],
@@ -554,6 +591,9 @@ class _DocumentPreviewState extends State<DocumentPreview> {
   Image? previewImage;
   @override
   Widget build(BuildContext context) {
+    double size = 300;
+    double ratio = PdfPageFormat.a4.height / PdfPageFormat.a4.width;
+    ratio *= 300;
     if (previewImage == null){
       generatePdfImageFromMD(widget.Content, PdfPageFormat.a4).then((image){
         setState(() {
@@ -562,6 +602,6 @@ class _DocumentPreviewState extends State<DocumentPreview> {
       });
     }
 
-    return Container(width: 300, height: 300,child: Card(child:previewImage));
+    return Container(width: size, height: ratio,child: Card(child:previewImage));
   }
 }

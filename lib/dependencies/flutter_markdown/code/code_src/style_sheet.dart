@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
+// NOTE: This File was Modified by Native Bits Team
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -408,7 +412,7 @@ class MarkdownStyleSheet {
     // If either of textScaler or textScaleFactor is non-null, pass null for the
     // other instead of the previous value, since only one is allowed.
 //    final TextScaler? newTextScaler =
-//        textScaler ?? (textScaleFactor == null ? this.textScaler : null);
+//        textScaler ?? (textScaleFactor == null ? this.textScaler : null); // NBT
 //    final double? nextTextScaleFactor =
 //        textScaleFactor ?? (textScaler == null ? this.textScaleFactor : null);
     return MarkdownStyleSheet(
@@ -468,7 +472,7 @@ class MarkdownStyleSheet {
       superscriptFontFeatureTag:
           superscriptFontFeatureTag ?? this.superscriptFontFeatureTag,
         textScaler: textScaler,
-//      textScaler: newTextScaler,
+//      textScaler: newTextScaler, //NBT
 //      textScaleFactor: nextTextScaleFactor,
     );
   }
@@ -531,7 +535,7 @@ class MarkdownStyleSheet {
       orderedListAlign: other.orderedListAlign,
       blockquoteAlign: other.blockquoteAlign,
       codeblockAlign: other.codeblockAlign,
-//      textScaleFactor: other.textScaleFactor,
+//      textScaleFactor: other.textScaleFactor, //NBT
       superscriptFontFeatureTag: other.superscriptFontFeatureTag,
       // Only one of textScaler and textScaleFactor can be passed. If
       // other.textScaleFactor is non-null, then the sheet was created with a

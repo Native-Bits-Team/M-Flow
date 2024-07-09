@@ -13,13 +13,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       //home: PdfPreview(build: (f) => generatePdfFromMD("# Test",f), enableScrollToPage: true,),
       //home: SizedBox(child: PdfPreviewCustom(build: (f) => generatePdfFromMD("# Test",f), maxPageWidth: 400,)),
-      home: FormPage(initText: ""),
-      // Theme for our entire app can be set from here...
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.blueGrey,
-        ),
-      ),
+      home: const FormPage(initText: "",),
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
+      iconTheme: IconThemeData(color: Colors.white70),
+      )
     );
   }
 }

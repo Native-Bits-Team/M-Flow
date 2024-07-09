@@ -224,7 +224,8 @@ class MarkdownBuilder implements md.NodeVisitor {
 
     int? start;
     if (_isBlockTag(tag)) {
-      _addAnonymousBlockIfNeeded();
+if (element.textContent.startsWith("w\$")){_addAnonymousBlockIfNeeded(center: true);}else{_addAnonymousBlockIfNeeded();} //NBT
+      //_addAnonymousBlockIfNeeded();
       if (_isListTag(tag)) {
         _listIndents.add(tag);
         if (element.attributes['start'] != null) {
@@ -357,15 +358,22 @@ class MarkdownBuilder implements md.NodeVisitor {
         ),
       );
     } else {
+String o = text.text;TextAlign k; if (text.text.startsWith("w\$")){k = TextAlign.center; o = text.text.replaceFirst("w\$","");}else{k = _textAlignForBlockTag(_currentBlockTag);} // NBT
+TextDecoration? d; if (text.text.startsWith("d\$")){d = TextDecoration.underline; o = text.text.replaceFirst("d\$","");} // NBT
+TextStyle t = _inlines.last.style!.copyWith(decoration: d);
       child = _buildRichText(
         TextSpan(
           style: _isInBlockquote
-              ? styleSheet.blockquote!.merge(_inlines.last.style)
-              : _inlines.last.style,
-          text: _isInBlockquote ? text.text : trimText(text.text),
+              //? styleSheet.blockquote!.merge(_inlines.last.style)
+              //: _inlines.last.style,
+              ? styleSheet.blockquote!.merge(t)
+              : t,
+          //text: _isInBlockquote ? text.text : trimText(text.text),
+          text: _isInBlockquote ? o : trimText(o), // NBT
           recognizer: _linkHandlers.isNotEmpty ? _linkHandlers.last : null,
         ),
-        textAlign: _textAlignForBlockTag(_currentBlockTag),
+        //textAlign: _textAlignForBlockTag(_currentBlockTag),
+        textAlign: k
       );
     }
     if (child != null) {
@@ -380,7 +388,8 @@ class MarkdownBuilder implements md.NodeVisitor {
     final String tag = element.tag;
 
     if (_isBlockTag(tag)) {
-      _addAnonymousBlockIfNeeded();
+if (element.textContent.startsWith("w\$")){_addAnonymousBlockIfNeeded(center: true);}else{_addAnonymousBlockIfNeeded();} //NBT
+      //_addAnonymousBlockIfNeeded();
 
       final _BlockElement current = _blocks.removeLast();
       Widget child;
@@ -702,7 +711,7 @@ class MarkdownBuilder implements md.NodeVisitor {
     parent.nextListIndex += 1;
   }
 
-  void _addAnonymousBlockIfNeeded() {
+  void _addAnonymousBlockIfNeeded({bool center = false}) {
     if (_inlines.isEmpty) {
       return;
     }
@@ -711,8 +720,9 @@ class MarkdownBuilder implements md.NodeVisitor {
     TextAlign textAlign = TextAlign.start;
     EdgeInsets textPadding = EdgeInsets.zero;
     if (_isBlockTag(_currentBlockTag)) {
-      blockAlignment = _wrapAlignmentForBlockTag(_currentBlockTag);
-      textAlign = _textAlignForBlockTag(_currentBlockTag);
+if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;}else{blockAlignment = _wrapAlignmentForBlockTag(_currentBlockTag); textAlign = _textAlignForBlockTag(_currentBlockTag);} // NBT
+      //blockAlignment = _wrapAlignmentForBlockTag(_currentBlockTag);
+      //textAlign = _textAlignForBlockTag(_currentBlockTag);
       textPadding = _textPaddingForBlockTag(_currentBlockTag);
 
       if (paddingBuilders.containsKey(_currentBlockTag)) {
