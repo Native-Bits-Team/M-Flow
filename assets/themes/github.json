@@ -7,7 +7,20 @@
         "fontWeight" : "600",
         "fontSize" : "32",
         "color" : "e6edf3",
-        "decoration": "underline",
+        "decorationColor": "30363db3",
+        "decorationThickness": "1"
+    },
+    "h2": {
+        "fontWeight" : "600",
+        "fontSize" : "24",
+        "color" : "e6edf3",
+        "decorationColor": "30363db3",
+        "decorationThickness": "1"
+    },
+    "h3": {
+        "fontWeight" : "600",
+        "fontSize" : "20",
+        "color" : "e6edf3",
         "decorationColor": "30363db3",
         "decorationThickness": "1"
     },

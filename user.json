@@ -6,12 +6,18 @@
         "signature": false,
         "compress": false,
         "deflat": false,
+        "autosave": true,
         "lastFormat": "pdf",
         "lastTheme": "github",
         "lastNameUsed": ""
     },
     "projects": {
-        "recentOpen": {},
+        "recentOpen": {
+            "0": {
+                "filePath": "C:\\Users\\Work\\Documents\\md\\M-Flow\\README.md",
+                "fileName": "README.md"
+            }
+        },
         "list": {}
     }
 }

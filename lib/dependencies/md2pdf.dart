@@ -8,11 +8,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-//import 'package:flutter/material.dart';
-//import 'package:flutter/material.dart';
-//import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as w;
-//import 'package:flutter/services.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -500,7 +496,7 @@ FutureOr<Uint8List> generatePdfFromMD(String md2, p.PdfPageFormat format) async 
   return doc.save();
 }
 
-Future<w.Image?> generatePdfImageFromMD(String md2, p.PdfPageFormat format) async {
+Future<w.Image?> generatePdfImageFromMD(String md2, {p.PdfPageFormat format = p.PdfPageFormat.a4}) async {
   if (md2 == ""){
     return null;
   }

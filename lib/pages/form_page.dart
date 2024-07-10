@@ -9,7 +9,6 @@ import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/functions/mark_down_styler.dart';
 import 'package:m_flow/functions/string_utilities.dart';
 import 'package:pdf/pdf.dart';
-import 'package:printing/printing.dart';
 
 _FormPageState? temp;
 
@@ -92,28 +91,6 @@ class _FormPageState extends State<FormPage> {
   }
 
 
-  //  THIS METHOD DIDN'T WORKED OUT...
-  // void applyMarkdownStyleToLine(int lineIndex) {
-  //   setState(() {
-  //     List<String> lines = markdownText.split('\n');
-
-  //     if (lineIndex < lines.length) {
-  //       String line = lines[lineIndex];
-
-  //       // Check if the line contains "cs$" and "ce$" markers
-  //       if (line.contains("cs\$")) {
-  //         // Replace "ce$" with a placeholder that hides it visually
-  //         String updatedLine = line.replaceAll("ce\$", ""); // Replace with empty string or another placeholder
-
-  //         // Update the line in the list
-  //         lines[lineIndex] = updatedLine;
-
-  //         // Update UI with the updated markdownText
-  //         markdownText = lines.join('\n');
-  //       }
-  //     }
-  //   });
-  // }
 
   
   @override
@@ -135,11 +112,11 @@ class _FormPageState extends State<FormPage> {
         backgroundColor: const Color.fromARGB(255, 5, 24, 32),
         toolbarHeight: 40.0,
         centerTitle: true,
-        title: const Text("Document #1"),
+        title: const Text("Welcome to M-Flow Document Making Software !"),
         titleTextStyle: const TextStyle(color: Colors.white),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(30),
+        padding: const EdgeInsets.all(27),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -149,7 +126,15 @@ class _FormPageState extends State<FormPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      IconButton(onPressed: () {                    
+                      IconButton(onPressed: () {      
+                        if (leftController.selection.start == leftController.selection.end){
+                        leftController.text = addSidesToWord(leftController.text, leftController.selection.start, "**");
+                        } else{
+                        String newText = "**";
+                        newText += leftController.text.substring(leftController.selection.start, leftController.selection.end);
+                        newText += "**";
+                        leftController.text = leftController.text.replaceRange(leftController.selection.start, leftController.selection.end, newText);
+                        }              
                       }, icon: const Icon(Icons.format_bold)),
                       IconButton(onPressed: () {
                         if (leftController.selection.start == leftController.selection.end){
@@ -174,30 +159,22 @@ class _FormPageState extends State<FormPage> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
-                              BorderSide(color: Color.fromARGB(99, 128, 127, 127)),
+                              BorderSide(color: Colors.white54),
                         ),
                         border: OutlineInputBorder(),
                         hintText: 'What\'s on your mind?',
+                        hintStyle: TextStyle(color: Colors.white38)
                       ),
                       maxLines: null,
                       minLines: 50,
-                      style: const TextStyle(color: Color.fromARGB(255, 158, 209, 233)),
+                      style: const TextStyle(color: Colors.white60),
                     ),
                   ),
-                  /*const SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_left)),
-                      IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
-                      IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_right)),
-                    ],
-                  ),*/
                 ],
               ),
             ),
 
-            const SizedBox(width: 50), // Spacer
+            const SizedBox(width: 47), // Spacer
 
             Expanded(
               child: Column(
@@ -211,10 +188,13 @@ class _FormPageState extends State<FormPage> {
                     zoom -= 0.2;
                     temp!.updateStyle();
                   }, icon: const Icon(Icons.zoom_out)),
+                  SizedBox(width: 10),
                 Expanded(child: DropdownMenu(
                 //label: const Text("Theme: "),
                 trailingIcon: const Icon(Icons.arrow_drop_down),
                 initialSelection: "github",
+                inputDecorationTheme: InputDecorationTheme(contentPadding: EdgeInsets.all(0), constraints: BoxConstraints(maxHeight: 40), isCollapsed: true),
+                textStyle: TextStyle(color: Colors.white60, fontSize: 16),
                 onSelected: (valueName) {
                   temp!.updateStyle();
                 },
@@ -226,7 +206,7 @@ class _FormPageState extends State<FormPage> {
                IconButton(
                     onPressed: () {
 
-                    }, icon: const Icon(Icons.save)),
+                    }, icon: const Icon(Icons.icecream, color: Colors.greenAccent,), color: Colors.greenAccent),
                IconButton(
                     onPressed: () {
                           showDialog(
@@ -237,18 +217,7 @@ class _FormPageState extends State<FormPage> {
                                 markdownTextExport: markdownText,
                               );
                             },
-                          );}, icon: const Icon(Icons.save)),
-                
-                /*  IconButton(onPressed: () {
-                    showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ParameterDialog(dialogContext: context);
-                            },
-                          );
-                  }, icon: const Icon(Icons.icecream), color: Colors.greenAccent)
-                  */
-
+                          );}, icon: const Icon(Icons.save, color: Colors.blueAccent), color: Colors.blueAccent,),
                   ]),
                   Expanded(
                     child: PreviewPanel(
@@ -257,50 +226,6 @@ class _FormPageState extends State<FormPage> {
                       backgroundColor: themeBackgroundColor
                       ),
                   ),
-                 /* const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton.icon(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ParameterDialog(dialogContext: context);
-                            },
-                          );
-                        },
-                        label: const Text("Apperance"),
-                        icon: const Icon(Icons.icecream),
-                        style: const ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                              Color.fromARGB(255, 106, 228, 191)),
-                          foregroundColor: WidgetStatePropertyAll(Colors.white),
-                        ),
-                      ),
-                     const SizedBox(width: 16.0),
-                      TextButton.icon(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ExportDialog(
-                                dialogContext: context,
-                                markdownTextExport: markdownText,
-                              );
-                            },
-                          );
-                        },
-                        label: const Text("Export"),
-                        icon: const Icon(Icons.save),
-                        style: const ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                              Color.fromARGB(255, 71, 146, 180)),
-                          foregroundColor: WidgetStatePropertyAll(Colors.white),
-                        ),
-                      )
-                    ],
-                  ),*/
                 ],
               ),
             ),
@@ -477,6 +402,10 @@ Future<MarkdownStyleSheet> buildMarkdownStyle(double zoom) async {
   
 
   TextStyle? h1Style;
+  TextStyle? h2Style;
+  TextStyle? h3Style;
+
+
   TextStyle? pStyle;
   TextStyle? aStyle;
   TextStyle? codeStyle;
@@ -486,6 +415,12 @@ Future<MarkdownStyleSheet> buildMarkdownStyle(double zoom) async {
   themeValues.forEach((key, value){
     if (key == "h1"){
       h1Style = makeTextStyleJson(value);
+    }
+    if (key == "h2"){
+      h2Style = makeTextStyleJson(value);
+    }
+    if (key == "h3"){
+      h3Style = makeTextStyleJson(value);
     }
     if (key == "p") {
       pStyle = makeTextStyleJson(value);
@@ -508,6 +443,8 @@ Future<MarkdownStyleSheet> buildMarkdownStyle(double zoom) async {
   code: codeStyle,
   codeblockDecoration: codeblockDecoration,
   h1: h1Style,
+  h2: h2Style,
+  h3: h3Style,
   p: pStyle,
   a: aStyle,
   blockquoteDecoration: blockquoteDecoration,
@@ -546,11 +483,12 @@ class _ParameterDialogState extends State<ParameterDialog> {
               child: DropdownMenu(
                 label: const Text("Theme: "),
                 trailingIcon: const Icon(Icons.arrow_drop_down),
+                textStyle: TextStyle(color: Colors.white60, backgroundColor: Colors.white60),
                 onSelected: (valueName) {
                   temp!.updateStyle();
                 },
                 dropdownMenuEntries: const [
-                  DropdownMenuEntry(value: "github", label: "Github Theme")
+                  DropdownMenuEntry(value: "github", label: "Github Theme", style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white60))))
                 ],
               ),
             ),
@@ -595,7 +533,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     double ratio = PdfPageFormat.a4.height / PdfPageFormat.a4.width;
     ratio *= 300;
     if (previewImage == null){
-      generatePdfImageFromMD(widget.Content, PdfPageFormat.a4).then((image){
+      generatePdfImageFromMD(widget.Content).then((image){
         setState(() {
           previewImage = image;
         });

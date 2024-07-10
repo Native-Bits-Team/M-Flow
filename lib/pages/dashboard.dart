@@ -9,6 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
+import 'package:m_flow/dependencies/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/form_page.dart';
 import 'package:screenshot/screenshot.dart';
@@ -73,23 +74,25 @@ class _DocPreviewState extends State<DocPreview> {
   String test = ""; // This is temporary
   @override
   Widget build(BuildContext context) {
-   // print("build");
-   // print(widget.projectPath);
 
     if (previewImageBytes == null && widget.projectPath != ""){
-    ScreenshotController sController = ScreenshotController();
+    //ScreenshotController sController = ScreenshotController();
     File(widget.projectPath).readAsString().then((text){
     test = text;
-    sController.captureFromWidget(MarkdownBody(data: text)).then((data){
-        setState(() {
-          previewImageBytes = Image.memory(data, alignment: Alignment.topCenter, filterQuality: FilterQuality.none);
-        });
+    generatePdfImageFromMD(text).then((image){
+      setState(() {
+      previewImageBytes = image;
+      });
     });
+    //sController.captureFromWidget(MarkdownBody(data: text)).then((data){
+        //setState(() {
+          //previewImageBytes = Image.memory(data, alignment: Alignment.topCenter, filterQuality: FilterQuality.none);
+        //});
+    //});
     
     });
     }
-    //return FilledButton(onPressed: () {print("test");}, child: Card(child: previewImageBytes,));
-    // Add pins
+
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Expanded(child: MaterialButton(onLongPress: () {
 
       
@@ -139,15 +142,15 @@ class _ProjectGridState extends State<ProjectGrid> {
       childPreview[j].projectName = widget.namePreview[j];
       childPreview[j].parentHandle = this;
     }
-  print(childPreview);
 
     return GridView(gridDelegate: gridDelegateRef, children: childPreview);
   }
 
   void updatePreviews(){
-    print("Called");
   List<String> pathPreviewTemp = [];
   List<String> namePreviewTemp = [];
+
+  List<Map<String, dynamic>> projectsPath = [];
 
  //   widget.pathPreview = [];
    // widget.pathPreview = []; // we should dispose children?
@@ -155,6 +158,7 @@ File("user.json").readAsString().then((onValue){
       
       var d = jsonDecode(onValue) as Map<String, dynamic>;
       var list =  d["projects"]["recentOpen"];
+      var projList = d["projects"]["list"];
      // int size = list.length;
      //widget.previewLength = size;
      list.forEach((key, value){ // maybe we should save the data as json too, rather then a list
@@ -162,14 +166,16 @@ File("user.json").readAsString().then((onValue){
                 namePreviewTemp.add(list[key]["fileName"]);
      });
 
+     projList.forEach((key, value){
+      projectsPath.add(value);
+     });
+
      if (pathPreviewTemp.toString() == widget.pathPreview.toString() && namePreviewTemp.toString() == widget.namePreview.toString()){
       return;
      } else {
       setState(() {
-      
       widget.pathPreview = pathPreviewTemp;
       widget.namePreview = namePreviewTemp;
-
     });
      }
     
