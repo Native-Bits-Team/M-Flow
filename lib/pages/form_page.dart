@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/dependencies/md2pdf.dart';
@@ -86,9 +85,6 @@ class _FormPageState extends State<FormPage> {
     // print('User Input: $userInput');
     return userInput;
   }
-
-
-
   
   @override
   Widget build(BuildContext context) {
@@ -180,13 +176,13 @@ class _FormPageState extends State<FormPage> {
                     zoom -= 0.2;
                     temp!.updateStyle();
                   }, icon: const Icon(Icons.zoom_out)),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                 Expanded(child: DropdownMenu(
                 //label: const Text("Theme: "),
                 trailingIcon: const Icon(Icons.arrow_drop_down),
                 initialSelection: "github",
-                inputDecorationTheme: InputDecorationTheme(contentPadding: EdgeInsets.all(0), constraints: BoxConstraints(maxHeight: 40), isCollapsed: true),
-                textStyle: TextStyle(color: Colors.white60, fontSize: 16),
+                inputDecorationTheme: const InputDecorationTheme(contentPadding: EdgeInsets.all(0), constraints: BoxConstraints(maxHeight: 40), isCollapsed: true),
+                textStyle: const TextStyle(color: Colors.white60, fontSize: 16),
                 onSelected: (valueName) {
                   temp!.updateStyle();
                 },
@@ -197,7 +193,6 @@ class _FormPageState extends State<FormPage> {
               
                IconButton(
                     onPressed: () {
-
                     }, icon: const Icon(Icons.icecream, color: Colors.greenAccent,), color: Colors.greenAccent),
                IconButton(
                     onPressed: () {
@@ -381,8 +376,8 @@ class _ExportDialogState extends State<ExportDialog> {
         
         
         ]))]),
-        SizedBox(width: 30,),
-        Column(children: [SizedBox(width:300, child:DocumentPreview(widget.markdownTextExport))])        //SizedBox( width: 10, height:  10,child: PdfPreview(build: (f) => generatePdfFromMD(widget.markdownTextExport,f), enableScrollToPage: true))
+        const SizedBox(width: 30,),
+        Column(children: [SizedBox(width:300, child:DocumentPreview(content: widget.markdownTextExport))])        //SizedBox( width: 10, height:  10,child: PdfPreview(build: (f) => generatePdfFromMD(widget.markdownTextExport,f), enableScrollToPage: true))
         ])
         ],
     );
@@ -390,8 +385,7 @@ class _ExportDialogState extends State<ExportDialog> {
 }
 
 MarkdownStyleSheet buildMarkdownStyle(double zoom) {
-  Map<String, dynamic> themeValues = loadThemeFile("assets/themes/github.json");
-  
+  Map<String, dynamic> themeValues = getTheme();
 
   TextStyle? h1Style;
   TextStyle? h2Style;
@@ -405,29 +399,33 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom) {
   Decoration? blockquoteDecoration;
 
   themeValues.forEach((key, value){
-    if (key == "h1"){
-      h1Style = makeTextStyleJson(value);
-    }
-    if (key == "h2"){
-      h2Style = makeTextStyleJson(value);
-    }
-    if (key == "h3"){
-      h3Style = makeTextStyleJson(value);
-    }
-    if (key == "p") {
-      pStyle = makeTextStyleJson(value);
-    }
-    if (key == "a"){
-      aStyle = makeTextStyleJson(value);
-    }
-    if (key == "code"){
-      codeStyle = makeTextStyleJson(value);
-    }
-    if (key == "codeblockDecoration"){
-      codeblockDecoration = makeBoxDecorationJson(value);
-    }
-    if (key == "blockquoteDecoration"){
-      blockquoteDecoration = makeBoxDecorationJson(value);
+
+    switch (key) {
+      case "h1":
+        h1Style = makeTextStyleJson(value);
+        break;
+      case "h2":
+        h2Style = makeTextStyleJson(value);
+        break;
+      case "h3":
+        h3Style = makeTextStyleJson(value);
+        break;
+      case "p":
+        pStyle = makeTextStyleJson(value);
+        break;
+      case "a":
+        aStyle = makeTextStyleJson(value);
+        break;
+      case "code":
+        codeStyle = makeTextStyleJson(value);
+        break;
+      case "codeblockDecoration":
+        codeblockDecoration = makeBoxDecorationJson(value);
+        break;
+      case "blockquoteDecoration":
+        blockquoteDecoration = makeBoxDecorationJson(value);
+        break;
+      default:
     }
   });
 
@@ -445,7 +443,6 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom) {
 }
 
 List<Color> getBackgroundColors() {
- // Map<String, dynamic> themeValues = await loadThemeFile("assets/themes/github.json");
   return [
     Color(HexColor(getTheme()["backgroundColor"]).value),
     Color(HexColor(getTheme()["pageBackgroundColor"]).value),
@@ -475,7 +472,7 @@ class _ParameterDialogState extends State<ParameterDialog> {
               child: DropdownMenu(
                 label: const Text("Theme: "),
                 trailingIcon: const Icon(Icons.arrow_drop_down),
-                textStyle: TextStyle(color: Colors.white60, backgroundColor: Colors.white60),
+                textStyle: const TextStyle(color: Colors.white60, backgroundColor: Colors.white60),
                 onSelected: (valueName) {
                   temp!.updateStyle();
                 },
@@ -511,8 +508,8 @@ class _ParameterDialogState extends State<ParameterDialog> {
 
 
 class DocumentPreview extends StatefulWidget {
-  String Content = "";
-  DocumentPreview(this.Content, {super.key});
+  final String content;
+  const DocumentPreview({super.key, required this.content});
   @override
   State<DocumentPreview> createState() => _DocumentPreviewState();
 }
@@ -525,13 +522,13 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     double ratio = PdfPageFormat.a4.height / PdfPageFormat.a4.width;
     ratio *= 300;
     if (previewImage == null){
-      generatePdfImageFromMD(widget.Content).then((image){
+      generatePdfImageFromMD(widget.content).then((image){
         setState(() {
           previewImage = image;
         });
       });
     }
 
-    return Container(width: size, height: ratio,child: Card(child:previewImage));
+    return SizedBox(width: size, height: ratio,child: Card(child:previewImage));
   }
 }

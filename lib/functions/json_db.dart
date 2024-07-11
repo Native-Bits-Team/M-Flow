@@ -10,7 +10,7 @@ initDatabaseAndThemes(){
 
   if(File("user.json").existsSync()){
     globalDatabase = jsonDecode(File("user.json").readAsStringSync());
-    loadThemeFile("assets/themes/" + globalDatabase["settings"]["lastTheme"] + ".json");
+    loadThemeFile(globalDatabase["settings"]["lastTheme"]);
   } else {
     globalDatabase = newDatabase();
     loadThemeFile("assets/themes/github.json");
@@ -33,12 +33,7 @@ newDatabase(){
         "lastNameUsed": ""
     },
     "projects": {
-        "recentOpen": {
-            "0": {
-                "filePath": "C:\\Users\\Work\\Documents\\md\\M-Flow\\README.md",
-                "fileName": "README.md"
-            }
-        },
+        "recentOpen": {},
         "list": {}
     }
   };
@@ -95,8 +90,7 @@ void addRecentOpen(String? path, String? fileName) {
   saveDatabase();
 }
 
-removeRecentOpen(String? path, String? fileName) async {
-  // could result in bugs
+removeRecentOpen(String? path, String? fileName) {
 
   var recentOpenList = globalDatabase["projects"]["recentOpen"];
   String? keyToRemove;
@@ -116,5 +110,5 @@ removeRecentOpen(String? path, String? fileName) async {
 }
 
 loadThemeFile(String themePath) {
-  globalTheme = jsonDecode(File(themePath).readAsStringSync());
+  globalTheme = jsonDecode(File("assets/themes/$themePath.json").readAsStringSync());
 }

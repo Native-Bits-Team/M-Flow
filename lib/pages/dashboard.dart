@@ -1,18 +1,10 @@
-
-
-
-
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
 import 'package:m_flow/dependencies/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/form_page.dart';
-import 'package:screenshot/screenshot.dart';
 
 
 
@@ -30,12 +22,9 @@ class DashBoard extends StatelessWidget{
               return;
             }
             addRecentOpen(result.files[0].path, result.files[0].name);
-            File(result.files[0].path as String).readAsString().then((data){
 Navigator.push(context, MaterialPageRoute(builder: (context){
-        return FormPage(initText: data);
+        return FormPage(initText: File(result.files[0].path as String).readAsStringSync());
       }));
-            });
-            
           });
         },
          label: const Text("Open Document")),
@@ -150,19 +139,13 @@ class _ProjectGridState extends State<ProjectGrid> {
   List<String> namePreviewTemp = [];
 
   List<Map<String, dynamic>> projectsPath = [];
-
- //   widget.pathPreview = [];
-   // widget.pathPreview = []; // we should dispose children?
-File("user.json").readAsString().then((onValue){
       
-      var d = jsonDecode(onValue) as Map<String, dynamic>;
-      var list =  d["projects"]["recentOpen"];
-      var projList = d["projects"]["list"];
-     // int size = list.length;
+      var list =  getDatabase()["projects"]["recentOpen"];
+      var projList = getDatabase()["projects"]["list"];
      //widget.previewLength = size;
      list.forEach((key, value){ // maybe we should save the data as json too, rather then a list
-                pathPreviewTemp.add(list[key]["filePath"]);
-                namePreviewTemp.add(list[key]["fileName"]);
+          pathPreviewTemp.add(list[key]["filePath"]);
+          namePreviewTemp.add(list[key]["fileName"]);
      });
 
      projList.forEach((key, value){
@@ -178,7 +161,6 @@ File("user.json").readAsString().then((onValue){
     });
      }
     
-    });
     }
   
 }
