@@ -2,12 +2,65 @@ import 'dart:convert';
 import 'dart:io';
 
 
+
+Map<String, dynamic> globalDatabase = {};
+Map<String, dynamic> globalTheme = {};
+
+initDatabase(){
+
+  if(File("user.json").existsSync()){
+    globalDatabase = jsonDecode(File("user.json").readAsStringSync());
+  } else {
+    globalDatabase = newDatabase();
+  }
+}
+
+newDatabase(){
+  var file = File("user.json").openWrite();
+  Map<String, dynamic> initValues = {
+        "user": {
+        "name": "user"
+    },
+    "settings": {
+        "signature": false,
+        "compress": false,
+        "deflat": false,
+        "autosave": true,
+        "lastFormat": "pdf",
+        "lastTheme": "github",
+        "lastNameUsed": ""
+    },
+    "projects": {
+        "recentOpen": {
+            "0": {
+                "filePath": "C:\\Users\\Work\\Documents\\md\\M-Flow\\README.md",
+                "fileName": "README.md"
+            }
+        },
+        "list": {}
+    }
+  };
+
+  file.write(jsonEncode(initValues));
+  file.close();
+}
+
+getTheme(){
+  return globalTheme;
+}
+
+getDatabase(){
+  return globalDatabase;
+}
+
+
+saveDatabase(){
+  var file = File("user.json").openWrite();
+  file.write(jsonEncode(globalDatabase));
+}
+
 void addRecentOpen(String? path, String? fileName) {
-  Map<String, dynamic> jsonValues;
-  File db = File("user.json");
-  db.readAsString().then((jsonString) {
-    jsonValues = jsonDecode(jsonString) as Map<String, dynamic>;
-    var recentOpenList = jsonValues["projects"]["recentOpen"];
+    var recentOpenList = globalDatabase["projects"]["recentOpen"];
     String? keyToRemove;
     int lastKey = 0;
     if (recentOpenList.keys.isNotEmpty) {
@@ -28,29 +81,22 @@ void addRecentOpen(String? path, String? fileName) {
           return;
         }
       }
-      jsonValues["projects"]["recentOpen"].remove(keyToRemove);
-      jsonValues["projects"]["recentOpen"].addAll({
+      globalDatabase["projects"]["recentOpen"].remove(keyToRemove);
+      globalDatabase["projects"]["recentOpen"].addAll({
         lastKey.toString(): {"filePath": path, "fileName": fileName}
       });
     } else {
-      jsonValues["projects"]["recentOpen"].addAll({
+      globalDatabase["projects"]["recentOpen"].addAll({
         lastKey.toString(): {"filePath": path, "fileName": fileName}
       });
     }
-    String newValues = jsonEncode(jsonValues);
-    File("user.json").openWrite(mode: FileMode.write).write(newValues);
-  });
+  saveDatabase();
 }
 
 removeRecentOpen(String? path, String? fileName) async {
   // could result in bugs
 
-  Map<String, dynamic> jsonValues;
-  File db = File("user.json");
-  String jsonString = await db.readAsString();
-
-  jsonValues = jsonDecode(jsonString) as Map<String, dynamic>;
-  var recentOpenList = jsonValues["projects"]["recentOpen"];
+  var recentOpenList = globalDatabase["projects"]["recentOpen"];
   String? keyToRemove;
 
   recentOpenList.forEach((key, value) {
@@ -62,17 +108,11 @@ removeRecentOpen(String? path, String? fileName) async {
   });
 
   if (keyToRemove != null) {
-    jsonValues["projects"]["recentOpen"].remove(keyToRemove);
+    globalDatabase["projects"]["recentOpen"].remove(keyToRemove);
   }
-  String newValues = jsonEncode(jsonValues);
-  File("user.json").openWrite(mode: FileMode.write).write(newValues);
-  return;
+  saveDatabase();
 }
 
-loadThemeFile(String themePath) async {
-  Map<String, dynamic> jsonValues;
-  File db = File(themePath);
-  String jsonString = await db.readAsString();
-  jsonValues = jsonDecode(jsonString) as Map<String, dynamic>;
-  return jsonValues;
+loadThemeFile(String themePath) {
+  globalTheme = jsonDecode(File(themePath).readAsStringSync());
 }
