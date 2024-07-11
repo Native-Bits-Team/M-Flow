@@ -492,7 +492,6 @@ FutureOr<Uint8List> generatePdfFromMD(String md2, p.PdfPageFormat format) async 
   );
 
   doc.addPage(pw.MultiPage(pageFormat: format, build: (context) => ch.widget ?? []));
-  print("TEST");
   return doc.save();
 }
 

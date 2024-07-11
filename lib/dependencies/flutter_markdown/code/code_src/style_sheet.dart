@@ -838,7 +838,6 @@ class MarkdownStyleSheet {
       blockquoteAlign,
       codeblockAlign,
       textScaler,
-      textScaleFactor,
       superscriptFontFeatureTag,
     ]);
   }
