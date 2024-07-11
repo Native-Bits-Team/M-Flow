@@ -119,7 +119,6 @@ class ProjectGrid extends StatefulWidget {
   ProjectGrid({super.key});
   List<String> pathPreview = [];
   List<String> namePreview = [];
- // int previewLength = 0; // temporarly
   bool init = false;
 
   @override

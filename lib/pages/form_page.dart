@@ -53,16 +53,13 @@ class _FormPageState extends State<FormPage> {
   }
 
   void updateStyle() {
-    buildMarkdownStyle(zoom).then((markdownStyleValue) {
-      getBackgroundColors().then((backgroundColors) {
+    var markdownStyleValue = buildMarkdownStyle(zoom);
+    var backgroundColors = getBackgroundColors();
         setState(() {
           markdownStyle = markdownStyleValue;
           themeBackgroundColor = backgroundColors[0];
           formPageBackgroundColor = backgroundColors[1];
         });
-      });
-    }).catchError((error) {print('Error updating style: $error');
-  });
   }
 
 
@@ -99,11 +96,6 @@ class _FormPageState extends State<FormPage> {
       stopper = false;
       updateStyle();
     }
-
-   // if (themeBackgroundColor == null){
-    //File("assets/themes/github.json").readAsString().then((theme){
-    //});
-    //}
 
     temp = this;
     return Scaffold(
@@ -397,8 +389,8 @@ class _ExportDialogState extends State<ExportDialog> {
   }
 }
 
-Future<MarkdownStyleSheet> buildMarkdownStyle(double zoom) async {
-  Map<String, dynamic> themeValues = await loadThemeFile("assets/themes/github.json");
+MarkdownStyleSheet buildMarkdownStyle(double zoom) {
+  Map<String, dynamic> themeValues = loadThemeFile("assets/themes/github.json");
   
 
   TextStyle? h1Style;
@@ -452,11 +444,11 @@ Future<MarkdownStyleSheet> buildMarkdownStyle(double zoom) async {
   );
 }
 
-Future<List<Color>> getBackgroundColors() async {
-  Map<String, dynamic> themeValues = await loadThemeFile("assets/themes/github.json");
+List<Color> getBackgroundColors() {
+ // Map<String, dynamic> themeValues = await loadThemeFile("assets/themes/github.json");
   return [
-    Color(HexColor(themeValues["backgroundColor"]).value),
-    Color(HexColor(themeValues["pageBackgroundColor"]).value),
+    Color(HexColor(getTheme()["backgroundColor"]).value),
+    Color(HexColor(getTheme()["pageBackgroundColor"]).value),
   ];
 }
 

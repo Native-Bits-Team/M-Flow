@@ -6,12 +6,14 @@ import 'dart:io';
 Map<String, dynamic> globalDatabase = {};
 Map<String, dynamic> globalTheme = {};
 
-initDatabase(){
+initDatabaseAndThemes(){
 
   if(File("user.json").existsSync()){
     globalDatabase = jsonDecode(File("user.json").readAsStringSync());
+    loadThemeFile("assets/themes/" + globalDatabase["settings"]["lastTheme"] + ".json");
   } else {
     globalDatabase = newDatabase();
+    loadThemeFile("assets/themes/github.json");
   }
 }
 

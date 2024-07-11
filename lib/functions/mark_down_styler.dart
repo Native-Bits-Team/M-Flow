@@ -1,18 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
-/*
-Color makeColorJson(Map<String, dynamic> colorJson){
-  return Color.fromARGB(255, colorJson["R"], colorJson["G"], colorJson["B"]);
-}
-
-FontWeight makeFontWeightJson(String fontWeightJson){
-  if (fontWeightJson == 600.toString()){
-    return FontWeight.w600;
-  }
-  return FontWeight.normal;
-}
-
-*/
 
 FontWeight makeFontWeightFromString(String weight){
 
@@ -163,7 +150,6 @@ Decoration makeBoxDecorationJson(Map<String, dynamic> value){
 
 
   });
-  //return ColoredBox();
 
   BorderRadiusGeometry? borderRadius = BorderRadius.circular(borderRadiusValue);
   return BoxDecoration(color: color, borderRadius: borderRadius, border: border);
