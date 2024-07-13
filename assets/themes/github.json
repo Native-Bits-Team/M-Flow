@@ -1,7 +1,7 @@
 {
     "backgroundColor": "0d1117",
-    
     "pageBackgroundColor": "2c3544",
+    "firstColor" : "e6edf3",
     
     "h1": {
         "fontWeight" : "600",

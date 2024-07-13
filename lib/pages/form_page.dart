@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/dependencies/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/functions/mark_down_styler.dart';
@@ -25,8 +24,6 @@ class _FormPageState extends State<FormPage> {
   TextEditingController leftController = TextEditingController();
   String markdownText = "";  // Initialized an empty variable of type 'String' to store markdown text...
   MarkdownStyleSheet markdownStyle = MarkdownStyleSheet();
-  Color? themeBackgroundColor; // Maybe replace with global theme
-  Color? formPageBackgroundColor;
   bool stopper = true;
   double zoom = 1.0;
 
@@ -53,11 +50,8 @@ class _FormPageState extends State<FormPage> {
 
   void updateStyle() {
     var markdownStyleValue = buildMarkdownStyle(zoom);
-    var backgroundColors = getBackgroundColors();
         setState(() {
           markdownStyle = markdownStyleValue;
-          themeBackgroundColor = backgroundColors[0];
-          formPageBackgroundColor = backgroundColors[1];
         });
   }
 
@@ -95,7 +89,6 @@ class _FormPageState extends State<FormPage> {
 
     temp = this;
     return Scaffold(
-      backgroundColor: formPageBackgroundColor,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 5, 24, 32),
         toolbarHeight: 40.0,
@@ -210,7 +203,6 @@ class _FormPageState extends State<FormPage> {
                     child: PreviewPanel(
                       markdownText: markdownText,
                       style: markdownStyle,
-                      backgroundColor: themeBackgroundColor
                       ),
                   ),
                 ],
@@ -227,13 +219,11 @@ class PreviewPanel extends StatelessWidget {
   final String markdownText; // used to declare a variable that can only be assigned once...
   // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
   final MarkdownStyleSheet style;
-  final Color? backgroundColor;
 
   const PreviewPanel({
     super.key,
     required this.markdownText,
     required this.style,
-    this.backgroundColor,
   });
 
   @override
@@ -242,7 +232,6 @@ class PreviewPanel extends StatelessWidget {
     return Card(
       shadowColor: Colors.grey,
       elevation: 1.0,
-      color: backgroundColor,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Markdown(data: markdownText, styleSheet: style),
@@ -377,7 +366,8 @@ class _ExportDialogState extends State<ExportDialog> {
         
         ]))]),
         const SizedBox(width: 30,),
-        Column(children: [SizedBox(width:300, child:DocumentPreview(content: widget.markdownTextExport))])        //SizedBox( width: 10, height:  10,child: PdfPreview(build: (f) => generatePdfFromMD(widget.markdownTextExport,f), enableScrollToPage: true))
+        Column(children: [SizedBox(width:300, child:DocumentPreview(content: widget.markdownTextExport))])
+        //SizedBox( width: 10, height:  10,child: PdfPreview(build: (f) => generatePdfFromMD(widget.markdownTextExport,f), enableScrollToPage: true))
         ])
         ],
     );
@@ -425,7 +415,7 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom) {
       case "blockquoteDecoration":
         blockquoteDecoration = makeBoxDecorationJson(value);
         break;
-      default:
+      default: // is it needed?
     }
   });
 
@@ -440,13 +430,6 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom) {
   blockquoteDecoration: blockquoteDecoration,
   textScaler: TextScaler.linear(zoom)
   );
-}
-
-List<Color> getBackgroundColors() {
-  return [
-    Color(HexColor(getTheme()["backgroundColor"]).value),
-    Color(HexColor(getTheme()["pageBackgroundColor"]).value),
-  ];
 }
 
 class ParameterDialog extends StatefulWidget {

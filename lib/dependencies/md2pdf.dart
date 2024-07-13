@@ -12,7 +12,9 @@ import 'package:flutter/widgets.dart' as w;
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:markdown/markdown.dart' as md;
+//import 'package:markdown/markdown.dart' as md;
+import 'package:m_flow/dependencies/markdown/code/markdown.dart' as md;
+
 import 'package:pdf/pdf.dart' as p;
 import 'package:pdf/pdf.dart';
 import 'package:http/http.dart' as http;
