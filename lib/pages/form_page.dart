@@ -90,11 +90,7 @@ class _FormPageState extends State<FormPage> {
     temp = this;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 5, 24, 32),
-        toolbarHeight: 40.0,
-        centerTitle: true,
         title: const Text("Welcome to M-Flow Document Making Software !"),
-        titleTextStyle: const TextStyle(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(27),
@@ -135,20 +131,10 @@ class _FormPageState extends State<FormPage> {
                     child: TextField(
                       controller: leftController,
                       decoration: const InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.lightBlue),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.white54),
-                        ),
-                        border: OutlineInputBorder(),
                         hintText: 'What\'s on your mind?',
-                        hintStyle: TextStyle(color: Colors.white38)
                       ),
                       maxLines: null,
                       minLines: 50,
-                      style: const TextStyle(color: Colors.white60),
                     ),
                   ),
                 ],
@@ -172,10 +158,10 @@ class _FormPageState extends State<FormPage> {
                   const SizedBox(width: 10),
                 Expanded(child: DropdownMenu(
                 //label: const Text("Theme: "),
-                trailingIcon: const Icon(Icons.arrow_drop_down),
+                trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white,),
                 initialSelection: "github",
-                inputDecorationTheme: const InputDecorationTheme(contentPadding: EdgeInsets.all(0), constraints: BoxConstraints(maxHeight: 40), isCollapsed: true),
-                textStyle: const TextStyle(color: Colors.white60, fontSize: 16),
+                inputDecorationTheme: const InputDecorationTheme(contentPadding: EdgeInsets.all(0), constraints: BoxConstraints(maxHeight: 40), isCollapsed: true, border: InputBorder.none, enabledBorder: InputBorder.none, focusedBorder: InputBorder.none),
+                //textStyle: const TextStyle(color: Colors.white60, fontSize: 16),
                 onSelected: (valueName) {
                   temp!.updateStyle();
                 },
@@ -350,9 +336,9 @@ class _ExportDialogState extends State<ExportDialog> {
             TextButton.icon(
               onPressed: () {
                 if (exportFormat == exportFormatOptions[0]) {
-                  mdtopdf(widget.markdownTextExport, pathParameter.text, true);
+                  mdtopdf(widget.markdownTextExport, pathParameter.text, true, temp!.markdownStyle);
                 } else if (exportFormat == exportFormatOptions[1]) {
-                  mdtopdf(widget.markdownTextExport, pathParameter.text, false);
+                  mdtopdf(widget.markdownTextExport, pathParameter.text, false, temp!.markdownStyle);
                 } else {
                   File(pathParameter.text).writeAsString(widget.markdownTextExport).then((value) {
                     Navigator.of(widget.dialogContext).pop();
@@ -455,12 +441,12 @@ class _ParameterDialogState extends State<ParameterDialog> {
               child: DropdownMenu(
                 label: const Text("Theme: "),
                 trailingIcon: const Icon(Icons.arrow_drop_down),
-                textStyle: const TextStyle(color: Colors.white60, backgroundColor: Colors.white60),
+                //textStyle: const TextStyle(color: Colors.white60, backgroundColor: Colors.white60),
                 onSelected: (valueName) {
                   temp!.updateStyle();
                 },
                 dropdownMenuEntries: const [
-                  DropdownMenuEntry(value: "github", label: "Github Theme", style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white60))))
+                  DropdownMenuEntry(value: "github", label: "Github Theme") //style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white60)))
                 ],
               ),
             ),
@@ -505,7 +491,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     double ratio = PdfPageFormat.a4.height / PdfPageFormat.a4.width;
     ratio *= 300;
     if (previewImage == null){
-      generatePdfImageFromMD(widget.content).then((image){
+      generatePdfImageFromMD(widget.content, temp!.markdownStyle).then((image){
         setState(() {
           previewImage = image;
         });

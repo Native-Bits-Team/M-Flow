@@ -11,7 +11,7 @@ String addSidesToWord(String text, int start, String symbol){
   bool findEnd = false;
   String split = "";
   for (int i=0; i < index; ++i){
-    findStart = text.startsWith([' ','.','('] as Pattern, start-i);
+    findStart = text.startsWith(RegExp(""), start-i); // Got the idea from the description of startsWith function // TODO: Fix this
     if (findStart){
       start = start-i+1; // +1 to remove the space itself
       break;

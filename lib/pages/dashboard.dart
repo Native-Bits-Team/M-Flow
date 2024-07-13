@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
 import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/form_page.dart';
@@ -68,7 +69,7 @@ class _DocPreviewState extends State<DocPreview> {
     //ScreenshotController sController = ScreenshotController();
     File(widget.projectPath).readAsString().then((text){
     test = text;
-    generatePdfImageFromMD(text).then((image){
+    generatePdfImageFromMD(text, MarkdownStyleSheet()).then((image){
       setState(() {
       previewImageBytes = image;
       });

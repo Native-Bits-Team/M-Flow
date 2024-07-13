@@ -8,9 +8,13 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+//import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as m;
+import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart' as w;
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
+import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
 import 'package:pdf/widgets.dart' as pw;
 //import 'package:markdown/markdown.dart' as md;
 import 'package:m_flow/dependencies/markdown/code/markdown.dart' as md;
@@ -437,7 +441,7 @@ class Styler {
 }
 
 //mdtopdf(String path, String out) async {
-mdtopdf(String md2, String exportPath, bool htmlOrPdf) async {
+mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style) async {
  // final md2 = await File(path).readAsString();
 // String md2 = input;
   var htmlx = md.markdownToHtml(md2,
@@ -466,7 +470,19 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf) async {
     creator: ""
   );
 
-  doc.addPage(pw.MultiPage(pageFormat: p.PdfPageFormat.a4,
+  doc.addPage(pw.MultiPage(
+    //theme: mStyleToThemeData(style),
+    pageTheme: pw.PageTheme(
+      //margin: pw.EdgeInsets.all(0.0),
+    theme: mStyleToThemeData(style),
+   // buildForeground: (context){
+     // return pw.Expanded(child: pw.Rectangle(fillColor: p.PdfColor(1.0, 1.0, 1.0)));
+    //},
+    buildBackground: (context){
+      context.canvas.setFillColor(p.PdfColor(0.0, 0.0, 1.0));
+      return pw.Rectangle(fillColor: p.PdfColor(0.0, 1.0, 1.0), strokeColor: p.PdfColor(0.0, 0.0, 1.0), strokeWidth: 50);
+    }),
+   // pageFormat: p.PdfPageFormat.a4,
     build: (context) => ch.widget ?? []));
   if (!htmlOrPdf){
   File(exportPath).writeAsBytes(await doc.save());
@@ -474,7 +490,7 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf) async {
 }
 
 
-FutureOr<Uint8List> generatePdfFromMD(String md2, p.PdfPageFormat format) async {
+FutureOr<Uint8List> generatePdfFromMD(String md2, p.PdfPageFormat format, {MarkdownStyleSheet? style}) async {
   var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()],
   blockSyntaxes: [const md.TableSyntax(),
   const md.FencedCodeBlockSyntax(),
@@ -497,7 +513,7 @@ FutureOr<Uint8List> generatePdfFromMD(String md2, p.PdfPageFormat format) async 
   return doc.save();
 }
 
-Future<w.Image?> generatePdfImageFromMD(String md2, {p.PdfPageFormat format = p.PdfPageFormat.a4}) async {
+Future<w.Image?> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4}) async {
   if (md2 == ""){
     return null;
   }
@@ -514,11 +530,55 @@ Future<w.Image?> generatePdfImageFromMD(String md2, {p.PdfPageFormat format = p.
   var doc = pw.Document(
     compress: true,
     version: p.PdfVersion.pdf_1_5,);
+  doc.addPage(pw.MultiPage(
+//  pageFormat: format,
+//footer: (context){
+  //return pw.Rectangle(fillColor: p.PdfColor(0.0,0.0,1.0), strokeWidth: 0.0);
+//},
+  pageTheme: pw.PageTheme(
+    theme: mStyleToThemeData(style),
+    
+   // buildForeground: (context){
+     // return pw.Expanded(child: pw.Rectangle(fillColor: p.PdfColor(1.0, 1.0, 1.0)));
+    //},
+   // buildBackground: (context){
 
-  doc.addPage(pw.MultiPage(pageFormat: format, build: (context) => ch.widget ?? []));
+     // return pw.Rectangle(fillColor: p.PdfColor(0.0, 0.0, 1.0), strokeColor: p.PdfColor(0.0, 0.0, 1.0), strokeWidth: 100000);
+      //}
+      ),
+  //theme: mStyleToThemeData(style),
+   build: (context) => ch.widget ?? []));
   Uint8List t = await doc.save();
   Stream<PdfRaster> r = Printing.raster(t); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
   PdfRaster j = await r.first;
   Uint8List k = await j.toPng();
   return w.Image.memory(k,width: j.width.toDouble(), height: j.height.toDouble());
+}
+
+pw.ThemeData? mStyleToThemeData(MarkdownStyleSheet style){
+
+  return pw.ThemeData(
+    header0: textStylePDFtoPaint(style.h1),
+   // header1: textStylePDFtoPaint(style.h2),
+   // header2: textStylePDFtoPaint(style.h3),
+   // header3: textStylePDFtoPaint(style.h4),
+   // header4: textStylePDFtoPaint(style.h5),
+   // header5: textStylePDFtoPaint(style.h6),
+    defaultTextStyle: textStylePDFtoPaint(style.p),
+    paragraphStyle: textStylePDFtoPaint(style.p),
+  );
+}
+
+textStylePDFtoPaint(TextStyle? tStyle){
+  pw.FontWeight fontWeight = pw.FontWeight.normal;
+  if (tStyle!.fontWeight == FontWeight.bold){
+    fontWeight = pw.FontWeight.bold;
+  }
+  pw.TextStyle l = pw.TextStyle(
+    fontWeight: fontWeight,
+    fontSize: tStyle.fontSize,
+    color: p.PdfColor(tStyle.color!.red.toDouble()/255.0,tStyle.color!.blue.toDouble()/255.0, tStyle.color!.green.toDouble()/255.0,tStyle.color!.alpha.toDouble()/255.0),
+
+    );
+  return l;
 }
