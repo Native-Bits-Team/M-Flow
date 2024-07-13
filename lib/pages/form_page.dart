@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
-import 'package:m_flow/dependencies/md2pdf.dart';
+import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/functions/mark_down_styler.dart';
 import 'package:m_flow/functions/string_utilities.dart';
