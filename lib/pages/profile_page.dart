@@ -26,10 +26,10 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         content: TextField(
           autofocus: true,
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: "Enter new $field",
-            hintStyle: TextStyle(color: Colors.grey),
+            hintStyle: const TextStyle(color: Colors.grey),
           ),
           onChanged: (value) {
             newValue = value;
@@ -39,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
           // cancel
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               'cancel',
               style: TextStyle(color: Colors.white),
             ),
@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
           // save
           TextButton(
             onPressed: () => Navigator.of(context).pop(newValue),
-            child: Text(
+            child: const Text(
               'save',
               style: TextStyle(color: Colors.white),
             ),
@@ -73,10 +73,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(''),
-        backgroundColor: Color.fromARGB(255, 5, 24, 32),
+        title: const Text(''),
+        backgroundColor: const Color.fromARGB(255, 5, 24, 32),
       ),
-      backgroundColor: Color.fromARGB(255, 7, 39, 53),
+      backgroundColor: const Color.fromARGB(255, 7, 39, 53),
       body: Center(
         child: SizedBox(
           width: 600,

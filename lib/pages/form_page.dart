@@ -100,7 +100,7 @@ class _FormPageState extends State<FormPage> {
   void updateStyle() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-    _debounce = Timer(Duration(milliseconds: 90), () {
+    _debounce = Timer(const Duration(milliseconds: 90), () {
       var markdownStyleValue = buildMarkdownStyle(zoom);
       var theme = getTheme();
       setState(() {
@@ -143,11 +143,7 @@ class _FormPageState extends State<FormPage> {
     return Scaffold( 
       backgroundColor: formPageBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 5, 24, 32),
-        toolbarHeight: 42.0,
-        centerTitle: true,
-        title: const Text("M-Flow", style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 17)),
-        titleTextStyle: const TextStyle(color: Colors.white),
+        title: const Text("M-Flow", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
       ),
       
       // *DRAWER : -------------------------------------------------------------------------------- *
@@ -181,7 +177,7 @@ class _FormPageState extends State<FormPage> {
                   borderRadius: BorderRadius.circular(12.0), // Adjust border radius as needed
                   side: const BorderSide(color: Colors.black, width: 2.0), // Adjust border color and width
                 ),
-                title: Text('Select Theme'),
+                title: const Text('Select Theme'),
                 content: Container(
                   width: 100,
                   height: 60,
@@ -193,7 +189,6 @@ class _FormPageState extends State<FormPage> {
                       contentPadding: EdgeInsets.all(12),
                       isCollapsed: true,
                     ),
-                    textStyle: const TextStyle(color: Colors.black, fontSize: 13),
                     onSelected: (valueName) {
                       setState(() {
                         // Handle selection if needed
@@ -287,38 +282,38 @@ class _FormPageState extends State<FormPage> {
                     }, icon: const Icon(Icons.zoom_out)),
                     const SizedBox(width: 10),
                 
-                    // Expanded(child: DropdownMenu(
-                    //   //label: const Text("Theme: "),
-                    //   trailingIcon: const Icon(Icons.arrow_drop_down),
-                    //   initialSelection: "github",
-                    //   inputDecorationTheme: const InputDecorationTheme(contentPadding: EdgeInsets.all(0), constraints: BoxConstraints(maxHeight: 40), isCollapsed: true),
-                    //   textStyle: const TextStyle(color: Colors.white60, fontSize: 16),
-                    //   onSelected: (valueName) {
-                    //     setState(() {
-                    //       updateStyle();
-                    //     });
-                    //   },
-                    //   dropdownMenuEntries: const [
-                    //     DropdownMenuEntry(value: "github", label: "Github Theme")
-                    //   ],
-                    // )),
+                     Expanded(child: DropdownMenu(
+                      // label: const Text("Theme: "),
+                       trailingIcon: const Icon(Icons.arrow_drop_down),
+                       initialSelection: "github",
+                       inputDecorationTheme: const InputDecorationTheme(contentPadding: EdgeInsets.all(0), constraints: BoxConstraints(maxHeight: 40), isCollapsed: true),
+                       textStyle: const TextStyle(fontSize: 16),
+                       onSelected: (valueName) {
+                         setState(() {
+                           updateStyle();
+                         });
+                       },
+                       dropdownMenuEntries: const [
+                         DropdownMenuEntry(value: "github", label: "Github Theme")
+                       ],
+                     )),
               
-                    // IconButton(
-                    //     onPressed: () {
-                    //       // implement here
-                    //     }, icon: const Icon(Icons.icecream, color: Colors.greenAccent,), color: Colors.greenAccent),
-                    // IconButton(
-                    //     onPressed: () {
-                    //       showDialog(
-                    //         context: context,
-                    //         builder: (BuildContext context) {
-                    //           return ExportDialog(
-                    //             dialogContext: context,
-                    //             markdownTextExport: markdownText,
-                    //           );
-                    //         },
-                    //       );
-                    //     }, icon: const Icon(Icons.save, color: Colors.blueAccent), color: Colors.blueAccent,),
+                     IconButton(
+                         onPressed: () {
+                            //implement here
+                         }, icon: const Icon(Icons.icecream, color: Colors.greenAccent,), color: Colors.greenAccent),
+                     IconButton(
+                         onPressed: () {
+                           showDialog(
+                             context: context,
+                             builder: (BuildContext context) {
+                               return ExportDialog(
+                                 dialogContext: context,
+                                 markdownTextExport: markdownText,
+                               );
+                             },
+                           );
+                         }, icon: const Icon(Icons.save, color: Colors.blueAccent), color: Colors.blueAccent,),
                     ]),
                     
                     Expanded(
@@ -352,7 +347,6 @@ class PreviewPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     // Card: A Material Design Card...
     return Card(
-      shadowColor: Colors.grey,
       elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -418,7 +412,6 @@ class _ExportDialogState extends State<ExportDialog> {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      backgroundColor: Colors.blueGrey[100],
       title: const Text("Document Export Settings"),
       elevation: 3.0,
       contentPadding: const EdgeInsets.only(top:26, bottom:12.0, left: 11, right: 11),
@@ -430,11 +423,10 @@ class _ExportDialogState extends State<ExportDialog> {
               children: [
                 Container(
                   height: 245,
-                  margin: EdgeInsets.only(top: 10),
+                  margin: const EdgeInsets.only(top: 10),
                   padding: const EdgeInsets.only(top:6.0, bottom:12.0, left: 11, right: 11),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: Colors.blueGrey),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -447,7 +439,7 @@ class _ExportDialogState extends State<ExportDialog> {
 
                             Container(
                               width: 100, // FIXED WIDTH FOR LABELS
-                              padding: EdgeInsets.only(top: 22),
+                              padding: const EdgeInsets.only(top: 22),
                               child: const Text("Export Path: ", style: TextStyle(fontWeight: FontWeight.bold)),
                             ),
 
@@ -455,7 +447,7 @@ class _ExportDialogState extends State<ExportDialog> {
                             Expanded(
                               child: TextField(
                                 controller: pathParameter,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: 'Enter export path',
                                 ),
@@ -473,7 +465,7 @@ class _ExportDialogState extends State<ExportDialog> {
 
                             Container(
                               width: 100, // FIXED WIDTH FOR LABELS
-                              padding: EdgeInsets.only(top: 22),
+                              padding: const EdgeInsets.only(top: 22),
                               child: const Text("Doc Title: ", style: TextStyle(fontWeight: FontWeight.bold)),
                             ),
 
@@ -481,7 +473,7 @@ class _ExportDialogState extends State<ExportDialog> {
                             Expanded(
                               child: TextField(
                                 controller: documentTitle,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: 'Enter Doc Title',
                                 ),
@@ -501,7 +493,7 @@ class _ExportDialogState extends State<ExportDialog> {
                         
                               Container(
                                 width: 100, // FIXED WIDTH FOR LABELS
-                                padding: EdgeInsets.only(top: 22),
+                                padding: const EdgeInsets.only(top: 22),
                                 child: const Text("Author Name: ", style: TextStyle(fontWeight: FontWeight.bold)),
                               ),
                         
@@ -509,7 +501,7 @@ class _ExportDialogState extends State<ExportDialog> {
                               Expanded(
                                 child: TextField(
                                   controller: authorName,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
                                     hintText: 'Enter author name',
                                   ),
@@ -530,7 +522,7 @@ class _ExportDialogState extends State<ExportDialog> {
                               
                               Container(
                                 width: 100, // FIXED WIDTH FOR LABELS
-                                padding: EdgeInsets.only(top: 14),
+                                padding: const EdgeInsets.only(top: 14),
                                 child: const Text("Doc Subject: ", style: TextStyle(fontWeight: FontWeight.bold)),
                               ),
                         
@@ -538,7 +530,7 @@ class _ExportDialogState extends State<ExportDialog> {
                               Expanded(
                                 child: TextField(
                                   controller: documentSubject,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
                                     hintText: 'Enter Doc Subject',
                                   ),
@@ -556,7 +548,6 @@ class _ExportDialogState extends State<ExportDialog> {
                   padding: const EdgeInsets.all(12.0),
                   // decoration: BoxDecoration(
                   //   borderRadius: BorderRadius.circular(12),
-                  //   border: Border.all(color: Colors.blueGrey),
                   // ),
                   child: Column(
                     children: [
@@ -653,7 +644,7 @@ class _ExportDialogState extends State<ExportDialog> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.chevron_left, color: Colors.black,),
+                      icon: const Icon(Icons.chevron_left),
                       onPressed: () {
                         // Handle left button press
                       },
@@ -663,7 +654,7 @@ class _ExportDialogState extends State<ExportDialog> {
                       child: DocumentPreview(widget.markdownTextExport),
                     ),
                     IconButton(
-                      icon: Icon(Icons.chevron_right, color: Colors.black,),
+                      icon: const Icon(Icons.chevron_right),
                       onPressed: () {
                         // Handle right button press
                       },
@@ -764,12 +755,11 @@ class _ParameterDialogState extends State<ParameterDialog> {
               child: DropdownMenu(
                 label: const Text("Theme: "),
                 trailingIcon: const Icon(Icons.arrow_drop_down),
-                //textStyle: const TextStyle(color: Colors.white60, backgroundColor: Colors.white60),
                 onSelected: (valueName) {
                   Navigator.of(widget.dialogContext).pop();
                 },
                 dropdownMenuEntries: const [
-                  DropdownMenuEntry(value: "github", label: "Github Theme") //style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white60)))
+                  DropdownMenuEntry(value: "github", label: "Github Theme")
                 ],
               ),
             ),
@@ -829,8 +819,8 @@ class _DocumentPreviewState extends State<DocumentPreview> {
         child: Container(
           width: size,
           height: ratio,
-          child: Card(
-            child: const Center(
+          child: const Card(
+            child: Center(
               child: Text(
                 "Nothing to display", 
                 style: TextStyle(
@@ -864,9 +854,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
         width: size,
         height: ratio,
         child: Card(
-          child: previewImage != null 
-            ? previewImage 
-            : const Center(child: CircularProgressIndicator()),
+          child: previewImage ?? const Center(child: CircularProgressIndicator()),
         ),
       ),
     );
@@ -905,10 +893,10 @@ class _FullPreviewScreenState extends State<FullPreviewScreen> {
     ratio *= size;
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 2, 22, 32),
+      backgroundColor: const Color.fromARGB(255, 2, 22, 32),
       appBar: AppBar(
         toolbarHeight: 28,
-        backgroundColor: Color.fromARGB(255, 2, 22, 32),
+        backgroundColor: const Color.fromARGB(255, 2, 22, 32),
       ),
       body: Center(
         child: widget.content.isEmpty
@@ -917,11 +905,9 @@ class _FullPreviewScreenState extends State<FullPreviewScreen> {
                 child: Container(
                   width: size,
                   height: ratio,
-                  decoration: BoxDecoration(),
+                  decoration: const BoxDecoration(),
                   child: Card(
-                    child: previewImage != null 
-                      ? previewImage 
-                      : const Center(child: CircularProgressIndicator()),
+                    child: previewImage ?? const Center(child: CircularProgressIndicator()),
                   ),
                 ),
               ),

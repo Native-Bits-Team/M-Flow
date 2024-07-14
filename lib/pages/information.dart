@@ -9,7 +9,7 @@ class InfoPage extends StatelessWidget{
     s += "\n md2pdf: MIT, License Text:";
     s += loadLicenseMIT();
     TextEditingController e = TextEditingController(text: s);
-    return Scaffold(body: Padding(padding: EdgeInsets.all(30),child: Card(color: Colors.white, child:Padding(padding: EdgeInsets.all(20),child:Column(children: [Expanded(child: TextField(scrollController: w,controller: e, onChanged: (newText){
+    return Scaffold(body: Padding(padding: const EdgeInsets.all(30),child: Card(color: Colors.white, child:Padding(padding: const EdgeInsets.all(20),child:Column(children: [Expanded(child: TextField(scrollController: w,controller: e, onChanged: (newText){
       e.text = s;
 
     }, maxLines: 1000,))])))));

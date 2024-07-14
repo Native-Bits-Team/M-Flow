@@ -17,7 +17,7 @@ class DashBoard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Color.fromARGB(255, 5, 24, 32),),
+      appBar: AppBar(backgroundColor: const Color.fromARGB(255, 5, 24, 32),),
 
       // *DRAWER : -------------------------------------------------------------------------------- *
       drawer: ProfileDrawerDashboard(

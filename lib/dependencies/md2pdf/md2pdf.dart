@@ -9,7 +9,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 //import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as m;
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart' as w;
 import 'package:html/parser.dart';
@@ -479,8 +478,8 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style)
      // return pw.Expanded(child: pw.Rectangle(fillColor: p.PdfColor(1.0, 1.0, 1.0)));
     //},
     buildBackground: (context){
-      context.canvas.setFillColor(p.PdfColor(0.0, 0.0, 1.0));
-      return pw.Rectangle(fillColor: p.PdfColor(0.0, 1.0, 1.0), strokeColor: p.PdfColor(0.0, 0.0, 1.0), strokeWidth: 50);
+      context.canvas.setFillColor(const p.PdfColor(0.0, 0.0, 1.0));
+      return pw.Rectangle(fillColor: const p.PdfColor(0.0, 1.0, 1.0), strokeColor: const p.PdfColor(0.0, 0.0, 1.0), strokeWidth: 50);
     }),
    // pageFormat: p.PdfPageFormat.a4,
     build: (context) => ch.widget ?? []));

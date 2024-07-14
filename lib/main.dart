@@ -3,8 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/dashboard.dart';
-import 'package:m_flow/pages/form_page.dart';
-import 'package:m_flow/pages/information.dart';
 
 void main() => runApp(const MyApp());
 
@@ -20,7 +18,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: DashBoard(),
+      home: const DashBoard(),
       theme: ThemeData(
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       iconTheme: const IconThemeData(color: Colors.white70),
@@ -29,7 +27,7 @@ class MyApp extends StatelessWidget {
       hintStyle: TextStyle(color: Colors.white38),
       focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.lightBlue))),
 
-appBarTheme: AppBarTheme(titleTextStyle: TextStyle(color: Colors.white),centerTitle: true, toolbarHeight: 40, backgroundColor: Color(HexColor(theme["backgroundColor"]).value)),
+appBarTheme: AppBarTheme(titleTextStyle: const TextStyle(color: Colors.white),centerTitle: true, toolbarHeight: 40, backgroundColor: Color(HexColor(theme["backgroundColor"]).value)),
       iconButtonTheme: const IconButtonThemeData(style: ButtonStyle(iconColor: WidgetStatePropertyAll(Colors.white60))),
       cardTheme: CardTheme(color: Color(HexColor(theme["backgroundColor"]).value)),
       scaffoldBackgroundColor: Color(HexColor(theme["pageBackgroundColor"]).value),

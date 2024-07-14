@@ -13,14 +13,14 @@ class ProfileDrawerDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Color.fromARGB(255, 5, 24, 32),
+      backgroundColor: const Color.fromARGB(255, 5, 24, 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Drawer head
           Column(
             children: [
-              DrawerHeader(
+              const DrawerHeader(
                 child: Icon(
                   Icons.person,
                   color: Colors.white,

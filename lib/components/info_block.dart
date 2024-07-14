@@ -21,7 +21,7 @@ class InfoBlock extends StatelessWidget {
         color: Colors.blueGrey[100], // Background color of the container
         borderRadius: BorderRadius.circular(12) 
       ),
-      margin: EdgeInsets.only(left: 20, right: 20, top: 20),
+      margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -31,13 +31,13 @@ class InfoBlock extends StatelessWidget {
             Row(
               children: [
                 Text(sectionName,
-                style: TextStyle(color: Colors.white, fontSize: 20),
+                style: const TextStyle(color: Colors.white, fontSize: 20),
                 ),
         
                 // edit button
                 IconButton(
                   onPressed: onPressed,
-                  icon: Icon(Icons.settings, color: Colors.black45),
+                  icon: const Icon(Icons.settings, color: Colors.black45),
                 ),
               ],
             ),
