@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,7 +10,8 @@ import 'package:m_flow/functions/mark_down_styler.dart';
 import 'package:m_flow/functions/string_utilities.dart';
 import 'package:pdf/pdf.dart';
 
-_FormPageState? temp;
+
+// _FormPageState? temp;
 
 class FormPage extends StatefulWidget {
   final String initText;
@@ -27,8 +29,12 @@ class _FormPageState extends State<FormPage> {
   MarkdownStyleSheet markdownStyle = MarkdownStyleSheet();
   Color? themeBackgroundColor; // Maybe replace with global theme
   Color? formPageBackgroundColor;
-  bool stopper = true;
+  // bool stopper = true;
   double zoom = 1.0;
+
+
+  // bool _isUpdatingStyle = false; // if don't wanna use debounce, uncomment this, use approach I...
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -36,12 +42,14 @@ class _FormPageState extends State<FormPage> {
     markdownText = widget.initText;
     leftController.text = markdownText;
     leftController.addListener(_updateRightField);
+    updateStyle(); // Call updateStyle once during initialization
   }
 
   @override
   void dispose() {
     // Dispose the controllers when the widget is disposed, So that state object is removed permanently from the tree...
     leftController.dispose(); // Important to dispose of the controllers to free up resources and avoid memory leaks...
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -51,22 +59,62 @@ class _FormPageState extends State<FormPage> {
     });
   }
 
-  void updateStyle() {
-    var markdownStyleValue = buildMarkdownStyle(zoom);
-    var backgroundColors = getBackgroundColors();
-        setState(() {
-          markdownStyle = markdownStyleValue;
-          themeBackgroundColor = backgroundColors[0];
-          formPageBackgroundColor = backgroundColors[1];
-        });
-  }
+//  // updateStyle() method OLD ----------------------------------------
+  // void updateStyle() {
+  //   var markdownStyleValue = buildMarkdownStyle(zoom);
+  //   var backgroundColors = getBackgroundColors();
+  //   setState(() {
+  //     markdownStyle = markdownStyleValue;
+  //     themeBackgroundColor = backgroundColors[0];
+  //     formPageBackgroundColor = backgroundColors[1];
+  //   });
+  // }
 
+//  // updateStyle() method OPTIMIZATION APPROACH - I (using _isUpdatingStyle())----------*DO NOT REMOVE THIS*------------------------------
+
+  // void updateStyle() {
+  //   if (_isUpdatingStyle) return;
+
+  //   var markdownStyleValue = buildMarkdownStyle(zoom);
+  //   var backgroundColors = getBackgroundColors();
+
+  //   setState(() {
+  //     _isUpdatingStyle = true;
+  //     // Your style update logic here
+  //     markdownStyle = markdownStyleValue;
+  //     themeBackgroundColor = backgroundColors[0];
+  //     formPageBackgroundColor = backgroundColors[1];
+      
+  //     _isUpdatingStyle = false;
+  //   });
+  // }
+
+// ------------------------- * if DeBounce creates a 'Race-Condition' we'll remove it... * ------------------------------------------
+
+
+
+//  // updateStyle() method OPTIMIZATION APPROACH - II (using _debounce())----------------------------------------
+
+  void updateStyle() {
+
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(Duration(milliseconds: 90), () {
+      var markdownStyleValue = buildMarkdownStyle(zoom);
+      var backgroundColors = getBackgroundColors();
+
+      setState(() {
+        markdownStyle = markdownStyleValue;
+        themeBackgroundColor = backgroundColors[0];
+        formPageBackgroundColor = backgroundColors[1];
+      });
+    });
+  }
 
   // Implementing Dynamic Line Manipulation -
   // Used to provide feature where 'Users' can move around any particular line while still rendering the markdown...
   String getUserInput() {
     String userInput = leftController.text;  // Get the entire user input
-
     // Split the input into lines
     List<String> lines = userInput.split('\n');
 
@@ -80,7 +128,6 @@ class _FormPageState extends State<FormPage> {
 
     // Join the lines back together
     userInput = lines.join('\n');
-
     // Print or use the userInput as needed
     // print('User Input: $userInput');
     return userInput;
@@ -88,12 +135,12 @@ class _FormPageState extends State<FormPage> {
   
   @override
   Widget build(BuildContext context) {
-    if (stopper) {
-      stopper = false;
-      updateStyle();
-    }
+    // if (stopper) {
+    //   stopper = false;
+    //   updateStyle();
+    // }
 
-    temp = this;
+    // temp = this;
     return Scaffold(
       backgroundColor: formPageBackgroundColor,
       appBar: AppBar(
@@ -170,11 +217,15 @@ class _FormPageState extends State<FormPage> {
                   Row(
                     children: [IconButton(onPressed: () {
                     zoom += 0.2;
-                    temp!.updateStyle();
+                    setState(() {
+                      updateStyle();
+                    });
                   }, icon: const Icon(Icons.zoom_in)),
                   IconButton(onPressed: () {
                     zoom -= 0.2;
-                    temp!.updateStyle();
+                    setState(() {
+                      updateStyle();
+                    });
                   }, icon: const Icon(Icons.zoom_out)),
                   const SizedBox(width: 10),
                 Expanded(child: DropdownMenu(
@@ -184,7 +235,9 @@ class _FormPageState extends State<FormPage> {
                 inputDecorationTheme: const InputDecorationTheme(contentPadding: EdgeInsets.all(0), constraints: BoxConstraints(maxHeight: 40), isCollapsed: true),
                 textStyle: const TextStyle(color: Colors.white60, fontSize: 16),
                 onSelected: (valueName) {
-                  temp!.updateStyle();
+                  setState(() {
+                    updateStyle();
+                  });
                 },
                 dropdownMenuEntries: const [
                   DropdownMenuEntry(value: "github", label: "Github Theme")
@@ -270,119 +323,277 @@ class _ExportDialogState extends State<ExportDialog> {
   String exportFormat = "PDF";
   TextEditingController pathParameter = TextEditingController(text: "document_1.pdf");
   TextEditingController authorName = TextEditingController(text: "Mr. YOU");
+  TextEditingController documentTitle = TextEditingController(text: "Document\_1.pdf");
+  TextEditingController documentSubject = TextEditingController(text: "Be Creative...");
+  
+  bool _showAuthorAndSubject = true;
+
+
+  // METHOD ADDED TO HANDLE SWITCH PRE-FILLED TEXT B/W HTML, PDF, MD...
+  void updateTextFields(String format) {
+    switch (format) {
+      case "HTML":
+        pathParameter.text = "Document_1.html";
+        documentTitle.text = "Document_1.html";
+        _showAuthorAndSubject = false;
+        break;
+      case "PDF":
+        pathParameter.text = "Document_1.pdf";
+        documentTitle.text = "Document_1.pdf";
+        _showAuthorAndSubject = true;
+        break;
+      case "MD":
+        pathParameter.text = "Document_1.md";
+        documentTitle.text = "Document_1.md";
+        _showAuthorAndSubject = false;
+        break;
+      default:
+        pathParameter.text = "Document_1.pdf";
+        documentTitle.text = "Document_1.pdf";
+        _showAuthorAndSubject = true;
+        break;
+    }
+  }
+
+// // BUILD METHOD FOR EXPORT DIALOG----------------------------------------------------------------------------*
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      title: const Text("Export Parameters"),
+      backgroundColor: Colors.blueGrey[100],
+      title: const Text("Document Export Settings"),
       elevation: 3.0,
-      contentPadding: const EdgeInsets.all(24.0),
+      contentPadding: const EdgeInsets.only(top:26, bottom:12.0, left: 11, right: 11),
       children: [
-        Row(children: [
-        Column(children: [
-          SizedBox(width: 300,child:
-          Row(
-          mainAxisSize: MainAxisSize.min,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          const Text("Export Path: ", style: TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(width: 30.0),
-          Expanded(child: TextField(controller: pathParameter)),
-        ])),
-        const SizedBox(height: 10.0),
-        SizedBox(width: 300, child: Row(children: [
-          const Text("File Format: ", style: TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(width: 10),
-          const Text("HTML"),
-          Radio(
-            value: exportFormatOptions[0],
-            groupValue: exportFormat,
-            onChanged: (Object? newSelect) {
-              setState(() {
-                exportFormat = newSelect.toString();
-              });
-            },
-          ),
-          const SizedBox(width: 10.0),
-          const Text("PDF"),
-          Radio(
-            value: exportFormatOptions[1],
-            groupValue: exportFormat,
-            onChanged: (Object? newSelect) {
-              setState(() {
-                exportFormat = newSelect.toString();
-              });
-            },
-          ),
-          const SizedBox(width: 10.0),
-          const Text("MD"),
-          Radio(
-            value: exportFormatOptions[2],
-            groupValue: exportFormat,
-            onChanged: (Object? newSelect) {
-              setState(() {
-                exportFormat = newSelect.toString();
-              });
-            },
-          ),
-        ])),
-        const SizedBox(height: 10.0),
-        SizedBox(width: 300, child: Row(
-          children: [
-            const Text("Document Title: ", style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(width: 30.0),
-            Expanded(child: TextField(controller: pathParameter)),
-          ],
-        )),
-        SizedBox(width: 300, child: Row(
-          children: [
-            const Text("Author Name: ", style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(width: 30.0),
-            Expanded(child: TextField(controller: pathParameter)),
-          ],
-        )),
-        SizedBox(width: 300, child: Row(
-          children: [
-            const Text("Document Subject: ", style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(width: 30.0),
-            Expanded(child: TextField(controller: pathParameter)),
-          ],
-        )),
-        const SizedBox(height: 10.0),
-        SizedBox(width: 300, child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton.icon(
-              onPressed: () {
-                Navigator.of(widget.dialogContext).pop(null);
-              },
-              icon: const Icon(Icons.cancel),
-              label: const Text("Cancel"),
+            Column(
+              children: [
+                Container(
+                  height: 245,
+                  margin: EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.only(top:6.0, bottom:12.0, left: 11, right: 11),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: Colors.blueGrey),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 300,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+
+                            Container(
+                              width: 100, // FIXED WIDTH FOR LABELS
+                              padding: EdgeInsets.only(top: 22),
+                              child: const Text("Export Path: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+
+                            const SizedBox(width: 30.0),
+                            Expanded(
+                              child: TextField(
+                                controller: pathParameter,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Enter export path',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      SizedBox(
+                        width: 300,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+
+                            Container(
+                              width: 100, // FIXED WIDTH FOR LABELS
+                              padding: EdgeInsets.only(top: 22),
+                              child: const Text("Doc Title: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+
+                            const SizedBox(width: 30.0),
+                            Expanded(
+                              child: TextField(
+                                controller: documentTitle,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Enter Doc Title',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Visibility(
+                        visible: _showAuthorAndSubject,
+                        child: SizedBox(
+                          width: 300,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                        
+                              Container(
+                                width: 100, // FIXED WIDTH FOR LABELS
+                                padding: EdgeInsets.only(top: 22),
+                                child: const Text("Author Name: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                        
+                              const SizedBox(width: 30.0),
+                              Expanded(
+                                child: TextField(
+                                  controller: authorName,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: 'Enter author name',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Visibility(
+                        visible: _showAuthorAndSubject,
+                        child: SizedBox(
+                          width: 300,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              
+                              Container(
+                                width: 100, // FIXED WIDTH FOR LABELS
+                                padding: EdgeInsets.only(top: 14),
+                                child: const Text("Doc Subject: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                        
+                              const SizedBox(width: 30.0),
+                              Expanded(
+                                child: TextField(
+                                  controller: documentSubject,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: 'Enter Doc Subject',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10.0),
+                Container(
+                  padding: const EdgeInsets.all(12.0),
+                  // decoration: BoxDecoration(
+                  //   borderRadius: BorderRadius.circular(12),
+                  //   border: Border.all(color: Colors.blueGrey),
+                  // ),
+                  child: Column(
+                    children: [
+                      // const Text("File Format: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                      // const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Text("HTML"),
+                          Radio(
+                            value: exportFormatOptions[0],
+                            groupValue: exportFormat,
+                            onChanged: (Object? newSelect) {
+                              setState(() {
+                                exportFormat = newSelect.toString();
+                                updateTextFields(exportFormat); // UPDATES THE PRE-FILLED TEXTS
+                              });
+                            },
+                          ),
+                          const SizedBox(width: 10.0),
+                          const Text("PDF"),
+                          Radio(
+                            value: exportFormatOptions[1],
+                            groupValue: exportFormat,
+                            onChanged: (Object? newSelect) {
+                              setState(() {
+                                exportFormat = newSelect.toString();
+                                updateTextFields(exportFormat); // UPDATES THE PRE-FILLED TEXTS
+                              });
+                            },
+                          ),
+                          const SizedBox(width: 10.0),
+                          const Text("MD"),
+                          Radio(
+                            value: exportFormatOptions[2],
+                            groupValue: exportFormat,
+                            onChanged: (Object? newSelect) {
+                              setState(() {
+                                exportFormat = newSelect.toString();
+                                updateTextFields(exportFormat); // UPDATES THE PRE-FILLED TEXTS
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 75.0),
+                SizedBox(
+                  width: 400,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.of(widget.dialogContext).pop(null);
+                        },
+                        icon: const Icon(Icons.cancel),
+                        label: const Text("Cancel"),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          if (exportFormat == exportFormatOptions[0]) {
+                            mdtopdf(widget.markdownTextExport, pathParameter.text, true);
+                          } else if (exportFormat == exportFormatOptions[1]) {
+                            mdtopdf(widget.markdownTextExport, pathParameter.text, false);
+                          } else {
+                            File(pathParameter.text).writeAsString(widget.markdownTextExport).then((value) {
+                              Navigator.of(widget.dialogContext).pop();
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.save),
+                        label: const Text("Export"),
+                      )
+                    ],
+                  ),
+                ),
+              ],
             ),
-            TextButton.icon(
-              onPressed: () {
-                if (exportFormat == exportFormatOptions[0]) {
-                  mdtopdf(widget.markdownTextExport, pathParameter.text, true);
-                } else if (exportFormat == exportFormatOptions[1]) {
-                  mdtopdf(widget.markdownTextExport, pathParameter.text, false);
-                } else {
-                  File(pathParameter.text).writeAsString(widget.markdownTextExport).then((value) {
-                    Navigator.of(widget.dialogContext).pop();
-                  });
-                }
-              },
-              icon: const Icon(Icons.save),
-              label: const Text("Export"),
-            )
-        
-        
-        ]))]),
-        const SizedBox(width: 30,),
-        Column(children: [SizedBox(width:300, child:DocumentPreview(content: widget.markdownTextExport))])        //SizedBox( width: 10, height:  10,child: PdfPreview(build: (f) => generatePdfFromMD(widget.markdownTextExport,f), enableScrollToPage: true))
-        ])
-        ],
-    );
+            const SizedBox(width: 30),
+            Column(
+              children: [
+                SizedBox(width: 300, child: DocumentPreview(widget.markdownTextExport))
+              ],
+            ),
+          ],
+        ),
+      ],
+      );
+    }
   }
-}
+
+// BUILD METHOD FOR EXPORT DIALOG (ENDS HERE)-----------------------------------------------------------------**
+
 
 MarkdownStyleSheet buildMarkdownStyle(double zoom) {
   Map<String, dynamic> themeValues = getTheme();
@@ -474,7 +685,7 @@ class _ParameterDialogState extends State<ParameterDialog> {
                 trailingIcon: const Icon(Icons.arrow_drop_down),
                 textStyle: const TextStyle(color: Colors.white60, backgroundColor: Colors.white60),
                 onSelected: (valueName) {
-                  temp!.updateStyle();
+                  Navigator.of(widget.dialogContext).pop();
                 },
                 dropdownMenuEntries: const [
                   DropdownMenuEntry(value: "github", label: "Github Theme", style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white60))))
@@ -509,26 +720,132 @@ class _ParameterDialogState extends State<ParameterDialog> {
 
 class DocumentPreview extends StatefulWidget {
   final String content;
-  const DocumentPreview({super.key, required this.content});
+
+  DocumentPreview(this.content, {super.key});
+
   @override
-  State<DocumentPreview> createState() => _DocumentPreviewState();
+  _DocumentPreviewState createState() => _DocumentPreviewState();
 }
 
 class _DocumentPreviewState extends State<DocumentPreview> {
   Image? previewImage;
+
   @override
   Widget build(BuildContext context) {
     double size = 300;
     double ratio = PdfPageFormat.a4.height / PdfPageFormat.a4.width;
     ratio *= 300;
-    if (previewImage == null){
-      generatePdfImageFromMD(widget.content).then((image){
+
+    if (widget.content.isEmpty) {
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FullPreviewScreen(widget.content),
+            ),
+          );
+        },
+        child: Container(
+          width: size,
+          height: ratio,
+          child: Card(
+            child: const Center(
+              child: Text(
+                "Nothing to display", 
+                style: TextStyle(
+                  color: Colors.red
+                  ),
+                ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (previewImage == null) {
+      generatePdfImageFromMD(widget.content).then((image) {
         setState(() {
           previewImage = image;
         });
       });
     }
 
-    return SizedBox(width: size, height: ratio,child: Card(child:previewImage));
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FullPreviewScreen(widget.content),
+          ),
+        );
+      },
+      child: Container(
+        width: size,
+        height: ratio,
+        child: Card(
+          child: previewImage != null 
+            ? previewImage 
+            : const Center(child: CircularProgressIndicator()),
+        ),
+      ),
+    );
+  }
+}
+
+class FullPreviewScreen extends StatefulWidget {
+  final String content;
+
+  const FullPreviewScreen(this.content, {super.key});
+
+  @override
+  _FullPreviewScreenState createState() => _FullPreviewScreenState();
+}
+
+class _FullPreviewScreenState extends State<FullPreviewScreen> {
+  Image? previewImage;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.content.isNotEmpty) {
+      generatePdfImageFromMD(widget.content).then((image) {
+        setState(() {
+          previewImage = image;
+        });
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double size = 600;
+    double ratio = PdfPageFormat.a4.height / PdfPageFormat.a4.width;
+    ratio *= size;
+
+    return Scaffold(
+      backgroundColor: Color.fromARGB(255, 2, 22, 32),
+      appBar: AppBar(
+        toolbarHeight: 28,
+        backgroundColor: Color.fromARGB(255, 2, 22, 32),
+      ),
+      body: Center(
+        child: widget.content.isEmpty
+            ? const Text("Nothing to display", style: TextStyle(color: Colors.red))
+            : SingleChildScrollView(
+                child: Container(
+                  width: size,
+                  height: ratio,
+                  decoration: BoxDecoration(),
+                  child: Card(
+                    child: previewImage != null 
+                      ? previewImage 
+                      : const Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+              ),
+      ),
+    );
   }
 }
