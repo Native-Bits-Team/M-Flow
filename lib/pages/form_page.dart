@@ -102,12 +102,11 @@ class _FormPageState extends State<FormPage> {
 
     _debounce = Timer(Duration(milliseconds: 90), () {
       var markdownStyleValue = buildMarkdownStyle(zoom);
-      var backgroundColors = getBackgroundColors();
-
+      var theme = getTheme();
       setState(() {
         markdownStyle = markdownStyleValue;
-        themeBackgroundColor = backgroundColors[0];
-        formPageBackgroundColor = backgroundColors[1];
+        themeBackgroundColor = theme["backgroundColor"];
+        formPageBackgroundColor = theme["pageBackgroundColor"];
       });
     });
   }
@@ -326,7 +325,6 @@ class _FormPageState extends State<FormPage> {
                       child: PreviewPanel(
                         markdownText: markdownText,
                         style: markdownStyle,
-                        backgroundColor: themeBackgroundColor
                       ),
                     ),
                 ],
@@ -631,9 +629,9 @@ class _ExportDialogState extends State<ExportDialog> {
                       TextButton.icon(
                         onPressed: () {
                           if (exportFormat == exportFormatOptions[0]) {
-                            mdtopdf(widget.markdownTextExport, pathParameter.text, true);
+                            mdtopdf(widget.markdownTextExport, pathParameter.text, true, MarkdownStyleSheet());
                           } else if (exportFormat == exportFormatOptions[1]) {
-                            mdtopdf(widget.markdownTextExport, pathParameter.text, false);
+                            mdtopdf(widget.markdownTextExport, pathParameter.text, false, MarkdownStyleSheet());
                           } else {
                             File(pathParameter.text).writeAsString(widget.markdownTextExport).then((value) {
                               Navigator.of(widget.dialogContext).pop();
@@ -846,7 +844,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     }
 
     if (previewImage == null) {
-      generatePdfImageFromMD(widget.content).then((image) {
+      generatePdfImageFromMD(widget.content, MarkdownStyleSheet()).then((image) {
         setState(() {
           previewImage = image;
         });
@@ -892,7 +890,7 @@ class _FullPreviewScreenState extends State<FullPreviewScreen> {
     super.initState();
 
     if (widget.content.isNotEmpty) {
-      generatePdfImageFromMD(widget.content).then((image) {
+      generatePdfImageFromMD(widget.content, MarkdownStyleSheet()).then((image) {
         setState(() {
           previewImage = image;
         });

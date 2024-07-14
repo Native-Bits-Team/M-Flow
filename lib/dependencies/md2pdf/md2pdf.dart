@@ -570,8 +570,11 @@ pw.ThemeData? mStyleToThemeData(MarkdownStyleSheet style){
 }
 
 textStylePDFtoPaint(TextStyle? tStyle){
+  if (tStyle == null){
+    return pw.TextStyle;
+  }
   pw.FontWeight fontWeight = pw.FontWeight.normal;
-  if (tStyle!.fontWeight == FontWeight.bold){
+  if (tStyle.fontWeight == FontWeight.bold){
     fontWeight = pw.FontWeight.bold;
   }
   pw.TextStyle l = pw.TextStyle(
