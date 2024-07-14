@@ -80,7 +80,7 @@ class _DocPreviewState extends State<DocPreview> {
     //ScreenshotController sController = ScreenshotController();
     File(widget.projectPath).readAsString().then((text){
     test = text;
-    generatePdfImageFromMD(text).then((image){
+    generatePdfImageFromMD(text, MarkdownStyleSheet()).then((image){
       setState(() {
       previewImageBytes = image;
       });

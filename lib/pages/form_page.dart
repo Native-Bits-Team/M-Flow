@@ -4,8 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:m_flow/components/profile_drawer.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
-import 'package:hexcolor/hexcolor.dart';
-import 'package:m_flow/dependencies/md2pdf.dart';
+import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/functions/mark_down_styler.dart';
 import 'package:m_flow/functions/string_utilities.dart';
@@ -99,7 +98,6 @@ class _FormPageState extends State<FormPage> {
 //  // updateStyle() method OPTIMIZATION APPROACH - II (using _debounce())----------------------------------------
 
   void updateStyle() {
-
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(Duration(milliseconds: 90), () {
@@ -142,7 +140,6 @@ class _FormPageState extends State<FormPage> {
     //   stopper = false;
     //   updateStyle();
     // }
-
     // temp = this;
     return Scaffold( 
       backgroundColor: formPageBackgroundColor,
@@ -261,20 +258,10 @@ class _FormPageState extends State<FormPage> {
                     child: TextField(
                       controller: leftController,
                       decoration: const InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.lightBlue),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.white54),
-                        ),
-                        border: OutlineInputBorder(),
                         hintText: 'What\'s on your mind?',
-                        hintStyle: TextStyle(color: Colors.white38)
                       ),
                       maxLines: null,
                       minLines: 50,
-                      style: const TextStyle(color: Colors.white60),
                     ),
                   ),
                 ],
@@ -356,13 +343,11 @@ class PreviewPanel extends StatelessWidget {
   final String markdownText; // used to declare a variable that can only be assigned once...
   // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
   final MarkdownStyleSheet style;
-  final Color? backgroundColor;
 
   const PreviewPanel({
     super.key,
     required this.markdownText,
     required this.style,
-    this.backgroundColor,
   });
 
   @override
@@ -371,7 +356,6 @@ class PreviewPanel extends StatelessWidget {
     return Card(
       shadowColor: Colors.grey,
       elevation: 1.0,
-      color: backgroundColor,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Markdown(data: markdownText, styleSheet: style),
@@ -742,7 +726,7 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom) {
       case "blockquoteDecoration":
         blockquoteDecoration = makeBoxDecorationJson(value);
         break;
-      default:
+      default: // is it needed?
     }
   });
 
@@ -757,13 +741,6 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom) {
   blockquoteDecoration: blockquoteDecoration,
   textScaler: TextScaler.linear(zoom)
   );
-}
-
-List<Color> getBackgroundColors() {
-  return [
-    Color(HexColor(getTheme()["backgroundColor"]).value),
-    Color(HexColor(getTheme()["pageBackgroundColor"]).value),
-  ];
 }
 
 class ParameterDialog extends StatefulWidget {
@@ -789,12 +766,12 @@ class _ParameterDialogState extends State<ParameterDialog> {
               child: DropdownMenu(
                 label: const Text("Theme: "),
                 trailingIcon: const Icon(Icons.arrow_drop_down),
-                textStyle: const TextStyle(color: Colors.white60, backgroundColor: Colors.white60),
+                //textStyle: const TextStyle(color: Colors.white60, backgroundColor: Colors.white60),
                 onSelected: (valueName) {
                   Navigator.of(widget.dialogContext).pop();
                 },
                 dropdownMenuEntries: const [
-                  DropdownMenuEntry(value: "github", label: "Github Theme", style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white60))))
+                  DropdownMenuEntry(value: "github", label: "Github Theme") //style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white60)))
                 ],
               ),
             ),
@@ -841,7 +818,6 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     double size = 300;
     double ratio = PdfPageFormat.a4.height / PdfPageFormat.a4.width;
     ratio *= 300;
-
     if (widget.content.isEmpty) {
       return GestureDetector(
         onTap: () {

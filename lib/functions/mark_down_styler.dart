@@ -23,7 +23,7 @@ FontWeight makeFontWeightFromString(String weight){
     case 900:
       return FontWeight.w900;
     default:
-        return FontWeight.normal;
+      return FontWeight.normal;
   }
 }
 
@@ -57,36 +57,35 @@ TextStyle makeTextStyleJson(Map<String, dynamic> value){
 background.color = Colors.transparent;
 
   value.forEach((key, value){
-    if (key == "fontWeight"){
-      fontWeight = makeFontWeightFromString(value);
+    
+    switch (key) {
+      case "fontWeight":
+        fontWeight = makeFontWeightFromString(value);
+        break;
+      case "fontSize":
+        fontSize = double.parse(value);
+        break;
+      case "color":
+        color = Color(HexColor(value).value);
+        break;
+      case "decoration":
+        decoration = TextDecoration.underline; // needs improvements
+        break;
+      case "decorationColor":
+        decorationColor = Color(HexColor(value).value);
+        break;
+      case "decorationThickness":
+        decorationThickness = double.parse(value);
+        break;
+      case "backgroundColor":
+        background.color = Color(HexColor(value).value);
+        break;
+      case "foregroundColor":
+        foreground = Paint();
+        foreground!.color = Color(HexColor(value).value);
+        break;
+      default: // is it needed?
     }
-
-    if (key == "fontSize"){
-      fontSize = double.parse(value);
-    }
-
-    if (key == "color"){
-      color = Color(HexColor(value).value);
-     // background.colorFilter = ColorFilter.mode(Color(HexColor(value).value), BlendMode.srcOver);
-    }
-    if (key == "decoration"){
-        decoration = TextDecoration.underline;
-    }
-    if (key == "decorationColor"){
-      decorationColor = Color(HexColor(value).value);
-    }
-    if (key == "decorationThickness"){
-      decorationThickness = double.parse(value);
-    }
-    if (key == "backgroundColor"){
-     // background.blendMode = BlendMode.dstOver;
-      background.color = Color(HexColor(value).value);
-    }
-    if (key == "foregroundColor"){
-      foreground = Paint();
-      foreground!.color = Color(HexColor(value).value);
-    }
-
   });
 
 
