@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:m_flow/functions/json_db.dart';
+import 'package:m_flow/pages/dashboard.dart';
 import 'package:m_flow/pages/form_page.dart';
 
 void main() => runApp(const MyApp());
@@ -11,7 +12,8 @@ class MyApp extends StatelessWidget {
     initDatabaseAndThemes();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const FormPage(initText: "",),
+      // home: const FormPage(initText: "",),
+      home: DashBoard(),
       theme: ThemeData(
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       iconTheme: const IconThemeData(color: Colors.white70),

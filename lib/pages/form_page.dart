@@ -2,12 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:m_flow/components/profile_drawer.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/dependencies/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/functions/mark_down_styler.dart';
 import 'package:m_flow/functions/string_utilities.dart';
+import 'package:m_flow/pages/dashboard.dart';
+import 'package:m_flow/pages/profile_page.dart';
 import 'package:pdf/pdf.dart';
 
 
@@ -141,17 +144,86 @@ class _FormPageState extends State<FormPage> {
     // }
 
     // temp = this;
-    return Scaffold(
+    return Scaffold( 
       backgroundColor: formPageBackgroundColor,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 5, 24, 32),
-        toolbarHeight: 40.0,
+        toolbarHeight: 42.0,
         centerTitle: true,
-        title: const Text("Welcome to M-Flow Document Making Software !"),
+        title: const Text("M-Flow", style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 17)),
         titleTextStyle: const TextStyle(color: Colors.white),
       ),
+      
+      // *DRAWER : -------------------------------------------------------------------------------- *
+      drawer: ProfileDrawer(
+        onExportTap: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ExportDialog(
+                dialogContext: context,
+                markdownTextExport: markdownText,
+              );
+            },
+          );
+        },
+
+        onIceTap: (){
+        },
+
+        onDashTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const DashBoard()));
+        },
+        
+        onGitTap: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Colors.blueGrey[100],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0), // Adjust border radius as needed
+                  side: const BorderSide(color: Colors.black, width: 2.0), // Adjust border color and width
+                ),
+                title: Text('Select Theme'),
+                content: Container(
+                  width: 100,
+                  height: 60,
+                  child: DropdownMenu(
+                    trailingIcon: const Icon(Icons.arrow_drop_down),
+                    initialSelection: "github",
+                    inputDecorationTheme: const InputDecorationTheme(
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.all(12),
+                      isCollapsed: true,
+                    ),
+                    textStyle: const TextStyle(color: Colors.black, fontSize: 13),
+                    onSelected: (valueName) {
+                      setState(() {
+                        // Handle selection if needed
+                      });
+                    },
+                    dropdownMenuEntries: const [DropdownMenuEntry(value: "github", label: "Github Flavour"),],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Close'),
+                  ),
+                ],
+              );
+            },
+          );
+        }, // GitTap ends here
+
+      ),
+      // *DRAWER : -------------------------------------------------------------------------------- *
+
       body: Padding(
-        padding: const EdgeInsets.all(27),
+        padding: const EdgeInsets.all(14),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -216,56 +288,60 @@ class _FormPageState extends State<FormPage> {
                 children: [
                   Row(
                     children: [IconButton(onPressed: () {
-                    zoom += 0.2;
-                    setState(() {
-                      updateStyle();
-                    });
-                  }, icon: const Icon(Icons.zoom_in)),
-                  IconButton(onPressed: () {
-                    zoom -= 0.2;
-                    setState(() {
-                      updateStyle();
-                    });
-                  }, icon: const Icon(Icons.zoom_out)),
-                  const SizedBox(width: 10),
-                Expanded(child: DropdownMenu(
-                //label: const Text("Theme: "),
-                trailingIcon: const Icon(Icons.arrow_drop_down),
-                initialSelection: "github",
-                inputDecorationTheme: const InputDecorationTheme(contentPadding: EdgeInsets.all(0), constraints: BoxConstraints(maxHeight: 40), isCollapsed: true),
-                textStyle: const TextStyle(color: Colors.white60, fontSize: 16),
-                onSelected: (valueName) {
-                  setState(() {
-                    updateStyle();
-                  });
-                },
-                dropdownMenuEntries: const [
-                  DropdownMenuEntry(value: "github", label: "Github Theme")
-                ],
-              )),
+                      zoom += 0.2;
+                      setState(() {
+                        updateStyle();
+                      });
+                    }, icon: const Icon(Icons.zoom_in)),
+                    IconButton(onPressed: () {
+                      zoom -= 0.2;
+                      setState(() {
+                        updateStyle();
+                      });
+                    }, icon: const Icon(Icons.zoom_out)),
+                    const SizedBox(width: 10),
+                
+                    // Expanded(child: DropdownMenu(
+                    //   //label: const Text("Theme: "),
+                    //   trailingIcon: const Icon(Icons.arrow_drop_down),
+                    //   initialSelection: "github",
+                    //   inputDecorationTheme: const InputDecorationTheme(contentPadding: EdgeInsets.all(0), constraints: BoxConstraints(maxHeight: 40), isCollapsed: true),
+                    //   textStyle: const TextStyle(color: Colors.white60, fontSize: 16),
+                    //   onSelected: (valueName) {
+                    //     setState(() {
+                    //       updateStyle();
+                    //     });
+                    //   },
+                    //   dropdownMenuEntries: const [
+                    //     DropdownMenuEntry(value: "github", label: "Github Theme")
+                    //   ],
+                    // )),
               
-               IconButton(
-                    onPressed: () {
-                    }, icon: const Icon(Icons.icecream, color: Colors.greenAccent,), color: Colors.greenAccent),
-               IconButton(
-                    onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ExportDialog(
-                                dialogContext: context,
-                                markdownTextExport: markdownText,
-                              );
-                            },
-                          );}, icon: const Icon(Icons.save, color: Colors.blueAccent), color: Colors.blueAccent,),
-                  ]),
-                  Expanded(
-                    child: PreviewPanel(
-                      markdownText: markdownText,
-                      style: markdownStyle,
-                      backgroundColor: themeBackgroundColor
+                    // IconButton(
+                    //     onPressed: () {
+                    //       // implement here
+                    //     }, icon: const Icon(Icons.icecream, color: Colors.greenAccent,), color: Colors.greenAccent),
+                    // IconButton(
+                    //     onPressed: () {
+                    //       showDialog(
+                    //         context: context,
+                    //         builder: (BuildContext context) {
+                    //           return ExportDialog(
+                    //             dialogContext: context,
+                    //             markdownTextExport: markdownText,
+                    //           );
+                    //         },
+                    //       );
+                    //     }, icon: const Icon(Icons.save, color: Colors.blueAccent), color: Colors.blueAccent,),
+                    ]),
+                    
+                    Expanded(
+                      child: PreviewPanel(
+                        markdownText: markdownText,
+                        style: markdownStyle,
+                        backgroundColor: themeBackgroundColor
                       ),
-                  ),
+                    ),
                 ],
               ),
             ),
@@ -323,7 +399,7 @@ class _ExportDialogState extends State<ExportDialog> {
   String exportFormat = "PDF";
   TextEditingController pathParameter = TextEditingController(text: "document_1.pdf");
   TextEditingController authorName = TextEditingController(text: "Mr. YOU");
-  TextEditingController documentTitle = TextEditingController(text: "Document\_1.pdf");
+  TextEditingController documentTitle = TextEditingController(text: "Document_1.pdf");
   TextEditingController documentSubject = TextEditingController(text: "Be Creative...");
   
   bool _showAuthorAndSubject = true;
@@ -543,6 +619,15 @@ class _ExportDialogState extends State<ExportDialog> {
                           ),
                         ],
                       ),
+
+                      const SizedBox(height: 25.0),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ProfilePage()));
+                        },
+                        child: const Text("Personalize First Page"),
+                      ),
+
                     ],
                   ),
                 ),
@@ -582,9 +667,30 @@ class _ExportDialogState extends State<ExportDialog> {
             const SizedBox(width: 30),
             Column(
               children: [
-                SizedBox(width: 300, child: DocumentPreview(widget.markdownTextExport))
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.chevron_left, color: Colors.black,),
+                      onPressed: () {
+                        // Handle left button press
+                      },
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: DocumentPreview(widget.markdownTextExport),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.chevron_right, color: Colors.black,),
+                      onPressed: () {
+                        // Handle right button press
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
+
           ],
         ),
       ],

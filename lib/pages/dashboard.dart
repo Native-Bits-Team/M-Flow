@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:m_flow/components/profile_drawer_dashboard.dart';
 import 'package:m_flow/dependencies/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/form_page.dart';
+import 'package:m_flow/pages/profile_page.dart';
 
 
 
@@ -14,6 +16,16 @@ class DashBoard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(backgroundColor: Color.fromARGB(255, 5, 24, 32),),
+
+      // *DRAWER : -------------------------------------------------------------------------------- *
+      drawer: ProfileDrawerDashboard(
+        onProfileTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
+        },
+      ),
+      // *DRAWER : -------------------------------------------------------------------------------- *
+
       body: Padding(padding: const EdgeInsets.all(30.0), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch ,children: [Card(child: Padding(padding: const EdgeInsets.all(30.0), child: Row(children: [Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
         TextButton.icon(icon: const Icon(Icons.add), style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
           FilePicker fP = FilePicker.platform;
