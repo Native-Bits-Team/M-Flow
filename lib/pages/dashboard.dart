@@ -63,10 +63,10 @@ Navigator.push(context, MaterialPageRoute(builder: (context){
 
 
 class DocPreview extends StatefulWidget {
-  DocPreview({super.key, projectPath, projectName, parentHandle});
-  String projectPath = "";
-  String projectName = "Unknown";
-  late final _ProjectGridState parentHandle; // Should be removed
+  const DocPreview({super.key, projectPath, projectName, required this.parentHandle});
+  final String projectPath = "";
+  final String projectName = "Unknown";
+  final _ProjectGridState parentHandle; // Should be removed
   @override
   State<DocPreview> createState() => _DocPreviewState();
 }
@@ -81,9 +81,9 @@ class _DocPreviewState extends State<DocPreview> {
     //ScreenshotController sController = ScreenshotController();
     File(widget.projectPath).readAsString().then((text){
     test = text;
-    generatePdfImageFromMD(text, MarkdownStyleSheet()).then((image){
+    generatePdfImageFromMD(text, MarkdownStyleSheet()).then((imageAndSize){
       setState(() {
-      previewImageBytes = image;
+      previewImageBytes = imageAndSize[0];
       });
     });
     //sController.captureFromWidget(MarkdownBody(data: text)).then((data){
@@ -100,7 +100,7 @@ class _DocPreviewState extends State<DocPreview> {
       
       showMenu(context: context, position: const RelativeRect.fromLTRB(10.0, 10.0, 30.0, 30.0), items: [PopupMenuItem(onTap: (){
           removeRecentOpen(widget.projectPath, widget.projectName).then((){
-            widget.parentHandle.updatePreviews();
+            widget.parentHandle.updatePreviews(); // TODO: Replace this method
           });
           
         
@@ -138,10 +138,14 @@ class _ProjectGridState extends State<ProjectGrid> {
       updatePreviews();
     //}
         for (int j = 0 ; j < widget.pathPreview.length; ++j){
-      childPreview.add(DocPreview());
-      childPreview[j].projectPath = widget.pathPreview[j];
-      childPreview[j].projectName = widget.namePreview[j];
-      childPreview[j].parentHandle = this;
+      childPreview.add(DocPreview(
+        projectPath: widget.pathPreview[j],
+        projectName: widget.namePreview[j],
+        parentHandle: this,
+      ));
+      //childPreview[j].projectPath = widget.pathPreview[j];
+      //childPreview[j].projectName = widget.namePreview[j];
+      //childPreview[j].parentHandle = this;
     }
 
     return GridView(gridDelegate: gridDelegateRef, children: childPreview);

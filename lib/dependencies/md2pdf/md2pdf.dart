@@ -512,9 +512,9 @@ FutureOr<Uint8List> generatePdfFromMD(String md2, p.PdfPageFormat format, {Markd
   return doc.save();
 }
 
-Future<w.Image?> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4}) async {
+Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0}) async {
   if (md2 == ""){
-    return null;
+    return []; // TODO: Should be removed
   }
   var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()],
   blockSyntaxes: [const md.TableSyntax(),
@@ -549,9 +549,11 @@ Future<w.Image?> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.
    build: (context) => ch.widget ?? []));
   Uint8List t = await doc.save();
   Stream<PdfRaster> r = Printing.raster(t); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
-  PdfRaster j = await r.first;
+  PdfRaster j = await r.elementAt(pageIndex);
   Uint8List k = await j.toPng();
-  return w.Image.memory(k,width: j.width.toDouble(), height: j.height.toDouble());
+  List<dynamic> ImageAndSize = [w.Image.memory(k, width: j.width.toDouble(), height: j.height.toDouble()),doc.document.pdfPageList.pages.length];
+  return ImageAndSize;
+//  return w.Image.memory(k,width: j.width.toDouble(), height: j.height.toDouble());
 }
 
 pw.ThemeData? mStyleToThemeData(MarkdownStyleSheet style){
@@ -568,9 +570,9 @@ pw.ThemeData? mStyleToThemeData(MarkdownStyleSheet style){
   );
 }
 
-textStylePDFtoPaint(TextStyle? tStyle){
+pw.TextStyle textStylePDFtoPaint(TextStyle? tStyle){
   if (tStyle == null){
-    return pw.TextStyle;
+    return const pw.TextStyle();
   }
   pw.FontWeight fontWeight = pw.FontWeight.normal;
   if (tStyle.fontWeight == FontWeight.bold){
