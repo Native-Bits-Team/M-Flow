@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/dashboard.dart';
+import 'package:m_flow/pages/form_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const DashBoard(),
+      home: const FormPage(initText: "Test"),
       theme: ThemeData(
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       iconTheme: const IconThemeData(color: Colors.white70),

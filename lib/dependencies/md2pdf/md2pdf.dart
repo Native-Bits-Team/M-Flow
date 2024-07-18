@@ -6,23 +6,32 @@
 //import 'dart:convert';
 //import 'dart:collection';
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 //import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart' as w;
+import 'package:hexcolor/hexcolor.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
-import 'package:pdf/widgets.dart' as pw;
+//import 'package:pdf/widgets.dart' as pw;
 //import 'package:markdown/markdown.dart' as md;
 import 'package:m_flow/dependencies/markdown/code/markdown.dart' as md;
 
-import 'package:pdf/pdf.dart' as p;
-import 'package:pdf/pdf.dart';
+//import 'package:pdf/pdf.dart' as p;
+//import 'package:pdf/pdf.dart';
 import 'package:http/http.dart' as http;
+import 'package:m_flow/functions/json_db.dart';
 import 'package:printing/printing.dart';
 //import 'package:pdf/widgets.dart';
+
+import 'package:m_flow/dependencies/dart_pdf/pdf/code/pdf.dart';
+import 'package:m_flow/dependencies/dart_pdf/pdf/code/pdf.dart' as p;
+import 'package:m_flow/dependencies/dart_pdf/pdf/code/widgets.dart' as pw;
+
 
 // computed style is a stack, each time we encounter an element like <p>... we push its style onto the stack, then pop it off at </p>
 // the top of the stack merges all of the styles of the parents.
@@ -58,6 +67,16 @@ Future<Uint8List> getImage(imageUrl) async {
   var response = await http.get(url);
   final bytes = response.bodyBytes;
   return bytes;
+}
+
+
+Future<Uint8List> getImageNBT(imageUrlNBT) async {
+imageUrlNBT = imageUrlNBT.toString().replaceFirst("file:///", "");
+  if (imageUrlNBT.toString().startsWith("http")){
+    return getImage(imageUrlNBT); 
+  } else {
+return File(imageUrlNBT).readAsBytes(); // [TRANSPARENCY] I got this from developer Madhur, who said to have got it from a snippit of code he wrote
+  }
 }
 
 class _UrlText extends pw.StatelessWidget {
@@ -414,7 +433,9 @@ class Styler {
             addRows(e.nodes[1], Style());
             return Chunk(widget: [pw.Table(children: ch)]);
           case "img":
-            var imageBody = await getImage(e.attributes["src"]);
+            //var imageBody = await getImage(e.attributes["src"]);
+            var imageBody = await getImageNBT(e.attributes["src"]);
+
             var imageRender = pw.MemoryImage(imageBody);
             return Chunk(widget: [pw.Image(imageRender)]);
           case "p":
@@ -466,43 +487,23 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style)
     author: "Me",
     creator: ""
   );
-
+  Color pageBackgroundColor = Color(HexColor(getTheme()["backgroundColor"]).value);
   doc.addPage(pw.MultiPage(
     pageTheme: pw.PageTheme(
     theme: mStyleToThemeData(style),
     buildBackground: (context){
-      context.canvas.setFillColor(const p.PdfColor(0.0, 0.0, 1.0));
-      return pw.Rectangle(fillColor: const p.PdfColor(0.0, 1.0, 1.0), strokeColor: const p.PdfColor(0.0, 0.0, 1.0), strokeWidth: 50);
+      return pw.Expanded(child: pw.Rectangle(fillColor: p.PdfColor(pageBackgroundColor.red/255.0,pageBackgroundColor.green/255.0,pageBackgroundColor.blue/255.0)));
     }),
+
+    //buildBackground: (context){
+      //context.canvas.setFillColor(const p.PdfColor(0.0, 0.0, 1.0));
+      //return pw.Rectangle(fillColor: const p.PdfColor(0.0, 1.0, 1.0), strokeColor: const p.PdfColor(0.0, 0.0, 1.0), strokeWidth: 50);
+    //}),
    // pageFormat: p.PdfPageFormat.a4,
     build: (context) => ch.widget ?? []));
   if (!htmlOrPdf){
   File(exportPath).writeAsBytes(await doc.save());
   }
-}
-
-
-FutureOr<Uint8List> generatePdfFromMD(String md2, p.PdfPageFormat format, {MarkdownStyleSheet? style}) async {
-  var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()],
-  blockSyntaxes: [const md.TableSyntax(),
-  const md.FencedCodeBlockSyntax(),
-  const md.HeaderWithIdSyntax(),
-  const md.SetextHeaderWithIdSyntax()],
-  extensionSet: md.ExtensionSet.gitHubWeb);
-
-  var document = parse(htmlx);
-
-  Chunk ch = await Styler().format(document.body!);
-  var doc = pw.Document(
-    compress: true,
-    version: p.PdfVersion.pdf_1_5,
-    title: "TEST",
-    author: "Me",
-    creator: ""
-  );
-
-  doc.addPage(pw.MultiPage(pageFormat: format, build: (context) => ch.widget ?? []));
-  return doc.save();
 }
 
 Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0}) async {
@@ -522,8 +523,12 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
   var doc = pw.Document(
     compress: true,
     version: p.PdfVersion.pdf_1_5,);
+    Color pageBackgroundColor = Color(HexColor(getTheme()["backgroundColor"]).value);
   doc.addPage(pw.MultiPage(
   pageTheme: pw.PageTheme(
+    buildBackground: (context){
+      return pw.Expanded(child: pw.Rectangle(fillColor: p.PdfColor(pageBackgroundColor.red/255.0,pageBackgroundColor.green/255.0,pageBackgroundColor.blue/255.0)));
+    },
 //    buildBackground: (context){
   //    return pw.OverflowBox(minWidth: 500,child: pw.Rectangle(fillColor: p.PdfColor.fromHex("#000000FF"))); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned how to use fromHex from its description
    // },

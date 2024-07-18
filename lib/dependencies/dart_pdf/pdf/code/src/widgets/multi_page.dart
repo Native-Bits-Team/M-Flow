@@ -410,14 +410,17 @@ class MultiPage extends Page {
 
       if (pageTheme.buildBackground != null) {
         final child = pageTheme.buildBackground!(page.context);
+        final backgroundConstrainNBT = page.fullConstraints.copyWith(maxHeight: page.fullConstraints.maxHeight + _margin.top + _margin.bottom, maxWidth: _margin.left + _margin.right + page.fullConstraints.maxWidth); // NBT
 
-        child.layout(page.context, page.fullConstraints, parentUsesSize: false);
+        //child.layout(page.context, page.fullConstraints, parentUsesSize: false); // NBT
+        child.layout(page.context, backgroundConstrainNBT, parentUsesSize: false); // NBT
         assert(child.box != null);
-        final xPos = isRTL
-            ? _margin.left + (availableWidth - child.box!.width)
-            : _margin.left;
+       // final xPos = isRTL
+         //   ? _margin.left + (availableWidth - child.box!.width)
+           // : _margin.left; 
         _paintChild(
-            page.context, child, xPos, _margin.bottom, pageFormat.height);
+            //page.context, child, xPos, _margin.bottom, pageFormat.height); // NBT
+            page.context, child, 0.0, 0.0, pageFormat.height); // NBT
       }
 
       var totalFlex = 0;

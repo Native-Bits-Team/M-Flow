@@ -963,7 +963,11 @@ class _DocumentPreviewState extends State<DocumentPreview> {
           SizedBox(
               width: size,
               height: ratio,
-              child: Card(
+              child: Card(clipBehavior: Clip.antiAliasWithSaveLayer,
+              elevation: 0.0,
+              borderOnForeground: false,
+              shadowColor: Colors.transparent,
+              margin: const EdgeInsets.all(0.0),
                   child: previewImage ??
                       wError //const Center(child: CircularProgressIndicator()),
                   )),
@@ -975,6 +979,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
               },
               icon: const Icon(Icons.chevron_right))
         ]),
+        const SizedBox(height: 20),
         Text(pageText)
       ]),
     );
