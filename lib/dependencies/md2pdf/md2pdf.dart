@@ -441,8 +441,6 @@ class Styler {
 
 //mdtopdf(String path, String out) async {
 mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style) async {
- // final md2 = await File(path).readAsString();
-// String md2 = input;
   var htmlx = md.markdownToHtml(md2,
       inlineSyntaxes: [md.InlineHtmlSyntax()],
       blockSyntaxes: [
@@ -470,13 +468,8 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style)
   );
 
   doc.addPage(pw.MultiPage(
-    //theme: mStyleToThemeData(style),
     pageTheme: pw.PageTheme(
-      //margin: pw.EdgeInsets.all(0.0),
     theme: mStyleToThemeData(style),
-   // buildForeground: (context){
-     // return pw.Expanded(child: pw.Rectangle(fillColor: p.PdfColor(1.0, 1.0, 1.0)));
-    //},
     buildBackground: (context){
       context.canvas.setFillColor(const p.PdfColor(0.0, 0.0, 1.0));
       return pw.Rectangle(fillColor: const p.PdfColor(0.0, 1.0, 1.0), strokeColor: const p.PdfColor(0.0, 0.0, 1.0), strokeWidth: 50);
@@ -514,7 +507,7 @@ FutureOr<Uint8List> generatePdfFromMD(String md2, p.PdfPageFormat format, {Markd
 
 Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0}) async {
   if (md2 == ""){
-    return []; // TODO: Should be removed
+    return [null,0]; // TODO: Should be removed
   }
   var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()],
   blockSyntaxes: [const md.TableSyntax(),
@@ -530,30 +523,18 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
     compress: true,
     version: p.PdfVersion.pdf_1_5,);
   doc.addPage(pw.MultiPage(
-//  pageFormat: format,
-//footer: (context){
-  //return pw.Rectangle(fillColor: p.PdfColor(0.0,0.0,1.0), strokeWidth: 0.0);
-//},
   pageTheme: pw.PageTheme(
-    theme: mStyleToThemeData(style),
-    
-   // buildForeground: (context){
-     // return pw.Expanded(child: pw.Rectangle(fillColor: p.PdfColor(1.0, 1.0, 1.0)));
-    //},
-   // buildBackground: (context){
-
-     // return pw.Rectangle(fillColor: p.PdfColor(0.0, 0.0, 1.0), strokeColor: p.PdfColor(0.0, 0.0, 1.0), strokeWidth: 100000);
-      //}
-      ),
-  //theme: mStyleToThemeData(style),
+//    buildBackground: (context){
+  //    return pw.OverflowBox(minWidth: 500,child: pw.Rectangle(fillColor: p.PdfColor.fromHex("#000000FF"))); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned how to use fromHex from its description
+   // },
+    theme: mStyleToThemeData(style)),
    build: (context) => ch.widget ?? []));
   Uint8List t = await doc.save();
   Stream<PdfRaster> r = Printing.raster(t); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
   PdfRaster j = await r.elementAt(pageIndex);
   Uint8List k = await j.toPng();
-  List<dynamic> ImageAndSize = [w.Image.memory(k, width: j.width.toDouble(), height: j.height.toDouble()),doc.document.pdfPageList.pages.length];
-  return ImageAndSize;
-//  return w.Image.memory(k,width: j.width.toDouble(), height: j.height.toDouble());
+  List<dynamic> imageAndSize = [w.Image.memory(k, width: j.width.toDouble(), height: j.height.toDouble()),doc.document.pdfPageList.pages.length];
+  return imageAndSize;
 }
 
 pw.ThemeData? mStyleToThemeData(MarkdownStyleSheet style){
