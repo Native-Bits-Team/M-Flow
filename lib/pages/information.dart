@@ -4,7 +4,7 @@ class InfoPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     ScrollController w = ScrollController();
-    String s = "M-Flow 0.1-Alpha, By Native Bits Team\n\n Developers:\n Imad Laggoune | Project Manager and Lead Developer\n Madhur | Lead Developer\n\n Licenes:\nflutter_markdown: BSD-3, License Text:\n";
+    String s = "M-Flow 0.1-Alpha, By Native Bits Team\n\n Developers:\n Imad Laggoune | Project Manager and Lead Developer\n Madhur pandey | Lead Developer\n\n Licenes:\nflutter_markdown: BSD-3, License Text:\n";
     s += loadLicenseBSDThree();
     s += "\n md2pdf: MIT, License Text:";
     s += loadLicenseMIT();
