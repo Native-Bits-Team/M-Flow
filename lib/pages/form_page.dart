@@ -13,15 +13,17 @@ import 'package:m_flow/functions/string_utilities.dart';
 import 'package:m_flow/pages/dashboard.dart';
 import 'package:m_flow/pages/profile_page.dart';
 import 'package:pdf/pdf.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+
+// import 'package:permission_handler/permission_handler.dart';
 
 _FormPageState? temp;
 
 class FormPage extends StatefulWidget {
   final String initText;
 
-  const FormPage(
-      {super.key,
-      required this.initText}); // '?': Denotes that key can be of type 'null' or 'key'...
+  const FormPage({super.key, required this.initText}); // '?': Denotes that key can be of type 'null' or 'key'...
   // We can choose not to provide a Key when instantiating FormPage...
   //final String initText = "";
   @override
@@ -30,16 +32,52 @@ class FormPage extends StatefulWidget {
 
 class _FormPageState extends State<FormPage> {
   TextEditingController leftController = TextEditingController();
-  String markdownText =
-      ""; // Initialized an empty variable of type 'String' to store markdown text...
+  String markdownText = ""; // Initialized an empty variable of type 'String' to store markdown text...
   MarkdownStyleSheet markdownStyle = MarkdownStyleSheet();
   Color? themeBackgroundColor; // Maybe replace with global theme
   Color? formPageBackgroundColor;
   // bool stopper = true;
   double zoom = 1.0;
 
+
   // bool _isUpdatingStyle = false; // if don't wanna use debounce, uncomment this, use approach I...
   Timer? _debounce;
+  
+
+  // Handles the image uploads and provide a pre-filled md syntax url on to the left-panel...
+  Future<void> _handleUploadImage() async {
+    try {
+      // Pick an image from the gallery
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image!= null) {
+        // Get the application documents directory to store the image
+        final directory = await getApplicationDocumentsDirectory();
+
+        // Create a unique filename using a timestamp
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final fileName = 'image_$timestamp.png';
+
+        // Create a new file in the application documents directory
+        final file = File('${directory.path}/$fileName');
+
+        // Write the picked image's bytes to the file
+        await file.writeAsBytes(await image.readAsBytes());
+
+        // Get the file path
+        final imagePath = file.path;
+
+        // Create a URI for the file
+        final uri = Uri.file(imagePath);
+        setState(() {
+          final markdownText = '![](${uri.toString()})\n';
+          leftController.text += markdownText;
+        });
+      }
+    } catch (e) {
+      print('Error: $e');
+      // Handle the error, e.g., show an error message to the user
+    }
+  }
 
   @override
   void initState() {
@@ -58,6 +96,10 @@ class _FormPageState extends State<FormPage> {
     _debounce?.cancel();
     super.dispose();
   }
+
+  // void _pickImage(){
+  //   // will write code here...
+  // }
 
   void _updateRightField() {
     setState(() {
@@ -277,7 +319,14 @@ class _FormPageState extends State<FormPage> {
                         icon: const Icon(Icons.format_underline)),
                     IconButton(onPressed: () {}, icon: const Icon(Icons.code)),
                     IconButton(
-                        onPressed: () {}, icon: const Icon(Icons.format_quote)),
+                        onPressed: () {}, icon: const Icon(Icons.format_quote)
+                    ),
+                    
+                    IconButton(
+                      onPressed: () async {
+                        await _handleUploadImage(); // go to the top...
+                      },icon: const Icon(Icons.upload_file)
+                    )
                   ]),
                   Expanded(
                     child: TextField(
@@ -360,6 +409,8 @@ class _FormPageState extends State<FormPage> {
                       icon: const Icon(Icons.save, color: Colors.blueAccent),
                       color: Colors.blueAccent,
                     ),
+
+
                   ]),
                   Expanded(
                     child: PreviewPanel(
@@ -880,9 +931,11 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     }
     Widget wError;
     if (widget.content.isEmpty) {
-      wError = const Text(
-        "Empty",
-        style: TextStyle(color: Colors.red),
+      wError = Center(
+        child: const Text(
+          "Nothing to Display",
+          style: TextStyle(color: Colors.red),
+        ),
       );
     } else {
       wError = const Center(child: CircularProgressIndicator());

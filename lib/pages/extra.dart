@@ -872,3 +872,89 @@
 //     );
 //   }
 // }
+
+
+                    
+                  //   IconButton(
+                  //     onPressed: () async {
+                  //       final ImagePicker _picker = ImagePicker();
+                  //       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+                  //       if (image != null) {
+                  //         // Store the image temporarily
+                  //         final Directory tempDir = await getTemporaryDirectory();
+                  //         final File tempImage = await File(image.path).copy('${tempDir.path}/temp_image.jpg');
+                  //         final String url = 'file://${tempImage.path}';
+                  //         print(url);
+                  //         final HttpServer server = await HttpServer.bind('localhost', 8080, shared: true);
+                  //         server.listen((HttpRequest request) {
+                  //           final File imageFile = File(tempImage.path);
+                  //           request.response.headers.contentType = ContentType('image', 'jpeg');
+                  //           imageFile.openRead().pipe(request.response).catchError((e) {
+                  //             request.response.statusCode = HttpStatus.internalServerError;
+                  //             request.response.close();
+                  //           });
+                  //         });
+
+                  //         final Uri url1 = Uri.parse('http://localhost:8080/temp_image.jpg');
+                  //         print('Image can be accessed at: $url1');
+                  //       }
+                  //     }, icon: const Icon(Icons.upload_file)
+                  //   )
+                  // ]),
+
+
+
+
+
+
+
+
+
+
+
+//                   Make sure to add the necessary permissions to your AndroidManifest.xml file to read and write files:
+
+// xml
+
+// Verify
+
+// Open In Editor
+// Edit
+// Copy code
+// <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+// <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+// This should allow you to store the image in the app's directory and use it in your markdown content.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Future<void> _handleUploadImage() async {
+  //   try {
+  //     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+  //     if (image!= null) {
+  //       final directory = await getApplicationDocumentsDirectory();
+  //       final file = File('${directory.path}/image.png');
+  //       await file.writeAsBytes(await image.readAsBytes());
+  //       final imageData = await file.readAsBytes();
+  //       final imagePath = file.path;
+  //       setState(() {
+  //         // final markdownText = '![Image](data:image/png;base64,${base64Encode(imageData)})';
+  //         final markdownTex = '![Image]($imagePath)';
+  //         leftController.text += markdownTex;
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print('Error: $e');
+  //     // Handle the error, e.g., show an error message to the user
+  //   }
+  // }
