@@ -471,7 +471,7 @@ class _ExportDialogState extends State<ExportDialog> {
   List<String> exportFormatOptions = ["HTML", "PDF", "MD"];
   String exportFormat = "PDF";
   TextEditingController pathParameter =
-      TextEditingController(text: "document_1.pdf");
+      TextEditingController(text: "Document_1.pdf");
   TextEditingController authorName = TextEditingController(text: "Mr. YOU");
   TextEditingController documentTitle =
       TextEditingController(text: "Document_1.pdf");
@@ -484,8 +484,8 @@ class _ExportDialogState extends State<ExportDialog> {
   void updateTextFields(String format) {
     switch (format) {
       case "HTML":
-        pathParameter.text = "Document_1.html";
-        documentTitle.text = "Document_1.html";
+        pathParameter.text = "Document_1";
+        documentTitle.text = "Document_1";
         _showAuthorAndSubject = false;
         break;
       case "PDF":
@@ -663,8 +663,7 @@ class _ExportDialogState extends State<ExportDialog> {
                             onChanged: (Object? newSelect) {
                               setState(() {
                                 exportFormat = newSelect.toString();
-                                updateTextFields(
-                                    exportFormat); // UPDATES THE PRE-FILLED TEXTS
+                                updateTextFields(exportFormat); // UPDATES THE PRE-FILLED TEXTS
                               });
                             },
                           ),
@@ -676,8 +675,7 @@ class _ExportDialogState extends State<ExportDialog> {
                             onChanged: (Object? newSelect) {
                               setState(() {
                                 exportFormat = newSelect.toString();
-                                updateTextFields(
-                                    exportFormat); // UPDATES THE PRE-FILLED TEXTS
+                                updateTextFields(exportFormat); // UPDATES THE PRE-FILLED TEXTS
                               });
                             },
                           ),
@@ -689,8 +687,7 @@ class _ExportDialogState extends State<ExportDialog> {
                             onChanged: (Object? newSelect) {
                               setState(() {
                                 exportFormat = newSelect.toString();
-                                updateTextFields(
-                                    exportFormat); // UPDATES THE PRE-FILLED TEXTS
+                                updateTextFields(exportFormat); // UPDATES THE PRE-FILLED TEXTS
                               });
                             },
                           ),
@@ -947,7 +944,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => FullPreviewScreen(widget.content),
+            builder: (context) => FullPreviewScreen(widget.content, pageIndex: currentPageIndex-1,),
           ),
         );
       },
@@ -988,8 +985,9 @@ class _DocumentPreviewState extends State<DocumentPreview> {
 
 class FullPreviewScreen extends StatefulWidget {
   final String content;
+  final int pageIndex;
 
-  const FullPreviewScreen(this.content, {super.key});
+  const FullPreviewScreen(this.content, {required this.pageIndex, super.key});
 
   @override
   _FullPreviewScreenState createState() => _FullPreviewScreenState();
@@ -1003,7 +1001,7 @@ class _FullPreviewScreenState extends State<FullPreviewScreen> {
     super.initState();
 
     if (widget.content.isNotEmpty) {
-      generatePdfImageFromMD(widget.content, temp!.markdownStyle)
+      generatePdfImageFromMD(widget.content, temp!.markdownStyle, pageIndex: widget.pageIndex)
           .then((imageAndSize) {
         setState(() {
           previewImage = imageAndSize[0];
