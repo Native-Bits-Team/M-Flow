@@ -535,10 +535,10 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
     theme: mStyleToThemeData(style)),
    build: (context) => ch.widget ?? []));
   Uint8List t = await doc.save();
-  Stream<PdfRaster> r = Printing.raster(t); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
+  Stream<PdfRaster> r = Printing.raster(t, dpi: PdfPageFormat.cm  ); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
   PdfRaster j = await r.elementAt(pageIndex);
   Uint8List k = await j.toPng();
-  List<dynamic> imageAndSize = [w.Image.memory(k, width: j.width.toDouble(), height: j.height.toDouble()),doc.document.pdfPageList.pages.length];
+  List<dynamic> imageAndSize = [w.Image.memory(k, width: j.width.toDouble(), height: j.height.toDouble(), filterQuality: FilterQuality.none,),doc.document.pdfPageList.pages.length];
   return imageAndSize;
 }
 

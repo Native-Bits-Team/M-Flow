@@ -1,9 +1,11 @@
 mflow
 0.1
 {
-    "title" : "",
+    "title" : "Test",
     "desc" : "",
     "date" : "",
     "lastdate" :"",
-    "content" : ""
+    "content" : "",
+    "extensions" : "",
+    "theme" : "github_dark"
 }

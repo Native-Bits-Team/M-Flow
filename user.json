@@ -8,11 +8,16 @@
         "deflat": false,
         "autosave": true,
         "lastFormat": "pdf",
-        "lastTheme": "github",
+        "lastTheme": "github_dark",
         "lastNameUsed": ""
     },
     "projects": {
-        "recentOpen": {},
+        "recentOpen": {
+            "0": {
+                "filePath": "C:\\Users\\Work\\Documents\\md\\M-Flow\\test.mflow",
+                "fileName": "test.mflow"
+            }
+        },
         "list": {}
     }
 }

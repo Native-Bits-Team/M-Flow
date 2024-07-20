@@ -13,7 +13,7 @@ initDatabaseAndThemes(){
     loadThemeFile(globalDatabase["settings"]["lastTheme"]);
   } else {
     globalDatabase = newDatabase();
-    loadThemeFile("assets/themes/github.json");
+    loadThemeFile("github_dark");
   }
 }
 
@@ -109,6 +109,30 @@ removeRecentOpen(String? path, String? fileName) {
   saveDatabase();
 }
 
-loadThemeFile(String themePath) {
+loadThemeFile(String? themePath) {
+  if (themePath == null){
+    return;
+  }
   globalTheme = jsonDecode(File("assets/themes/$themePath.json").readAsStringSync());
+}
+
+loadThemeFileReturn(String? themePath) {
+  if (themePath == null){
+    return;
+  }
+  return jsonDecode(File("assets/themes/$themePath.json").readAsStringSync());
+}
+
+
+loadMFlowFile(String? path) async {
+  if (path == null){
+    return;
+  }
+  var fileContent = await File(path).readAsString();
+  if (fileContent.startsWith("mflow")){
+    //if (fileContent.startsWith() == "0.1"){
+      Map<String, dynamic> data =  jsonDecode(fileContent.substring(10));
+      return data;
+    //}
+  }
 }

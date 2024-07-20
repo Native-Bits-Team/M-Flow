@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -30,14 +31,27 @@ class DashBoard extends StatelessWidget{
       body: Padding(padding: const EdgeInsets.all(30.0), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch ,children: [Card(child: Padding(padding: const EdgeInsets.all(30.0), child: Row(children: [Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
         TextButton.icon(icon: const Icon(Icons.add), style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
           FilePicker fP = FilePicker.platform;
-          fP.pickFiles(dialogTitle: "Open Document", initialDirectory: "~/", type: FileType.custom, allowedExtensions: ["md"]).then((result){
-            if (result!.files[0].path == ""){
+          fP.pickFiles(dialogTitle: "Open Document", initialDirectory: "~/", type: FileType.custom, allowedExtensions: ["md","mflow"]).then((result){
+            if (result!.files.first.path == ""){
               return;
             }
-            addRecentOpen(result.files[0].path, result.files[0].name);
+            addRecentOpen(result.files.first.path, result.files[0].name);
+            if (result.files.first.extension == "mflow"){
+              loadMFlowFile(result.files.first.path).then((data){
+                if (data == null){
+                  print("ERROR");
+                  return;
+                }
+                if (data["title"] == null || data["title"] == ""){
+                  data["title"] = result.files.first.name;
+                }
+                Navigator.push(context, MaterialPageRoute(builder: (context){
+                return FormPage(initText: File(result.files[0].path as String).readAsStringSync(), fileData: data,);}));
+              });
+            } else {
 Navigator.push(context, MaterialPageRoute(builder: (context){
-        return FormPage(initText: File(result.files[0].path as String).readAsStringSync());
-      }));
+        return FormPage(initText: File(result.files[0].path as String).readAsStringSync(), fileData: {"title": result.files.first.name},);
+      }));}
           });
         },
          label: const Text("Open Document")),
@@ -45,7 +59,7 @@ Navigator.push(context, MaterialPageRoute(builder: (context){
         TextButton.icon(icon: const Icon(Icons.add), style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black12)),onPressed: (){
 Navigator.push(context, MaterialPageRoute(builder: (context){
         //addNewValue("projects", {"projectName": "Unknown", "filePath" : "README.md"});
-        return const FormPage(initText: "");
+        return const FormPage(initText: "", fileData: {"title": "M-Flow"},);
       }));
 
         }, label: const Text("New Document"))
@@ -63,9 +77,9 @@ Navigator.push(context, MaterialPageRoute(builder: (context){
 
 
 class DocPreview extends StatefulWidget {
-  const DocPreview({super.key, projectPath, projectName, required this.parentHandle});
-  final String projectPath = "";
-  final String projectName = "Unknown";
+  const DocPreview({super.key, required this.projectPath, required this.projectName, required this.parentHandle});
+  final String projectPath;
+  final String projectName;
   final _ProjectGridState parentHandle; // Should be removed
   @override
   State<DocPreview> createState() => _DocPreviewState();
@@ -76,16 +90,25 @@ class _DocPreviewState extends State<DocPreview> {
   String test = ""; // This is temporary
   @override
   Widget build(BuildContext context) {
-
     if (previewImageBytes == null && widget.projectPath != ""){
     //ScreenshotController sController = ScreenshotController();
     File(widget.projectPath).readAsString().then((text){
-    test = text;
-    generatePdfImageFromMD(text, MarkdownStyleSheet()).then((imageAndSize){
+      if (text.startsWith("mflow")){
+        Map<String, dynamic> data = jsonDecode(text.substring(10));
+            generatePdfImageFromMD(text, buildMarkdownStyle(1.0, tempTheme: data["theme"])).then((imageAndSize){
       setState(() {
       previewImageBytes = imageAndSize[0];
       });
     });
+      } else {
+            generatePdfImageFromMD(text, MarkdownStyleSheet()).then((imageAndSize){
+            setState(() {
+            previewImageBytes = imageAndSize[0];
+            });
+          });
+      }
+    test = text;
+
     //sController.captureFromWidget(MarkdownBody(data: text)).then((data){
         //setState(() {
           //previewImageBytes = Image.memory(data, alignment: Alignment.topCenter, filterQuality: FilterQuality.none);
@@ -95,7 +118,7 @@ class _DocPreviewState extends State<DocPreview> {
     });
     }
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Expanded(child: MaterialButton(onLongPress: () {
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Expanded(child: MaterialButton(padding: EdgeInsets.zero,onLongPress: () {
 
       
       showMenu(context: context, position: const RelativeRect.fromLTRB(10.0, 10.0, 30.0, 30.0), items: [PopupMenuItem(onTap: (){
@@ -108,9 +131,13 @@ class _DocPreviewState extends State<DocPreview> {
       
     },onPressed: () {
       Navigator.push(context, MaterialPageRoute(builder: (context){
-        return FormPage(initText: test);
+        return FormPage(initText: test, fileData: {"title": "M-Flow"},);
       }));
-    }, color: Colors.white, child: previewImageBytes)), Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(widget.projectName), IconButton(onPressed: () {}, icon: const Icon(Icons.settings))])]);
+    }, color: Colors.transparent, child: previewImageBytes, )), 
+    SizedBox(height: 5),
+    Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(widget.projectName), 
+   // IconButton(onPressed: () {}, icon: const Icon(Icons.settings))
+    ])]);
     
   }
 }

@@ -1,4 +1,7 @@
 {
+    "Notes": "Used generate-github-markdown-css to generate a github CSS dark theme (probably generated from github itself), used the generated CSS file as a reference to recreate the github dark theme.| credites to github itself for this theme ",
+    "themeName" : "Github Dark",
+    "themeFileName" : "github_dark",
     "backgroundColor": "0d1117",
     "pageBackgroundColor": "2c3544",
     "firstColor" : "e6edf3",
@@ -44,5 +47,4 @@
     "blockquoteDecoration": {
         "color": "8d96a0"
     }
-
 }

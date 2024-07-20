@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -22,8 +23,9 @@ _FormPageState? temp;
 
 class FormPage extends StatefulWidget {
   final String initText;
+  final Map<String, dynamic> fileData;
 
-  const FormPage({super.key, required this.initText}); // '?': Denotes that key can be of type 'null' or 'key'...
+  const FormPage({super.key, required this.initText, required this.fileData}); // '?': Denotes that key can be of type 'null' or 'key'...
   // We can choose not to provide a Key when instantiating FormPage...
   //final String initText = "";
   @override
@@ -185,12 +187,21 @@ class _FormPageState extends State<FormPage> {
     //   stopper = false;
     //   updateStyle();
     // }
+    List<DropdownMenuEntry> dropEntries = [];
+    Directory("assets/themes").listSync().forEach((entry){
+      File data = File(entry.path);
+      if (data.existsSync()){
+      Map<String, dynamic> dataD =  jsonDecode(data.readAsStringSync());
+      dropEntries.add(DropdownMenuEntry(value: dataD["themeFileName"], label: dataD["themeName"]));
+
+      }
+    });
     temp = this;
     return Scaffold(
       backgroundColor: formPageBackgroundColor,
       appBar: AppBar(
-        title: const Text("M-Flow",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+        title: Text(widget.fileData!["title"],
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
       ),
 
       // *DRAWER : -------------------------------------------------------------------------------- *
@@ -233,9 +244,9 @@ class _FormPageState extends State<FormPage> {
                   height: 60,
                   child: DropdownMenu(
                     trailingIcon: const Icon(Icons.arrow_drop_down),
-                    initialSelection: "github",
-                    expandedInsets: EdgeInsets.all(0.0),
-                    inputDecorationTheme: InputDecorationTheme(
+                    initialSelection: "github_dark",
+                    expandedInsets: const EdgeInsets.all(0.0),
+                    inputDecorationTheme: const InputDecorationTheme(
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none
                     ),
@@ -246,7 +257,7 @@ class _FormPageState extends State<FormPage> {
                     },
                     dropdownMenuEntries: const [
                       DropdownMenuEntry(
-                          value: "github", label: "Github Flavour"),
+                          value: "github_dark", label: "Github Flavour"),
                     ],
                   ),
                 ),
@@ -369,7 +380,7 @@ class _FormPageState extends State<FormPage> {
                         child: DropdownMenu(
                       // label: const Text("Theme: "),
                       trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60,),
-                      initialSelection: "github",
+                      initialSelection: dropEntries.first.value, // TODO: FIX THIS
                       inputDecorationTheme: const InputDecorationTheme(
                        // filled: true,
                        // fillColor: Colors.blueAccent,
@@ -384,13 +395,11 @@ class _FormPageState extends State<FormPage> {
                       textStyle: const TextStyle(fontSize: 16),
                       onSelected: (valueName) {
                         setState(() {
+                          loadThemeFile(valueName);
                           updateStyle();
                         });
                       },
-                      dropdownMenuEntries: const [
-                        DropdownMenuEntry(
-                            value: "github", label: "Github Theme")
-                      ],
+                      dropdownMenuEntries: dropEntries
                     )),
                     IconButton(
                         onPressed: () {
@@ -761,9 +770,13 @@ class _ExportDialogState extends State<ExportDialog> {
 
 // BUILD METHOD FOR EXPORT DIALOG (ENDS HERE)-----------------------------------------------------------------**
 
-MarkdownStyleSheet buildMarkdownStyle(double zoom) {
-  Map<String, dynamic> themeValues = getTheme();
-
+MarkdownStyleSheet buildMarkdownStyle(double zoom, {String? tempTheme}) {
+  Map<String, dynamic> themeValues;
+  if (tempTheme == null){
+  themeValues = getTheme();
+  } else {
+  themeValues = loadThemeFileReturn(tempTheme);
+  }
   TextStyle? h1Style;
   TextStyle? h2Style;
   TextStyle? h3Style;
@@ -843,7 +856,7 @@ class _ParameterDialogState extends State<ParameterDialog> {
                   Navigator.of(widget.dialogContext).pop();
                 },
                 dropdownMenuEntries: const [
-                  DropdownMenuEntry(value: "github", label: "Github Theme")
+                  DropdownMenuEntry(value: "github_dark", label: "Github Theme")
                 ],
               ),
             ),
@@ -935,8 +948,8 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     }
     Widget wError;
     if (widget.content.isEmpty) {
-      wError = Center(
-        child: const Text(
+      wError = const Center(
+        child: Text(
           "Nothing to Display",
           style: TextStyle(color: Colors.red),
         ),
