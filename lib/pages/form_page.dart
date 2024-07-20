@@ -234,10 +234,10 @@ class _FormPageState extends State<FormPage> {
                   child: DropdownMenu(
                     trailingIcon: const Icon(Icons.arrow_drop_down),
                     initialSelection: "github",
-                    inputDecorationTheme: const InputDecorationTheme(
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(12),
-                      isCollapsed: true,
+                    expandedInsets: EdgeInsets.all(0.0),
+                    inputDecorationTheme: InputDecorationTheme(
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none
                     ),
                     onSelected: (valueName) {
                       setState(() {
@@ -368,11 +368,18 @@ class _FormPageState extends State<FormPage> {
                     Expanded(
                         child: DropdownMenu(
                       // label: const Text("Theme: "),
-                      trailingIcon: const Icon(Icons.arrow_drop_down),
+                      trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60,),
                       initialSelection: "github",
                       inputDecorationTheme: const InputDecorationTheme(
-                          contentPadding: EdgeInsets.all(0),
+                       // filled: true,
+                       // fillColor: Colors.blueAccent,
+                        
+                        
+                          contentPadding: EdgeInsets.all(10.0),
                           constraints: BoxConstraints(maxHeight: 40),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white60)),
                           isCollapsed: true),
                       textStyle: const TextStyle(fontSize: 16),
                       onSelected: (valueName) {
