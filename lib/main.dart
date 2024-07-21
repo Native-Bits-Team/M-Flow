@@ -6,43 +6,81 @@ import 'package:m_flow/pages/form_page.dart';
 
 void main() => runApp(const MyApp());
 
-class MyApp extends StatelessWidget {
+// IMPORTANT: Turning the MyApp into statefulWidget might/may cause a preformance issues? TODO: confirm or deny this
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+
+_MyAppState? globalAppHandler;
+
+class _MyAppState extends State<MyApp> {
+  late Map<String, dynamic> theme;
+
+  updateGlobalAppTheme(){
+    setState(() {
+      theme = getTheme();
+    });
+  }
+  @override
+  void initState() {
+    super.initState();
+    initDatabaseAndThemes();
+    theme = getTheme();
+  }
+  
+
   @override
   Widget build(BuildContext context) {
-    initDatabaseAndThemes();
-    Map<String, dynamic> theme = getTheme();
-        //Color firstColor = theme["firstColor"];
-
+    //Color firstColor = theme["firstColor"];
     //TextStyle textStyle = const TextStyle();
+    globalAppHandler = this;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: FormPage(initText: "Test", fileData: {"title": "test"}),
       theme: ThemeData(
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
-      iconTheme: const IconThemeData(color: Colors.white70),
+      //iconTheme: IconThemeData(color: Color(HexColor(theme["backgroundColor"]).value)),
       inputDecorationTheme: const InputDecorationTheme(enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white54)),
       border: OutlineInputBorder(),
-      hintStyle: TextStyle(color: Colors.white38),
+      //hintStyle: TextStyle(color: Colors.white38),
       focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.lightBlue))),
 
-appBarTheme: AppBarTheme(titleTextStyle: const TextStyle(color: Colors.white),centerTitle: true, toolbarHeight: 40, backgroundColor: Color(HexColor(theme["backgroundColor"]).value)),
-      iconButtonTheme: const IconButtonThemeData(style: ButtonStyle(iconColor: WidgetStatePropertyAll(Colors.white60))),
+      appBarTheme: AppBarTheme(centerTitle: true, toolbarHeight: 40, backgroundColor: Color(HexColor(theme["backgroundColor"]).value), titleTextStyle: TextStyle(color: Color(HexColor(theme["firstColor"]).value), fontSize: 20)),
+
+      iconButtonTheme: IconButtonThemeData(style: ButtonStyle(iconColor: WidgetStatePropertyAll(Color(HexColor(theme["firstColor"]).value)))),
       cardTheme: CardTheme(color: Color(HexColor(theme["backgroundColor"]).value)),
       scaffoldBackgroundColor: Color(HexColor(theme["pageBackgroundColor"]).value),
       dialogBackgroundColor: Color(HexColor(theme["pageBackgroundColor"]).value),
       dialogTheme: const DialogTheme(titleTextStyle: TextStyle(color: Colors.white)),// Invalid Constant Error
-      textTheme: Typography.englishLike2021, // Got the idea from TextTheme details
-      textButtonTheme: const TextButtonThemeData(style : ButtonStyle(
+      //textTheme: Typography.blackMountainView, // Got the idea from TextTheme and its copyWith() details
+      textTheme: typographySwitcher(int.parse(theme["typography"])),
+      //primaryTextTheme: typographySwitcher(int.parse(theme["typography"])),
+      textButtonTheme: TextButtonThemeData(style : ButtonStyle(
         backgroundColor: WidgetStatePropertyAll(Colors.blueAccent),// Invalid Constant Error
-        iconColor: WidgetStatePropertyAll(Colors.white60),// Invalid Constant Error
-        textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), // Invalid Constant Error
+        iconColor: WidgetStatePropertyAll(Color(HexColor(theme["firstColor"]).value)),
+      //  textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), // Invalid Constant Error
         side: WidgetStatePropertyAll(BorderSide(color: Colors.blueAccent, width: 2.0)),// Invalid Constant Error
         )
         
         ),
       )
     );
+  }
+}
+
+
+typographySwitcher(int index){
+  switch (index) {
+    case 0:
+      return Typography.blackHelsinki;
+    case 1:
+      return Typography.whiteHelsinki;
+    default: return Typography.whiteHelsinki;
   }
 }

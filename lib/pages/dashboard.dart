@@ -10,8 +10,6 @@ import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/form_page.dart';
 import 'package:m_flow/pages/profile_page.dart';
 
-
-
 class DashBoard extends StatelessWidget{
   const DashBoard({super.key});
   
@@ -95,13 +93,13 @@ class _DocPreviewState extends State<DocPreview> {
     File(widget.projectPath).readAsString().then((text){
       if (text.startsWith("mflow")){
         Map<String, dynamic> data = jsonDecode(text.substring(10));
-            generatePdfImageFromMD(text, buildMarkdownStyle(1.0, tempTheme: data["theme"])).then((imageAndSize){
+            generatePdfImageFromMD(text, buildMarkdownStyle(1.0, tempTheme: data["theme"]), tempTheme: data["theme"]).then((imageAndSize){
       setState(() {
       previewImageBytes = imageAndSize[0];
       });
     });
       } else {
-            generatePdfImageFromMD(text, MarkdownStyleSheet()).then((imageAndSize){
+            generatePdfImageFromMD(text, MarkdownStyleSheet(), tempTheme: "mflow").then((imageAndSize){
             setState(() {
             previewImageBytes = imageAndSize[0];
             });
@@ -121,7 +119,7 @@ class _DocPreviewState extends State<DocPreview> {
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Expanded(child: MaterialButton(padding: EdgeInsets.zero,onLongPress: () {
 
       
-      showMenu(context: context, position: const RelativeRect.fromLTRB(10.0, 10.0, 30.0, 30.0), items: [PopupMenuItem(onTap: (){
+      showMenu(context: context, position: RelativeRect.fromLTRB(10, 10, 10, 10), items: [PopupMenuItem(onTap: (){
           removeRecentOpen(widget.projectPath, widget.projectName).then((){
             widget.parentHandle.updatePreviews(); // TODO: Replace this method
           });
@@ -134,7 +132,7 @@ class _DocPreviewState extends State<DocPreview> {
         return FormPage(initText: test, fileData: {"title": "M-Flow"},);
       }));
     }, color: Colors.transparent, child: previewImageBytes, )), 
-    SizedBox(height: 5),
+    const SizedBox(height: 5),
     Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(widget.projectName), 
    // IconButton(onPressed: () {}, icon: const Icon(Icons.settings))
     ])]);
@@ -168,7 +166,7 @@ class _ProjectGridState extends State<ProjectGrid> {
       childPreview.add(DocPreview(
         projectPath: widget.pathPreview[j],
         projectName: widget.namePreview[j],
-        parentHandle: this,
+        parentHandle: this, // TODO: Is there an alternative to this?
       ));
       //childPreview[j].projectPath = widget.pathPreview[j];
       //childPreview[j].projectName = widget.namePreview[j];

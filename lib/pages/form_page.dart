@@ -11,6 +11,7 @@ import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/functions/mark_down_styler.dart';
 import 'package:m_flow/functions/string_utilities.dart';
+import 'package:m_flow/main.dart';
 import 'package:m_flow/pages/dashboard.dart';
 import 'package:m_flow/pages/profile_page.dart';
 import 'package:pdf/pdf.dart';
@@ -36,8 +37,7 @@ class _FormPageState extends State<FormPage> {
   TextEditingController leftController = TextEditingController();
   String markdownText = ""; // Initialized an empty variable of type 'String' to store markdown text...
   MarkdownStyleSheet markdownStyle = MarkdownStyleSheet();
-  Color? themeBackgroundColor; // Maybe replace with global theme
-  Color? formPageBackgroundColor;
+  //Color? themeBackgroundColor; // Maybe replace with global theme
   // bool stopper = true;
   double zoom = 1.0;
 
@@ -148,12 +148,9 @@ class _FormPageState extends State<FormPage> {
 
     _debounce = Timer(const Duration(milliseconds: 90), () {
       var markdownStyleValue = buildMarkdownStyle(zoom);
-      var theme = getTheme();
+      globalAppHandler!.updateGlobalAppTheme();
       setState(() {
         markdownStyle = markdownStyleValue;
-        themeBackgroundColor = Color(HexColor(theme["backgroundColor"]).value);
-        formPageBackgroundColor =
-            Color(HexColor(theme["pageBackgroundColor"]).value);
       });
     });
   }
@@ -198,11 +195,10 @@ class _FormPageState extends State<FormPage> {
     });
     temp = this;
     return Scaffold(
-      backgroundColor: formPageBackgroundColor,
       appBar: AppBar(
-        title: Text(widget.fileData!["title"],
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-      ),
+        title: Text(widget.fileData["title"],
+            //style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)
+            )),
 
       // *DRAWER : -------------------------------------------------------------------------------- *
       drawer: ProfileDrawer(
@@ -983,10 +979,11 @@ class _DocumentPreviewState extends State<DocumentPreview> {
               child: Card(clipBehavior: Clip.antiAliasWithSaveLayer,
               elevation: 0.0,
               borderOnForeground: false,
+              color: Colors.blue,
               shadowColor: Colors.transparent,
               margin: const EdgeInsets.all(0.0),
-                  child: previewImage ??
-                      wError //const Center(child: CircularProgressIndicator()),
+                  child: Expanded(child: previewImage ??
+                      wError) //const Center(child: CircularProgressIndicator()),
                   )),
           IconButton(
               onPressed: () {

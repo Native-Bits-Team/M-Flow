@@ -6,7 +6,7 @@
 //import 'dart:convert';
 //import 'dart:collection';
 import 'dart:async';
-import 'dart:ffi';
+//import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 //import 'package:flutter/material.dart';
@@ -506,7 +506,7 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style)
   }
 }
 
-Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0}) async {
+Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0, String? tempTheme}) async {
   if (md2 == ""){
     return [null,0]; // TODO: Should be removed
   }
@@ -523,7 +523,12 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
   var doc = pw.Document(
     compress: true,
     version: p.PdfVersion.pdf_1_5,);
-    Color pageBackgroundColor = Color(HexColor(getTheme()["backgroundColor"]).value);
+    Color pageBackgroundColor;
+    if (tempTheme == null){
+    pageBackgroundColor = Color(HexColor(getTheme()["backgroundColor"]).value);
+    } else {
+    pageBackgroundColor = Color(HexColor(loadThemeFileReturn(tempTheme)["backgroundColor"]).value);
+    }
   doc.addPage(pw.MultiPage(
   pageTheme: pw.PageTheme(
     buildBackground: (context){
@@ -535,10 +540,11 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
     theme: mStyleToThemeData(style)),
    build: (context) => ch.widget ?? []));
   Uint8List t = await doc.save();
-  Stream<PdfRaster> r = Printing.raster(t, dpi: PdfPageFormat.cm  ); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
+  Stream<PdfRaster> r = Printing.raster(t, dpi: PdfPageFormat.inch ); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
+                                                                      // PdfPageFormat.inch is 72.0, I learned it from page_format.dart form pdf dependency
   PdfRaster j = await r.elementAt(pageIndex);
   Uint8List k = await j.toPng();
-  List<dynamic> imageAndSize = [w.Image.memory(k, width: j.width.toDouble(), height: j.height.toDouble(), filterQuality: FilterQuality.none,),doc.document.pdfPageList.pages.length];
+  List<dynamic> imageAndSize = [w.Image.memory(k, width: j.width.toDouble(), height: j.height.toDouble(), fit: BoxFit.fitWidth),doc.document.pdfPageList.pages.length];
   return imageAndSize;
 }
 
