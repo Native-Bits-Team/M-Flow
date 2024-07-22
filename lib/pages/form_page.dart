@@ -53,7 +53,7 @@ class _FormPageState extends State<FormPage> {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (image!= null) {
         // Get the application documents directory to store the image
-        final directory = await getApplicationDocumentsDirectory();
+        final directory = await getApplicationDocumentsDirectory(); // TODO: we could reduce dependency count by removing this one and replacing it with built in solution or custom solution
 
         // Create a unique filename using a timestamp
         final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -235,7 +235,7 @@ class _FormPageState extends State<FormPage> {
                       width: 2.0), // Adjust border color and width
                 ),
                 title: const Text('Select Theme'),
-                content: Container(
+                content: SizedBox(
                   width: 100,
                   height: 60,
                   child: DropdownMenu(
@@ -324,9 +324,43 @@ class _FormPageState extends State<FormPage> {
                     IconButton(
                         onPressed: () {},
                         icon: const Icon(Icons.format_underline)),
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.code)),
+                    IconButton(onPressed: () {
+                      if (leftController.selection.start ==
+                              leftController.selection.end) {
+                            leftController.text = addSidesToWord(
+                                leftController.text,
+                                leftController.selection.start,
+                                "`");
+                          } else {
+                            String newText = "```\n";
+                            newText += leftController.text.substring(
+                                leftController.selection.start,
+                                leftController.selection.end);
+                            newText += "\n```";
+                            leftController.text = leftController.text
+                                .replaceRange(leftController.selection.start,
+                                    leftController.selection.end, newText);
+                          }
+                    }, icon: const Icon(Icons.code)),
                     IconButton(
-                        onPressed: () {}, icon: const Icon(Icons.format_quote)
+                        onPressed: () {
+                                                if (leftController.selection.start ==
+                              leftController.selection.end) {
+                            leftController.text = addSidesToWord(
+                                leftController.text,
+                                leftController.selection.start,
+                                "`");
+                          } else {
+                            String newText = "```\n";
+                            newText += leftController.text.substring(
+                                leftController.selection.start,
+                                leftController.selection.end);
+                            newText += "\n```";
+                            leftController.text = leftController.text
+                                .replaceRange(leftController.selection.start,
+                                    leftController.selection.end, newText);
+                          }
+                        }, icon: const Icon(Icons.format_quote)
                     ),
                     
                     IconButton(
@@ -945,10 +979,11 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     Widget wError;
     if (widget.content.isEmpty) {
       wError = const Center(
-        child: Text(
-          "Nothing to Display",
-          style: TextStyle(color: Colors.red),
-        ),
+        child: Tooltip(message: "Nothing to Display", child: Icon(Icons.info, color: Colors.red))
+        //Text(
+          //"Nothing to Display",
+          //style: TextStyle(color: Colors.red),
+      //  ),
       );
     } else {
       wError = const Center(child: CircularProgressIndicator());
@@ -979,11 +1014,10 @@ class _DocumentPreviewState extends State<DocumentPreview> {
               child: Card(clipBehavior: Clip.antiAliasWithSaveLayer,
               elevation: 0.0,
               borderOnForeground: false,
-              color: Colors.blue,
               shadowColor: Colors.transparent,
               margin: const EdgeInsets.all(0.0),
-                  child: Expanded(child: previewImage ??
-                      wError) //const Center(child: CircularProgressIndicator()),
+                  child: previewImage ?? wError
+                      //const Center(child: CircularProgressIndicator()),
                   )),
           IconButton(
               onPressed: () {

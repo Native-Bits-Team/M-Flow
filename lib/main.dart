@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: FormPage(initText: "Test", fileData: {"title": "test"}),
+      home: const FormPage(initText: "Test", fileData: {"title": "test"}),
       theme: ThemeData(
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       //iconTheme: IconThemeData(color: Color(HexColor(theme["backgroundColor"]).value)),
@@ -62,10 +62,10 @@ class _MyAppState extends State<MyApp> {
       textTheme: typographySwitcher(int.parse(theme["typography"])),
       //primaryTextTheme: typographySwitcher(int.parse(theme["typography"])),
       textButtonTheme: TextButtonThemeData(style : ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(Colors.blueAccent),// Invalid Constant Error
+        backgroundColor: const WidgetStatePropertyAll(Colors.blueAccent),// Invalid Constant Error
         iconColor: WidgetStatePropertyAll(Color(HexColor(theme["firstColor"]).value)),
       //  textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), // Invalid Constant Error
-        side: WidgetStatePropertyAll(BorderSide(color: Colors.blueAccent, width: 2.0)),// Invalid Constant Error
+        side: const WidgetStatePropertyAll(BorderSide(color: Colors.blueAccent, width: 2.0)),// Invalid Constant Error
         )
         
         ),

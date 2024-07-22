@@ -84,13 +84,17 @@ class DocPreview extends StatefulWidget {
 }
 
 class _DocPreviewState extends State<DocPreview> {
-  Image? previewImageBytes;
+  Widget? previewImageBytes;
   String test = ""; // This is temporary
   @override
   Widget build(BuildContext context) {
     if (previewImageBytes == null && widget.projectPath != ""){
     //ScreenshotController sController = ScreenshotController();
-    File(widget.projectPath).readAsString().then((text){
+
+    if (!File(widget.projectPath).existsSync()){ // TODO: Maybe there is an alternative that doesn't use File object
+      previewImageBytes = const Tooltip(message: "File Not Found",child: Icon(Icons.info, color: Colors.red));
+    }
+    File(widget.projectPath).readAsString().then((text){ // TODO: Wrong way of handling opening and closing a file?
       if (text.startsWith("mflow")){
         Map<String, dynamic> data = jsonDecode(text.substring(10));
             generatePdfImageFromMD(text, buildMarkdownStyle(1.0, tempTheme: data["theme"]), tempTheme: data["theme"]).then((imageAndSize){
@@ -116,10 +120,12 @@ class _DocPreviewState extends State<DocPreview> {
     });
     }
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Expanded(child: MaterialButton(padding: EdgeInsets.zero,onLongPress: () {
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Expanded(child: MaterialButton(
+      elevation: 0.1,
+      padding: EdgeInsets.zero,onLongPress: () {
 
       
-      showMenu(context: context, position: RelativeRect.fromLTRB(10, 10, 10, 10), items: [PopupMenuItem(onTap: (){
+      showMenu(context: context, position: const RelativeRect.fromLTRB(10, 10, 10, 10), items: [PopupMenuItem(onTap: (){
           removeRecentOpen(widget.projectPath, widget.projectName).then((){
             widget.parentHandle.updatePreviews(); // TODO: Replace this method
           });
@@ -129,7 +135,7 @@ class _DocPreviewState extends State<DocPreview> {
       
     },onPressed: () {
       Navigator.push(context, MaterialPageRoute(builder: (context){
-        return FormPage(initText: test, fileData: {"title": "M-Flow"},);
+        return FormPage(initText: test, fileData: const {"title": "M-Flow"},);
       }));
     }, color: Colors.transparent, child: previewImageBytes, )), 
     const SizedBox(height: 5),
@@ -180,7 +186,7 @@ class _ProjectGridState extends State<ProjectGrid> {
   List<String> pathPreviewTemp = [];
   List<String> namePreviewTemp = [];
 
-  List<Map<String, dynamic>> projectsPath = [];
+ // List<Map<String, dynamic>> projectsPath = [];
       
       var list =  getDatabase()["projects"]["recentOpen"];
       var projList = getDatabase()["projects"]["list"];
@@ -190,9 +196,9 @@ class _ProjectGridState extends State<ProjectGrid> {
           namePreviewTemp.add(list[key]["fileName"]);
      });
 
-     projList.forEach((key, value){
-      projectsPath.add(value);
-     });
+    // projList.forEach((key, value){
+      //projectsPath.add(value);
+     //});
 
      if (pathPreviewTemp.toString() == widget.pathPreview.toString() && namePreviewTemp.toString() == widget.namePreview.toString()){
       return;

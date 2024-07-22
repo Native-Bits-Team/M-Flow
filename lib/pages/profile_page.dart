@@ -21,7 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (context) => AlertDialog(
         backgroundColor: Colors.blueGrey,
         title: Text(
-          'Edit ' + field,
+          'Edit $field',
           style: const TextStyle(color: Colors.white),
         ),
         content: TextField(
