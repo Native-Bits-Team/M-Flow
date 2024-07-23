@@ -1,20 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/components/profile_drawer.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
-import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/functions/mark_down_styler.dart';
 import 'package:m_flow/functions/string_utilities.dart';
 import 'package:m_flow/main.dart';
 import 'package:m_flow/pages/dashboard.dart';
-import 'package:m_flow/pages/profile_page.dart';
-import 'package:pdf/pdf.dart';
+import 'package:m_flow/widgets/dialog_widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -209,6 +205,7 @@ class _FormPageState extends State<FormPage> {
               return ExportDialog(
                 dialogContext: context,
                 markdownTextExport: markdownText,
+                markdownStyle: temp!.markdownStyle,
               );
             },
           );
@@ -448,6 +445,7 @@ class _FormPageState extends State<FormPage> {
                             return ExportDialog(
                               dialogContext: context,
                               markdownTextExport: markdownText,
+                              markdownStyle: temp!.markdownStyle,
                             );
                           },
                         );
@@ -499,304 +497,6 @@ class PreviewPanel extends StatelessWidget {
   }
 }
 
-class ExportDialog extends StatefulWidget {
-  final BuildContext dialogContext;
-  final String markdownTextExport;
-
-  const ExportDialog({
-    super.key,
-    required this.dialogContext,
-    required this.markdownTextExport,
-  });
-
-  @override
-  State<ExportDialog> createState() => _ExportDialogState();
-}
-
-class _ExportDialogState extends State<ExportDialog> {
-  List<String> exportFormatOptions = ["HTML", "PDF", "MD"];
-  String exportFormat = "PDF";
-  TextEditingController pathParameter =
-      TextEditingController(text: "Document_1.pdf");
-  TextEditingController authorName = TextEditingController(text: "Mr. YOU");
-  TextEditingController documentTitle =
-      TextEditingController(text: "Document_1.pdf");
-  TextEditingController documentSubject =
-      TextEditingController(text: "Be Creative...");
-
-  bool _showAuthorAndSubject = true;
-
-  // METHOD ADDED TO HANDLE SWITCH PRE-FILLED TEXT B/W HTML, PDF, MD...
-  void updateTextFields(String format) {
-    switch (format) {
-      case "HTML":
-        pathParameter.text = "Document_1";
-        documentTitle.text = "Document_1";
-        _showAuthorAndSubject = false;
-        break;
-      case "PDF":
-        pathParameter.text = "Document_1.pdf";
-        documentTitle.text = "Document_1.pdf";
-        _showAuthorAndSubject = true;
-        break;
-      case "MD":
-        pathParameter.text = "Document_1.md";
-        documentTitle.text = "Document_1.md";
-        _showAuthorAndSubject = false;
-        break;
-      default:
-        pathParameter.text = "Document_1.pdf";
-        documentTitle.text = "Document_1.pdf";
-        _showAuthorAndSubject = true;
-        break;
-    }
-  }
-
-// // BUILD METHOD FOR EXPORT DIALOG----------------------------------------------------------------------------*
-
-  @override
-  Widget build(BuildContext context) {
-    return SimpleDialog(
-      title: const Text("Document Export Settings"),
-      elevation: 3.0,
-      contentPadding:
-          const EdgeInsets.only(top: 26, bottom: 22.0, left: 11, right: 11),
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: [
-                Container(
-                  height: 245,
-                  margin: const EdgeInsets.only(top: 10),
-                  padding: const EdgeInsets.only(
-                      top: 6.0, bottom: 12.0, left: 11, right: 11),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 300,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 100, // FIXED WIDTH FOR LABELS
-                              padding: const EdgeInsets.only(top: 22),
-                              child: const Text("Export Path: ",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            const SizedBox(width: 30.0),
-                            Expanded(
-                              child: TextField(
-                                controller: pathParameter,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  hintText: 'Enter export path',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
-                      SizedBox(
-                        width: 300,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 100, // FIXED WIDTH FOR LABELS
-                              padding: const EdgeInsets.only(top: 22),
-                              child: const Text("Doc Title: ",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            const SizedBox(width: 30.0),
-                            Expanded(
-                              child: TextField(
-                                controller: documentTitle,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  hintText: 'Enter Doc Title',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
-                      Visibility(
-                        visible: _showAuthorAndSubject,
-                        child: SizedBox(
-                          width: 300,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 100, // FIXED WIDTH FOR LABELS
-                                padding: const EdgeInsets.only(top: 22),
-                                child: const Text("Author Name: ",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              const SizedBox(width: 30.0),
-                              Expanded(
-                                child: TextField(
-                                  controller: authorName,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Enter author name',
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
-                      Visibility(
-                        visible: _showAuthorAndSubject,
-                        child: SizedBox(
-                          width: 300,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 100, // FIXED WIDTH FOR LABELS
-                                padding: const EdgeInsets.only(top: 14),
-                                child: const Text("Doc Subject: ",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              const SizedBox(width: 30.0),
-                              Expanded(
-                                child: TextField(
-                                  controller: documentSubject,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Enter Doc Subject',
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10.0),
-                Container(
-                  padding: const EdgeInsets.all(12.0),
-                  // decoration: BoxDecoration(
-                  //   borderRadius: BorderRadius.circular(12),
-                  // ),
-                  child: Column(
-                    children: [
-                      // const Text("File Format: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                      // const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Text("HTML"),
-                          Radio(
-                            value: exportFormatOptions[0],
-                            groupValue: exportFormat,
-                            onChanged: (Object? newSelect) {
-                              setState(() {
-                                exportFormat = newSelect.toString();
-                                updateTextFields(exportFormat); // UPDATES THE PRE-FILLED TEXTS
-                              });
-                            },
-                          ),
-                          const SizedBox(width: 10.0),
-                          const Text("PDF"),
-                          Radio(
-                            value: exportFormatOptions[1],
-                            groupValue: exportFormat,
-                            onChanged: (Object? newSelect) {
-                              setState(() {
-                                exportFormat = newSelect.toString();
-                                updateTextFields(exportFormat); // UPDATES THE PRE-FILLED TEXTS
-                              });
-                            },
-                          ),
-                          const SizedBox(width: 10.0),
-                          const Text("MD"),
-                          Radio(
-                            value: exportFormatOptions[2],
-                            groupValue: exportFormat,
-                            onChanged: (Object? newSelect) {
-                              setState(() {
-                                exportFormat = newSelect.toString();
-                                updateTextFields(exportFormat); // UPDATES THE PRE-FILLED TEXTS
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 25.0),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const ProfilePage()));
-                        },
-                        child: const Text("Personalize First Page"),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 75.0),
-                SizedBox(
-                  width: 400,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton.icon(
-                        onPressed: () {
-                          Navigator.of(widget.dialogContext).pop(null);
-                        },
-                        icon: const Icon(Icons.cancel),
-                        label: const Text("Cancel"),
-                      ),
-                      const SizedBox(width: 20),
-                      TextButton.icon(
-                        onPressed: () {
-                          if (exportFormat == exportFormatOptions[0]) {
-                            mdtopdf(widget.markdownTextExport,
-                                pathParameter.text, true, temp!.markdownStyle);
-                          } else if (exportFormat == exportFormatOptions[1]) {
-                            mdtopdf(widget.markdownTextExport,
-                                pathParameter.text, false, temp!.markdownStyle);
-                          } else {
-                            File(pathParameter.text)
-                                .writeAsString(widget.markdownTextExport)
-                                .then((value) {
-                              Navigator.of(widget.dialogContext).pop();
-                            });
-                          }
-                        },
-                        icon: const Icon(Icons.save),
-                        label: const Text("Export"),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 30),
-            Expanded(child: DocumentPreview(widget.markdownTextExport))
-          ],
-        ),
-      ],
-    );
-  }
-}
 
 // BUILD METHOD FOR EXPORT DIALOG (ENDS HERE)-----------------------------------------------------------------**
 
@@ -856,6 +556,7 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom, {String? tempTheme}) {
       p: pStyle,
       a: aStyle,
       blockquoteDecoration: blockquoteDecoration,
+      listBullet: pStyle, // TODO: pStyle For now
       textScaler: TextScaler.linear(zoom));
 }
 
@@ -911,184 +612,6 @@ class _ParameterDialogState extends State<ParameterDialog> {
           ],
         ),
       ],
-    );
-  }
-}
-
-class DocumentPreview extends StatefulWidget {
-  final String content;
-
-  DocumentPreview(this.content, {super.key});
-
-  @override
-  _DocumentPreviewState createState() => _DocumentPreviewState();
-}
-
-class _DocumentPreviewState extends State<DocumentPreview> {
-  Image? previewImage;
-  int pageCount = 1;
-  int currentPageIndex = 1;
-  int lastPageIndex = 1;
-  @override
-  Widget build(BuildContext context) {
-    double size = 300;
-    double ratio = PdfPageFormat.a4.height / PdfPageFormat.a4.width;
-    ratio *= 300;
-    /*
-    if (widget.content.isEmpty) {
-      return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FullPreviewScreen(widget.content),
-            ),
-          );
-        },
-        child: Column(children: [
-          Container(
-          width: size,
-          height: ratio,
-          child: const Card(
-            child: Center(
-              child: Text(
-                "Nothing to display", 
-                style: TextStyle(
-                  color: Colors.red
-                  ),
-                ),
-            ),
-          ),
-        )
-        Text("Path 1/1")]),
-      );
-    }
-*/ // NOT REALLY NEEDED
-
-    if (previewImage == null || lastPageIndex != currentPageIndex) {
-      previewImage = null;
-      lastPageIndex = currentPageIndex;
-      generatePdfImageFromMD(widget.content, temp!.markdownStyle, pageIndex: currentPageIndex-1)
-          .then((imageAndSize) {
-        setState(() {
-          previewImage = imageAndSize[0];
-          pageCount = imageAndSize[1];
-        });
-      });
-    }
-    Widget wError;
-    if (widget.content.isEmpty) {
-      wError = const Center(
-        child: Tooltip(message: "Nothing to Display", child: Icon(Icons.info, color: Colors.red))
-        //Text(
-          //"Nothing to Display",
-          //style: TextStyle(color: Colors.red),
-      //  ),
-      );
-    } else {
-      wError = const Center(child: CircularProgressIndicator());
-    }
-
-    String pageText = "Page $currentPageIndex/$pageCount";
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FullPreviewScreen(widget.content, pageIndex: currentPageIndex-1,),
-          ),
-        );
-      },
-      child: Column(children: [
-        Row(children: [
-          IconButton(
-              onPressed: () {
-                setState(() {
-                  currentPageIndex = max(1, currentPageIndex - 1);
-                });
-              },
-              icon: const Icon(Icons.chevron_left)),
-          SizedBox(
-              width: size,
-              height: ratio,
-              child: Card(clipBehavior: Clip.antiAliasWithSaveLayer,
-              elevation: 0.0,
-              borderOnForeground: false,
-              shadowColor: Colors.transparent,
-              margin: const EdgeInsets.all(0.0),
-                  child: previewImage ?? wError
-                      //const Center(child: CircularProgressIndicator()),
-                  )),
-          IconButton(
-              onPressed: () {
-                setState(() {
-                  currentPageIndex = min(pageCount, currentPageIndex + 1);
-                });
-              },
-              icon: const Icon(Icons.chevron_right))
-        ]),
-        const SizedBox(height: 20),
-        Text(pageText)
-      ]),
-    );
-  }
-}
-
-class FullPreviewScreen extends StatefulWidget {
-  final String content;
-  final int pageIndex;
-
-  const FullPreviewScreen(this.content, {required this.pageIndex, super.key});
-
-  @override
-  _FullPreviewScreenState createState() => _FullPreviewScreenState();
-}
-
-class _FullPreviewScreenState extends State<FullPreviewScreen> {
-  Image? previewImage;
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (widget.content.isNotEmpty) {
-      generatePdfImageFromMD(widget.content, temp!.markdownStyle, pageIndex: widget.pageIndex)
-          .then((imageAndSize) {
-        setState(() {
-          previewImage = imageAndSize[0];
-        });
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double size = 600;
-    double ratio = PdfPageFormat.a4.height / PdfPageFormat.a4.width;
-    ratio *= size;
-
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 2, 22, 32),
-      appBar: AppBar(
-        toolbarHeight: 28,
-        backgroundColor: const Color.fromARGB(255, 2, 22, 32),
-      ),
-      body: Center(
-        child: widget.content.isEmpty
-            ? const Text("Nothing to display",
-                style: TextStyle(color: Colors.red))
-            : SingleChildScrollView(
-                child: Container(
-                  width: size,
-                  height: ratio,
-                  decoration: const BoxDecoration(),
-                  child: Card(
-                    child: previewImage ??
-                        const Center(child: CircularProgressIndicator()),
-                  ),
-                ),
-              ),
-      ),
     );
   }
 }

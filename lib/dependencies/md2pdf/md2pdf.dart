@@ -16,6 +16,7 @@ import 'package:flutter/widgets.dart' as w;
 import 'package:hexcolor/hexcolor.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
+import 'package:m_flow/dependencies/dart_pdf/pdf/code/src/widgets/icon.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
 //import 'package:pdf/widgets.dart' as pw;
 //import 'package:markdown/markdown.dart' as md;
@@ -214,6 +215,14 @@ class Styler {
         clear();
         r = [...r, ...ch.widget!];
       } else if (ch.text != null) {
+        if (s.bullet != null){ // NBT
+          if (ch.text!.text == "\n"){ // NBT
+            continue; // NBT
+          } // 
+          spans.add(pw.TextSpan(text: ch.text!.text!.replaceAll("\n", ""))); // This was added to fix a "bug" that causes a newline to be added causing text not to be next to the "bullet"
+          spans.add(const pw.TextSpan(text: "\n\n")); // 
+          continue; // 
+        } // 
         spans.add(ch.text!);
       }
     }
@@ -549,16 +558,17 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
 }
 
 pw.ThemeData? mStyleToThemeData(MarkdownStyleSheet style){
-
   return pw.ThemeData(
     header0: textStylePDFtoPaint(style.h1),
-   // header1: textStylePDFtoPaint(style.h2),
-   // header2: textStylePDFtoPaint(style.h3),
-   // header3: textStylePDFtoPaint(style.h4),
-   // header4: textStylePDFtoPaint(style.h5),
-   // header5: textStylePDFtoPaint(style.h6),
+    header1: textStylePDFtoPaint(style.h2),
+    header2: textStylePDFtoPaint(style.h3),
+    header3: textStylePDFtoPaint(style.h4),
+    header4: textStylePDFtoPaint(style.h5),
+    header5: textStylePDFtoPaint(style.h6),
     defaultTextStyle: textStylePDFtoPaint(style.p),
     paragraphStyle: textStylePDFtoPaint(style.p),
+    bulletStyle: textStylePDFtoPaint(style.p),
+    //iconTheme: IconThemeData(color: PdfColor(1.0, 1.0, 1.0))
   );
 }
 
@@ -573,7 +583,7 @@ pw.TextStyle textStylePDFtoPaint(TextStyle? tStyle){
   pw.TextStyle l = pw.TextStyle(
     fontWeight: fontWeight,
     fontSize: tStyle.fontSize,
-    color: p.PdfColor(tStyle.color!.red.toDouble()/255.0,tStyle.color!.blue.toDouble()/255.0, tStyle.color!.green.toDouble()/255.0,tStyle.color!.alpha.toDouble()/255.0),
+    color: p.PdfColor(tStyle.color!.red.toDouble()/255.0,tStyle.color!.green.toDouble()/255.0, tStyle.color!.blue.toDouble()/255.0,tStyle.color!.alpha.toDouble()/255.0),
 
     );
   return l;

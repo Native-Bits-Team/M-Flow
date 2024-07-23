@@ -62,10 +62,13 @@ class _MyAppState extends State<MyApp> {
       textTheme: typographySwitcher(int.parse(theme["typography"])),
       //primaryTextTheme: typographySwitcher(int.parse(theme["typography"])),
       textButtonTheme: TextButtonThemeData(style : ButtonStyle(
-        backgroundColor: const WidgetStatePropertyAll(Colors.blueAccent),// Invalid Constant Error
+        elevation: WidgetStatePropertyAll(0.0),
+        //backgroundColor: WidgetStatePropertyAll(Color(HexColor(theme["backgroundColor"]).value)),// Invalid Constant Error
+        backgroundColor: WidgetStatePropertyAll(Colors.transparent),
         iconColor: WidgetStatePropertyAll(Color(HexColor(theme["firstColor"]).value)),
-      //  textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), // Invalid Constant Error
-        side: const WidgetStatePropertyAll(BorderSide(color: Colors.blueAccent, width: 2.0)),// Invalid Constant Error
+        
+        textStyle: WidgetStatePropertyAll(TextStyle(color: Color(HexColor(theme["firstColor"]).value), fontWeight: FontWeight.bold)), // Invalid Constant Error
+        side: WidgetStatePropertyAll(BorderSide(color: Color(HexColor(theme["firstColor"]).value), width: 1.0)),// Invalid Constant Error
         )
         
         ),

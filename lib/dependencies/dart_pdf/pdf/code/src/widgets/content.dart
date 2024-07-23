@@ -256,7 +256,8 @@ class Bullet extends StatelessWidget {
             width: bulletSize,
             height: bulletSize,
             margin: bulletMargin,
-            decoration: BoxDecoration(color: bulletColor, shape: bulletShape),
+            //decoration: BoxDecoration(color: bulletColor, shape: bulletShape), //NBT
+            decoration: BoxDecoration(color: Theme.of(context).bulletStyle.color, shape: bulletShape) // NBT
           ),
           Expanded(
             child: text == null
