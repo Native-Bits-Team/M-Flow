@@ -16,6 +16,7 @@ import 'package:flutter/widgets.dart' as w;
 import 'package:hexcolor/hexcolor.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
+import 'package:m_flow/dependencies/dart_pdf/pdf/code/src/widgets/flex.dart';
 import 'package:m_flow/dependencies/dart_pdf/pdf/code/src/widgets/icon.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
 //import 'package:pdf/widgets.dart' as pw;
@@ -404,8 +405,10 @@ class Styler {
               for (var r in e.nodes) {
                 var cl = <pw.Widget>[];
                 for (var c in r.nodes) {
+                  if (c.nodeType == Node.TEXT_NODE){continue;} // NBT
                   var ws = await widgetChildren(c, Style());
-                  var align = pw.CrossAxisAlignment.start;
+                  //var align = pw.CrossAxisAlignment.start;
+                  var align = pw.CrossAxisAlignment.center; // NBT
                   if (c.attributes["style"] != null) {
                     if (c.attributes["style"] == "text-align: right;") {
                       align = pw.CrossAxisAlignment.end;
@@ -417,7 +420,8 @@ class Styler {
                   }
                   c as Element;
                   if (c.localName == "th") {
-                    cellfill = PdfColors.grey300;
+                    //cellfill = PdfColors.grey300; // NBT
+                    cellfill = PdfColor(1.0, 0.0, 0.0,0.0); // NBT
                     border = const pw.Border(
                         bottom: pw.BorderSide(width: 2),
                         top: pw.BorderSide(color: PdfColors.white));
@@ -427,19 +431,33 @@ class Styler {
                           weight: pw.FontWeight.bold,
                         ));
                   } else {
-                    cellfill = PdfColors.white;
+                    //cellfill = PdfColors.white; // NBT
+                    cellfill = PdfColor(1.0,0.0,0.0,0.0); // NBT
                     border = pw.Border.all(width: 0, color: PdfColors.white);
                   }
-                  cl.add(pw.Column(children: ws, crossAxisAlignment: align));
+                  //cl.add(pw.Column(children: ws, crossAxisAlignment: align)); // NBT
+                  cl.add(pw.Expanded(child: pw.Column(children: ws, crossAxisAlignment: align))); // NBT
                 }
                 ch.add(pw.TableRow(
                     children: cl,
+                   // decoration: pw.BoxDecoration(border: pw.Border.all(width: 3.0, color: p.PdfColors.blue)) // NBT
                     decoration:
-                        pw.BoxDecoration(color: cellfill, border: border)));
+                        //pw.BoxDecoration(color: cellfill, border: border) // NBT
+                        pw.BoxDecoration(border: pw.Border.all(width: 1.0, color: p.PdfColors.white), borderRadius: pw.BorderRadius.all(pw.Radius.circular(1.0))) // NBT
+                        ));
               }
             }
-            addRows(e.nodes[0], Style(weight: pw.FontWeight.bold));
-            addRows(e.nodes[1], Style());
+            List<Node> toBeRemoved = []; // NBT
+            e.nodes.forEach((element){ // 
+              if (element.toString().length < 4){ //
+                toBeRemoved.add(element); //
+              } // 
+            }); //
+            toBeRemoved.forEach((element){ //
+              e.nodes.remove(element); //
+            }); // NOTE: there is a bug that causes an empty "new line" Node to be in the list, causing an error, this workaround is to detect and remove these empty nodes
+            await addRows(e.nodes[0], Style(weight: pw.FontWeight.bold)); // NBT
+            await addRows(e.nodes[1], Style(weight: pw.FontWeight.bold, color: PdfColors.white, boxDecoration: pw.BoxDecoration(border: pw.Border.all(width: 3.0), color: p.PdfColors.blue))); // NBT
             return Chunk(widget: [pw.Table(children: ch)]);
           case "img":
             //var imageBody = await getImage(e.attributes["src"]);
@@ -527,7 +545,6 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
   extensionSet: md.ExtensionSet.gitHubWeb);
 
   var document = parse(htmlx);
-
   Chunk ch = await Styler().format(document.body!);
   var doc = pw.Document(
     compress: true,

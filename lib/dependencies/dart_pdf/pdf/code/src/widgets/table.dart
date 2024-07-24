@@ -513,18 +513,29 @@ class Table extends Widget with SpanningWidget {
         continue;
       }
 
-      if (row.decoration != null) {
-        var y = double.infinity;
-        var h = 0.0;
+      //if (row.decoration != null) { // NBT
+      if (row.decoration != null && row.children.isNotEmpty){ // NBT
+        //var y = double.infinity; // NBT
+        //var h = 0.0; // NBT
+        double childMaxHeight = 0.0; // NBT
+        double childMinYPosition = double.infinity;
         for (final child in row.children) {
-          y = math.min(y, child.box!.y);
-          h = math.max(h, child.box!.height);
-        }
+        //  y = math.min(y, child.box!.y); // NBT
+        //  h = math.max(h, child.box!.height); // NBT
+        childMaxHeight = math.max(childMaxHeight, child.box!.height); // NBT
+        childMinYPosition = math.min(childMinYPosition, child.box!.y); // NBT
+        //} // NBT
+        //print(child.box); // NBT
+        print(childMinYPosition); // NBT
         row.decoration!.paint(
           context,
-          PdfRect(0, y, box!.width, h),
-          PaintPhase.background,
+          //PdfRect(0, y, box!.width, h), // NBT
+          //PdfRect(child.box!.x, child.box!.y, child.box!.width - 1100.0, child.box!.height), // NBT
+          //child.box!.copyWith(height: childMaxHeight), // NBT
+          PdfRect(child.box!.x, childMinYPosition, child.box!.width, childMaxHeight) // NBT
+          //PaintPhase.background, // NBT
         );
+        } // NBT
       }
 
       for (final child in row.children) {
@@ -540,14 +551,15 @@ class Table extends Widget with SpanningWidget {
         break;
       }
     }
-
+/* // NBT
     index = 0;
     for (final row in children) {
       if (index++ < _context.firstLine && !row.repeat) {
         continue;
       }
 
-      if (row.decoration != null) {
+      //if (row.decoration != null) { // NBT
+      if (row.decoration != null && row.children.isNotEmpty){ // NBT
         var y = double.infinity;
         var h = 0.0;
         for (final child in row.children) {
@@ -565,7 +577,7 @@ class Table extends Widget with SpanningWidget {
         break;
       }
     }
-
+*/ // NBT
     context.canvas.restoreContext();
 
     if (border != null) {
