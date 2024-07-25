@@ -14,6 +14,8 @@ import 'package:m_flow/widgets/dialog_widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:flutter_math_fork/flutter_math.dart';
+
 // import 'package:permission_handler/permission_handler.dart';
 
 _FormPageState? temp;
@@ -174,6 +176,45 @@ class _FormPageState extends State<FormPage> {
     return userInput;
   }
 
+  // To handle the icons (bold, italic, mathjax, ....) features gracefully
+  void _formatText(String prefix, String suffix, {bool isBlock = false}) {
+    final start = leftController.selection.start;
+    final end = leftController.selection.end;
+
+    // Check for valid selection
+    if (start == -1 || end == -1) {
+      return; // Invalid selection
+    }
+
+    if (start == end) {
+      // Handle when no text is selected
+      leftController.text = addSidesToWord(
+        leftController.text,
+        start,
+        prefix,
+      );
+    } else {
+      // Handle when text is selected
+      String selectedText = leftController.text.substring(start, end);
+      String newText;
+
+      if (selectedText.startsWith(prefix) && selectedText.endsWith(suffix)) {
+        // Remove formatting
+        newText = selectedText.substring(prefix.length, selectedText.length - suffix.length);
+      } else {
+        // Add formatting
+        if (isBlock) {
+          newText = '$prefix\n$selectedText\n$suffix';
+        } else {
+          newText = '$prefix$selectedText$suffix';
+        }
+      }
+
+      leftController.text = leftController.text.replaceRange(start, end, newText);
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // if (stopper) {
@@ -279,91 +320,49 @@ class _FormPageState extends State<FormPage> {
                 children: [
                   Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                     IconButton(
-                        onPressed: () {
-                          if (leftController.selection.start ==
-                              leftController.selection.end) {
-                            leftController.text = addSidesToWord(
-                                leftController.text,
-                                leftController.selection.start,
-                                "**");
-                          } else {
-                            String newText = "**";
-                            newText += leftController.text.substring(
-                                leftController.selection.start,
-                                leftController.selection.end);
-                            newText += "**";
-                            leftController.text = leftController.text
-                                .replaceRange(leftController.selection.start,
-                                    leftController.selection.end, newText);
-                          }
-                        },
-                        icon: const Icon(Icons.format_bold)),
-                    IconButton(
-                        onPressed: () {
-                          if (leftController.selection.start ==
-                              leftController.selection.end) {
-                            leftController.text = addSidesToWord(
-                                leftController.text,
-                                leftController.selection.start,
-                                "*");
-                          } else {
-                            String newText = "*";
-                            newText += leftController.text.substring(
-                                leftController.selection.start,
-                                leftController.selection.end);
-                            newText += "*";
-                            leftController.text = leftController.text
-                                .replaceRange(leftController.selection.start,
-                                    leftController.selection.end, newText);
-                          }
-                        },
-                        icon: const Icon(Icons.format_italic)),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.format_underline)),
-                    IconButton(onPressed: () {
-                      if (leftController.selection.start ==
-                              leftController.selection.end) {
-                            leftController.text = addSidesToWord(
-                                leftController.text,
-                                leftController.selection.start,
-                                "`");
-                          } else {
-                            String newText = "```\n";
-                            newText += leftController.text.substring(
-                                leftController.selection.start,
-                                leftController.selection.end);
-                            newText += "\n```";
-                            leftController.text = leftController.text
-                                .replaceRange(leftController.selection.start,
-                                    leftController.selection.end, newText);
-                          }
-                    }, icon: const Icon(Icons.code)),
-                    IconButton(
-                        onPressed: () {
-                                                if (leftController.selection.start ==
-                              leftController.selection.end) {
-                            leftController.text = addSidesToWord(
-                                leftController.text,
-                                leftController.selection.start,
-                                "`");
-                          } else {
-                            String newText = "```\n";
-                            newText += leftController.text.substring(
-                                leftController.selection.start,
-                                leftController.selection.end);
-                            newText += "\n```";
-                            leftController.text = leftController.text
-                                .replaceRange(leftController.selection.start,
-                                    leftController.selection.end, newText);
-                          }
-                        }, icon: const Icon(Icons.format_quote)
+                      onPressed: () {
+                        _formatText("**", "**");
+                      },
+                    icon: const Icon(Icons.format_bold),
                     ),
-                    
+
+                    IconButton(
+                      onPressed: () {
+                        _formatText("*", "*");
+                      },
+                      icon: const Icon(Icons.format_italic),
+                    ),
+
+                    IconButton(
+                      onPressed: () {
+                        _formatText("`", "`");
+                      },
+                      icon: const Icon(Icons.code),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _formatText("```\n", "\n```", isBlock: true);
+                      },
+                      icon: const Icon(Icons.format_quote),
+                    ),
+
                     IconButton(
                       onPressed: () async {
                         await _handleUploadImage(); // go to the top...
                       },icon: const Icon(Icons.upload_file)
+                    ),
+
+
+                    IconButton(
+                      onPressed: () {
+                        final mathExpressionTemplate = r'$$your_math_expression_here$$';
+                        leftController.text = leftController.text.replaceRange(
+                          leftController.selection.start,
+                          leftController.selection.end,
+                          mathExpressionTemplate,
+                        );
+                      },
+                      icon: const Icon(Icons.functions),
                     )
                   ]),
                   Expanded(
@@ -403,58 +402,72 @@ class _FormPageState extends State<FormPage> {
                         },
                         icon: const Icon(Icons.zoom_out)),
                     const SizedBox(width: 10),
-                    Expanded(
-                        child: DropdownMenu(
-                      // label: const Text("Theme: "),
-                      trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60,),
-                      initialSelection: dropEntries.first.value, // TODO: FIX THIS
-                      inputDecorationTheme: const InputDecorationTheme(
-                       // filled: true,
-                       // fillColor: Colors.blueAccent,
+
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.lightBlue.shade100, width: 1),
                         
-                        
-                          contentPadding: EdgeInsets.all(10.0),
-                          constraints: BoxConstraints(maxHeight: 40),
-                          border: InputBorder.none,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: DropdownMenu(
+                        // label: const Text("Theme: "),
+                        trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60,),
+                        initialSelection: dropEntries.first.value, // TODO: FIX THIS
+                        inputDecorationTheme: InputDecorationTheme(
+                          contentPadding: EdgeInsets.all(9.0),
+                          constraints: BoxConstraints(maxHeight: 35),
+                          enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
-                          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white60)),
-                          isCollapsed: true),
-                      textStyle: const TextStyle(fontSize: 16),
-                      onSelected: (valueName) {
-                        setState(() {
-                          loadThemeFile(valueName);
-                          updateStyle();
-                        });
-                      },
-                      dropdownMenuEntries: dropEntries
-                    )),
-                    IconButton(
-                        onPressed: () {
-                          //implement here
-                        },
-                        icon: const Icon(
-                          Icons.icecream,
-                          color: Colors.greenAccent,
+                          // border: OutlineInputBorder(
+                          //   borderSide: BorderSide(color: Colors.red, width: 0.5),
+                          //   borderRadius: BorderRadius.circular(16.0),
+                          // ),
+                          isCollapsed: true,
                         ),
-                        color: Colors.greenAccent),
-                    IconButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return ExportDialog(
-                              dialogContext: context,
-                              markdownTextExport: markdownText,
-                              markdownStyle: temp!.markdownStyle,
-                            );
-                          },
-                        );
-                      },
-                      icon: const Icon(Icons.save, color: Colors.blueAccent),
-                      color: Colors.blueAccent,
+                        textStyle: const TextStyle(fontSize: 13),
+                        onSelected: (valueName) {
+                          setState(() {
+                            loadThemeFile(valueName);
+                            updateStyle();
+                          });
+                        },
+                        dropdownMenuEntries: dropEntries
+                      )
                     ),
 
+                    Spacer(), // Pushes icons to the rightmost edge
 
+                    Row(
+                      // mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            //implement here
+                          },
+                          icon: const Icon(
+                            Icons.icecream,
+                            color: Colors.greenAccent,
+                          ),
+                          color: Colors.greenAccent),
+                        
+                        IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ExportDialog(
+                                  dialogContext: context,
+                                  markdownTextExport: markdownText,
+                                  markdownStyle: temp!.markdownStyle,
+                                );
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.save, color: Colors.blueAccent),
+                          color: Colors.blueAccent,
+                        ),
+                      ],
+                    ),
                   ]),
                   Expanded(
                     child: PreviewPanel(
@@ -472,9 +485,33 @@ class _FormPageState extends State<FormPage> {
   }
 }
 
+
+// class PreviewPanel extends StatelessWidget {
+//   final String markdownText; // used to declare a variable that can only be assigned once...
+//   // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
+//   final MarkdownStyleSheet style;
+
+//   const PreviewPanel({
+//     super.key,
+//     required this.markdownText,
+//     required this.style,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     // Card: A Material Design Card...
+//     return Card(
+//       elevation: 1.0,
+//       child: Padding(
+//         padding: const EdgeInsets.all(10.0),
+//         child: Markdown(data: markdownText, styleSheet: style),
+//       ),
+//     );
+//   }
+// }
+
 class PreviewPanel extends StatelessWidget {
-  final String
-      markdownText; // used to declare a variable that can only be assigned once...
+  final String markdownText; // used to declare a variable that can only be assigned once...
   // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
   final MarkdownStyleSheet style;
 
@@ -491,14 +528,60 @@ class PreviewPanel extends StatelessWidget {
       elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Markdown(data: markdownText, styleSheet: style),
+        child: ListView(
+          children: _buildMarkdownWidgets(markdownText, style),
+        ),
       ),
     );
+  }
+
+
+  // MATHJAX INTEGRATION FOR OUR MARKDOWN...
+  List<Widget> _buildMarkdownWidgets(String text, MarkdownStyleSheet style) {
+    List<Widget> widgets = [];
+
+    // Split the text by lines
+    List<String> lines = text.split('\n');
+
+    for (String line in lines) {
+      // Check if the line contains a math expression (e.g., enclosed in $...$ or $$...$$)
+      if (line.contains(r'\$') || line.contains(r'$$')) {
+        if (line.startsWith(r'$$') && line.endsWith(r'$$')) {
+          // Block math expression
+          widgets.add(Math.tex(
+            line.replaceAll(r'$$', ''),
+            textStyle: TextStyle(fontSize: 16),
+          ));
+        } else {
+          // Inline math expression
+          final parts = line.split(r'$');
+          for (int i = 0; i < parts.length; i++) {
+            if (i % 2 == 0) {
+              widgets.add(MarkdownBody(
+                data: parts[i],
+                styleSheet: style,
+              ));
+            } else {
+              widgets.add(Math.tex(
+                parts[i],
+                textStyle: TextStyle(fontSize: 16),
+              ));
+            }
+          }
+        }
+      } else {
+        widgets.add(MarkdownBody(
+          data: line,
+          styleSheet: style,
+        ));
+      }
+    }
+
+    return widgets;
   }
 }
 
 
-// BUILD METHOD FOR EXPORT DIALOG (ENDS HERE)-----------------------------------------------------------------**
 
 MarkdownStyleSheet buildMarkdownStyle(double zoom, {String? tempTheme}) {
   Map<String, dynamic> themeValues;

@@ -958,3 +958,306 @@
   //     // Handle the error, e.g., show an error message to the user
   //   }
   // }
+
+
+
+        // body: Padding(
+        // padding: const EdgeInsets.all(14),
+        // child: Row(
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: [
+        //     Expanded(
+        //       child: Column(
+        //         children: [
+        //           Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+        //             IconButton(
+        //                 onPressed: () {
+        //                   if (leftController.selection.start ==
+        //                       leftController.selection.end) {
+        //                     leftController.text = addSidesToWord(
+        //                         leftController.text,
+        //                         leftController.selection.start,
+        //                         "**");
+        //                   } else {
+        //                     String newText = "**";
+        //                     newText += leftController.text.substring(
+        //                         leftController.selection.start,
+        //                         leftController.selection.end);
+        //                     newText += "**";
+        //                     leftController.text = leftController.text
+        //                         .replaceRange(leftController.selection.start,
+        //                             leftController.selection.end, newText);
+        //                   }
+        //                 },
+        //                 icon: const Icon(Icons.format_bold)),
+        //             IconButton(
+        //                 onPressed: () {
+        //                   if (leftController.selection.start ==
+        //                       leftController.selection.end) {
+        //                     leftController.text = addSidesToWord(
+        //                         leftController.text,
+        //                         leftController.selection.start,
+        //                         "*");
+        //                   } else {
+        //                     String newText = "*";
+        //                     newText += leftController.text.substring(
+        //                         leftController.selection.start,
+        //                         leftController.selection.end);
+        //                     newText += "*";
+        //                     leftController.text = leftController.text
+        //                         .replaceRange(leftController.selection.start,
+        //                             leftController.selection.end, newText);
+        //                   }
+        //                 },
+        //                 icon: const Icon(Icons.format_italic)),
+        //             IconButton(
+        //                 onPressed: () {},
+        //                 icon: const Icon(Icons.format_underline)),
+        //             IconButton(onPressed: () {
+        //               if (leftController.selection.start ==
+        //                       leftController.selection.end) {
+        //                     leftController.text = addSidesToWord(
+        //                         leftController.text,
+        //                         leftController.selection.start,
+        //                         "`");
+        //                   } else {
+        //                     String newText = "```\n";
+        //                     newText += leftController.text.substring(
+        //                         leftController.selection.start,
+        //                         leftController.selection.end);
+        //                     newText += "\n```";
+        //                     leftController.text = leftController.text
+        //                         .replaceRange(leftController.selection.start,
+        //                             leftController.selection.end, newText);
+        //                   }
+        //             }, icon: const Icon(Icons.code)),
+        //             IconButton(
+        //                 onPressed: () {
+        //                                         if (leftController.selection.start ==
+        //                       leftController.selection.end) {
+        //                     leftController.text = addSidesToWord(
+        //                         leftController.text,
+        //                         leftController.selection.start,
+        //                         "`");
+        //                   } else {
+        //                     String newText = "```\n";
+        //                     newText += leftController.text.substring(
+        //                         leftController.selection.start,
+        //                         leftController.selection.end);
+        //                     newText += "\n```";
+        //                     leftController.text = leftController.text
+        //                         .replaceRange(leftController.selection.start,
+        //                             leftController.selection.end, newText);
+        //                   }
+        //                 }, icon: const Icon(Icons.format_quote)
+        //             ),
+                    
+        //             IconButton(
+        //               onPressed: () async {
+        //                 await _handleUploadImage(); // go to the top...
+        //               },icon: const Icon(Icons.upload_file)
+        //             ),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      // body: Padding(
+      //   padding: const EdgeInsets.all(14),
+      //   child: Row(
+      //     crossAxisAlignment: CrossAxisAlignment.start,
+      //     children: [
+      //       Expanded(
+      //         child: Column(
+      //           children: [
+      //             Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+      //               IconButton(
+      //                 onPressed: () {
+      //                   int start = leftController.selection.start;
+      //                   int end = leftController.selection.end;
+
+      //                   if (start == -1 || end == -1) {
+      //                     return; // Invalid selection
+      //                   }
+
+      //                   if (start == end) {
+      //                     // Handle when no text is selected
+      //                     leftController.text = addSidesToWord(
+      //                       leftController.text,
+      //                       start,
+      //                       "**",
+      //                     );
+      //                   } else {
+      //                     // Handle when text is selected
+      //                     int start = leftController.selection.start;
+      //                     int end = leftController.selection.end;
+      //                     String selectedText = leftController.text.substring(start, end);
+      //                     String newText;
+      
+      //                     if (selectedText.startsWith("**") && selectedText.endsWith("**")) {
+      //                       // Remove bold formatting
+      //                       newText = selectedText.substring(2, selectedText.length - 2);
+      //                     } else {
+      //                       // Add bold formatting
+      //                       newText = "**$selectedText**";
+      //                     }
+      
+      //                     leftController.text = leftController.text.replaceRange(start, end, newText);
+      //                   }
+      //                 },
+      //                 icon: const Icon(Icons.format_bold),
+      //               ),
+      //               IconButton(
+      //                 onPressed: () {
+      //                   if (leftController.selection.start == leftController.selection.end) {
+      //                     // Handle when no text is selected
+      //                     leftController.text = addSidesToWord(
+      //                       leftController.text,
+      //                       leftController.selection.start,
+      //                       "*",
+      //                     );
+      //                   } else {
+      //                     // Handle when text is selected
+      //                     int start = leftController.selection.start;
+      //                     int end = leftController.selection.end;
+      //                     String selectedText = leftController.text.substring(start, end);
+      //                     String newText;
+      
+      //                     if (selectedText.startsWith("*") && selectedText.endsWith("*")) {
+      //                       // Remove italic formatting
+      //                       newText = selectedText.substring(1, selectedText.length - 1);
+      //                     } else {
+      //                       // Add italic formatting
+      //                       newText = "*$selectedText*";
+      //                     }
+      
+      //                     leftController.text = leftController.text.replaceRange(start, end, newText);
+      //                   }
+      //                 },
+      //                 icon: const Icon(Icons.format_italic),
+      //               ),
+      //               IconButton(
+      //                   onPressed: () {},
+      //                   icon: const Icon(Icons.format_underline)),
+      //               IconButton(onPressed: () {
+      //                 if (leftController.selection.start ==
+      //                         leftController.selection.end) {
+      //                       leftController.text = addSidesToWord(
+      //                           leftController.text,
+      //                           leftController.selection.start,
+      //                           "`");
+      //                     } else {
+      //                       String newText = "```\n";
+      //                       newText += leftController.text.substring(
+      //                           leftController.selection.start,
+      //                           leftController.selection.end);
+      //                       newText += "\n```";
+      //                       leftController.text = leftController.text
+      //                           .replaceRange(leftController.selection.start,
+      //                               leftController.selection.end, newText);
+      //                     }
+      //               }, icon: const Icon(Icons.code)),
+      //               IconButton(
+      //                   onPressed: () {
+      //                                           if (leftController.selection.start ==
+      //                         leftController.selection.end) {
+      //                       leftController.text = addSidesToWord(
+      //                           leftController.text,
+      //                           leftController.selection.start,
+      //                           "`");
+      //                     } else {
+      //                       String newText = "```\n";
+      //                       newText += leftController.text.substring(
+      //                           leftController.selection.start,
+      //                           leftController.selection.end);
+      //                       newText += "\n```";
+      //                       leftController.text = leftController.text
+      //                           .replaceRange(leftController.selection.start,
+      //                               leftController.selection.end, newText);
+      //                     }
+      //                   }, icon: const Icon(Icons.format_quote)
+      //               ),
+                    
+      //               IconButton(
+      //                 onPressed: () async {
+      //                   await _handleUploadImage(); // go to the top...
+      //                 },icon: const Icon(Icons.upload_file)
+      //               ),
+
+
+      //               IconButton(
+      //                 onPressed: () {
+      //                   final mathExpressionTemplate = r'$$your_math_expression_here$$';
+      //                   leftController.text = leftController.text.replaceRange(
+      //                     leftController.selection.start,
+      //                     leftController.selection.end,
+      //                     mathExpressionTemplate,
+      //                   );
+      //                 },
+      //                 icon: const Icon(Icons.functions),
+      //               )
+      //             ]),
+      //             Expanded(
+      //               child: TextField(
+      //                 controller: leftController,
+      //                 decoration: const InputDecoration(
+      //                   hintText: 'What\'s on your mind?',
+      //                 ),
+      //                 maxLines: null,
+      //                 minLines: 50,
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+
+      //       const SizedBox(width: 47), // Spacer
+
+
+                    // Expanded(
+                    //   child: Container(
+                    //     decoration: BoxDecoration(
+                    //       border: Border.all(color: Colors.white60, width: 1),
+                    //       borderRadius: BorderRadius.circular(10),
+                    //     ),
+                    //     child: DropdownButtonFormField(
+                    //       decoration: InputDecoration(
+                    //         contentPadding: EdgeInsets.all(10.0),
+                    //         border: InputBorder.none,
+                    //         focusedBorder: InputBorder.none,
+                    //         enabledBorder: InputBorder.none,
+                    //         isCollapsed: true,
+                    //       ),
+                    //       style: TextStyle(fontSize: 16, color: Colors.white),
+                    //       icon: Icon(Icons.arrow_drop_down, color: Colors.white60),
+                    //       iconSize: 24,
+                    //       elevation: 0,
+                    //       value: dropEntries.first.value, // TODO: FIX THIS
+
+                    //       onChanged: (valueName) {
+                    //         setState(() {
+                    //           loadThemeFile(valueName);
+                    //           updateStyle();
+                    //         });
+                    //       },
+                    //       items: dropEntries.map((entry) {
+                    //         return DropdownMenuItem(
+                    //           value: entry.value,
+                    //           child: Text(entry.label, style: TextStyle(fontSize: 16)),
+                    //         );
+                    //       }).toList(),
+                    //     ),
+                    //   ),
+                    // )
