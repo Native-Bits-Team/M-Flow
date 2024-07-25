@@ -202,7 +202,7 @@ class _ExportDialogState extends State<ExportDialog> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10.0),
+                const SizedBox(height: 1.0),
                 Container(
                   padding: const EdgeInsets.all(12.0),
                   // decoration: BoxDecoration(
@@ -252,14 +252,14 @@ class _ExportDialogState extends State<ExportDialog> {
                         ],
                       ),
 
-                      const SizedBox(height: 25.0),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const ProfilePage()));
-                        },
-                        child: const Text("Personalize First Page"),
-                      ),
+                      // const SizedBox(height: 25.0),
+                      // TextButton(
+                      //   onPressed: () {
+                      //     Navigator.of(context).push(MaterialPageRoute(
+                      //         builder: (context) => const ProfilePage()));
+                      //   },
+                      //   child: const Text("Personalize First Page"),
+                      // ),
                     ],
                   ),
                 ),
@@ -267,14 +267,23 @@ class _ExportDialogState extends State<ExportDialog> {
                 SizedBox(
                   width: 400,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    // mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton.icon(
                         onPressed: () {
                           Navigator.of(widget.dialogContext).pop(null);
                         },
                         icon: const Icon(Icons.cancel),
-                        label: const Text("Cancel"),
+                        label: const Text("Cancel", style: TextStyle(fontSize: 13.5),),
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
+                          side: BorderSide(color: Colors.white, width: 0.2),
+                          shadowColor: Colors.black.withOpacity(0.3), // Shadow color and opacity
+                          elevation: 2, // Optional: add a border color
+                        ),
                       ),
                       const SizedBox(width: 20),
                       TextButton.icon(
@@ -294,7 +303,17 @@ class _ExportDialogState extends State<ExportDialog> {
                           }
                         },
                         icon: const Icon(Icons.save),
-                        label: const Text("Export"),
+                        label: const Text("Export", style: TextStyle(fontSize: 13.5),),
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
+                          backgroundColor: Colors.transparent, // Set to transparent if you want to define your own background
+                          side: BorderSide(color: Colors.white, width: 0.2), // Thinner border
+                          shadowColor: Colors.black.withOpacity(0.3), // Shadow color and opacity
+                          elevation: 2, // Shadow elevation
+                        ),
                       )
                     ],
                   ),
