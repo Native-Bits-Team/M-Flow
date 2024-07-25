@@ -4,7 +4,9 @@
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:flutter_math_fork/flutter_math.dart'; // NBT
+import 'package:markdown/markdown.dart' as md; // NBT
+//import 'package:m_flow/dependencies/markdown/code/markdown.dart' as md; // NBT HISTORY
 
 import '_functions_io.dart' if (dart.library.js_interop) '_functions_web.dart';
 import 'style_sheet.dart';
@@ -225,7 +227,27 @@ class MarkdownBuilder implements md.NodeVisitor {
     int? start;
     if (_isBlockTag(tag)) {
 if (element.textContent.startsWith("w\$")){_addAnonymousBlockIfNeeded(center: true);}else{_addAnonymousBlockIfNeeded();} //NBT
-      //_addAnonymousBlockIfNeeded();
+////////////// NBT Starts, Credits to NBT member Madhur for original Code, Modified to Work here by Imad Laggoune
+/*
+if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) {
+        if (element.textContent.startsWith(r'$$') && element.textContent.endsWith(r'$$')) {
+          // Block math expression
+          element.children!.add(
+            Math.tex(element.textContent.replaceAll(r'$$', ''),textStyle: TextStyle(fontSize: 16)) as md.Node);
+        } else {
+          // Inline math expression
+          final parts = element.textContent.split(r'$');
+          for (int i = 0; i < parts.length; i++) {
+            if (i % 2 == 0) {
+              element.children!.add(md.Text(element.textContent));
+            } else {
+              element.children!.add(Math.tex(parts[i],textStyle: TextStyle(fontSize: 16)) as md.Node);
+            }
+          }
+        }
+      }*/
+////////////// NBT Ends
+      //_addAnonymousBlockIfNeeded(); // ?? NBT ??
       if (_isListTag(tag)) {
         _listIndents.add(tag);
         if (element.attributes['start'] != null) {
@@ -360,6 +382,25 @@ if (element.textContent.startsWith("w\$")){_addAnonymousBlockIfNeeded(center: tr
     } else {
 String o = text.text;TextAlign k; if (text.text.startsWith("w\$")){k = TextAlign.center; o = text.text.replaceFirst("w\$","");}else{k = _textAlignForBlockTag(_currentBlockTag);} // NBT
 TextDecoration? d; if (text.text.startsWith("d\$")){d = TextDecoration.underline; o = text.text.replaceFirst("d\$","");} // NBT
+////////////// NBT Starts, Credits to NBT member Madhur for original Code, Modified by Imad Laggoune
+if (text.text.contains(r'\$') || text.text.contains(r'$$')) {
+        if (text.text.startsWith(r'$$') && text.text.endsWith(r'$$')) {
+          // Block math expression
+          _inlines.last.children.add(
+            Math.tex(text.text.replaceAll(r'$$', ''),textStyle: TextStyle(fontSize: 16)));
+        } else {
+          // Inline math expression
+          final parts = text.text.split(r'$');
+          for (int i = 0; i < parts.length; i++) {
+            if (i % 2 == 0) {
+              _inlines.last.children.add(Text(text.text));
+            } else {
+              _inlines.last.children.add(Math.tex(parts[i],textStyle: TextStyle(fontSize: 16)));
+            }
+          }
+        }
+      }
+////////////// NBT Ends
 TextStyle t = _inlines.last.style!.copyWith(decoration: d);
       child = _buildRichText(
         TextSpan(
@@ -785,8 +826,10 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
   ) {
     // List of merged text spans and widgets
     final List<Widget> mergedTexts = <Widget>[];
-
+    bool skipNext = false; // NBT
     for (final Widget child in children) {
+      if (skipNext){skipNext=false;continue;}
+      if (child is Math){skipNext = true;} // NBT
       // If the list is empty, add the current widget to the list
       if (mergedTexts.isEmpty) {
         mergedTexts.add(child);
@@ -804,6 +847,7 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
         final TextSpan span = last.textSpan!;
         spans.addAll(_getInlineSpans(span));
       } else if (last is Text) {
+        if (last.textSpan == null){continue;} // NBT
         final InlineSpan span = last.textSpan!;
         spans.addAll(_getInlineSpans(span));
       } else if (last is RichText) {

@@ -527,15 +527,16 @@ class PreviewPanel extends StatelessWidget {
     return Card(
       elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: ListView(
-          children: _buildMarkdownWidgets(markdownText, style),
-        ),
+        padding: const EdgeInsets.all(10.0), // Markdown() has a padding of 16.0
+       child: Markdown(data: markdownText, styleSheet: style),
+     //   child: ListView(
+     //     children: _buildMarkdownWidgets(markdownText, style),
+     //   ),
       ),
     );
   }
 
-
+/* Not needed anymore
   // MATHJAX INTEGRATION FOR OUR MARKDOWN...
   List<Widget> _buildMarkdownWidgets(String text, MarkdownStyleSheet style) {
     List<Widget> widgets = [];
@@ -578,7 +579,7 @@ class PreviewPanel extends StatelessWidget {
     }
 
     return widgets;
-  }
+  }*/
 }
 
 

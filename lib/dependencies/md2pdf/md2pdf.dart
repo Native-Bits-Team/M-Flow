@@ -20,8 +20,8 @@ import 'package:m_flow/dependencies/dart_pdf/pdf/code/src/widgets/flex.dart';
 import 'package:m_flow/dependencies/dart_pdf/pdf/code/src/widgets/icon.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
 //import 'package:pdf/widgets.dart' as pw;
-//import 'package:markdown/markdown.dart' as md;
-import 'package:m_flow/dependencies/markdown/code/markdown.dart' as md;
+import 'package:markdown/markdown.dart' as md;
+//import 'package:m_flow/dependencies/markdown/code/markdown.dart' as md;
 
 //import 'package:pdf/pdf.dart' as p;
 //import 'package:pdf/pdf.dart';
@@ -223,7 +223,8 @@ class Styler {
           spans.add(pw.TextSpan(text: ch.text!.text!.replaceAll("\n", ""))); // This was added to fix a "bug" that causes a newline to be added causing text not to be next to the "bullet"
           spans.add(const pw.TextSpan(text: "\n\n")); // 
           continue; // 
-        } // 
+        } //
+        //ch.text = pw.TextSpan(text: ch.text!.text, style: ch.text!.style!.copyWith(height: )); // NBT
         spans.add(ch.text!);
       }
     }
@@ -436,7 +437,7 @@ class Styler {
                     border = pw.Border.all(width: 0, color: PdfColors.white);
                   }
                   //cl.add(pw.Column(children: ws, crossAxisAlignment: align)); // NBT
-                  cl.add(pw.Expanded(child: pw.Column(children: ws, crossAxisAlignment: align))); // NBT
+                  cl.add(pw.Expanded(child: pw.Padding(padding: pw.EdgeInsets.all(15.0),child:pw.Expanded(child: pw.Column(children: ws, crossAxisAlignment: align, mainAxisAlignment: pw.MainAxisAlignment.center))))); // NBT
                 }
                 ch.add(pw.TableRow(
                     children: cl,
