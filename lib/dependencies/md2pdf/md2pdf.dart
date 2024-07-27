@@ -16,8 +16,6 @@ import 'package:flutter/widgets.dart' as w;
 import 'package:hexcolor/hexcolor.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
-import 'package:m_flow/dependencies/dart_pdf/pdf/code/src/widgets/flex.dart';
-import 'package:m_flow/dependencies/dart_pdf/pdf/code/src/widgets/icon.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
 //import 'package:pdf/widgets.dart' as pw;
 import 'package:markdown/markdown.dart' as md;
@@ -557,6 +555,7 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
     pageBackgroundColor = Color(HexColor(loadThemeFileReturn(tempTheme)["backgroundColor"]).value);
     }
   doc.addPage(pw.MultiPage(
+  maxPages: 200,
   pageTheme: pw.PageTheme(
     buildBackground: (context){
       return pw.Expanded(child: pw.Rectangle(fillColor: p.PdfColor(pageBackgroundColor.red/255.0,pageBackgroundColor.green/255.0,pageBackgroundColor.blue/255.0)));

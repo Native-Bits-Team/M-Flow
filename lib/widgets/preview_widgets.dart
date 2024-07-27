@@ -102,10 +102,12 @@ class _DocumentPreviewState extends State<DocumentPreview> {
           SizedBox(
               width: size,
               height: ratio,
-              child: Card(clipBehavior: Clip.antiAliasWithSaveLayer,
-              elevation: 0.0,
+              child: Card(
+              clipBehavior: 
+              Clip.antiAliasWithSaveLayer,
+              //elevation: 0.0,
               borderOnForeground: false,
-              shadowColor: Colors.transparent,
+              shadowColor: Colors.black, // will this effect the preview accuracy
               margin: const EdgeInsets.all(0.0),
                   child: previewImage ?? wError
                       //const Center(child: CircularProgressIndicator()),

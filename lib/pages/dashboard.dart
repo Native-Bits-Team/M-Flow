@@ -76,13 +76,17 @@ class DashBoard extends StatelessWidget {
                                                 data["title"] =
                                                     result.files.first.name;
                                               }
+                                              if (data["content"] == null){
+                                                print("Error");
+                                              }
                                               Navigator.push(context,
                                                   MaterialPageRoute(
                                                       builder: (context) {
                                                 return FormPage(
-                                                  initText: File(result.files[0]
-                                                          .path as String)
-                                                      .readAsStringSync(),
+                                                  initText: data["content"],
+                                                  //File(result.files[0]
+                                                    //      .path as String)
+                                                      //.readAsStringSync(),
                                                   fileData: data,
                                                 );
                                               }));
@@ -184,7 +188,7 @@ class _DocPreviewState extends State<DocPreview> {
         previewImageBytes = const Tooltip(
             message: "File Not Found",
             child: Icon(Icons.info, color: Colors.red));
-      }
+      } else {
       if (_debounce?.isActive ?? false)
         _debounce!.cancel(); // Credits to NBT member Madhur for this code
 
@@ -222,7 +226,7 @@ class _DocPreviewState extends State<DocPreview> {
           //});
           //});
         });
-      });
+      });}
     }
 
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [

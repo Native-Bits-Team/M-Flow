@@ -54,7 +54,11 @@ class _MyAppState extends State<MyApp> {
       appBarTheme: AppBarTheme(centerTitle: true, toolbarHeight: 40, backgroundColor: Color(HexColor(theme["backgroundColor"]).value), titleTextStyle: TextStyle(color: Color(HexColor(theme["firstColor"]).value), fontSize: 20)),
 
       iconButtonTheme: IconButtonThemeData(style: ButtonStyle(iconColor: WidgetStatePropertyAll(Color(HexColor(theme["firstColor"]).value)))),
-      cardTheme: CardTheme(color: Color(HexColor(theme["backgroundColor"]).value)),
+      
+      cardTheme: CardTheme(color: Color(HexColor(theme["backgroundColor"]).value),
+      shadowColor: Colors.black,
+      elevation: 3.0),
+
       scaffoldBackgroundColor: Color(HexColor(theme["pageBackgroundColor"]).value),
       dialogBackgroundColor: Color(HexColor(theme["pageBackgroundColor"]).value),
       dialogTheme: const DialogTheme(titleTextStyle: TextStyle(color: Colors.white)),// Invalid Constant Error
@@ -62,11 +66,11 @@ class _MyAppState extends State<MyApp> {
       textTheme: typographySwitcher(int.parse(theme["typography"])),
       //primaryTextTheme: typographySwitcher(int.parse(theme["typography"])),
       textButtonTheme: TextButtonThemeData(style : ButtonStyle(
-        elevation: WidgetStatePropertyAll(0.0),
+        elevation: WidgetStatePropertyAll(2.0),
+        shadowColor: WidgetStatePropertyAll(Colors.black),
         //backgroundColor: WidgetStatePropertyAll(Color(HexColor(theme["backgroundColor"]).value)),// Invalid Constant Error
-        backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+        backgroundColor: WidgetStatePropertyAll(Color(HexColor(theme["backgroundColor"]).value)),
         iconColor: WidgetStatePropertyAll(Color(HexColor(theme["firstColor"]).value)),
-        
         textStyle: WidgetStatePropertyAll(TextStyle(color: Color(HexColor(theme["firstColor"]).value), fontWeight: FontWeight.bold)), // Invalid Constant Error
         side: WidgetStatePropertyAll(BorderSide(color: Color(HexColor(theme["firstColor"]).value), width: 1.0)),// Invalid Constant Error
         )

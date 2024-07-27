@@ -12,7 +12,7 @@ class InfoPage extends StatelessWidget {
     s += "\n\n\nIf you noticed that we missed a license please notify the team!";
     TextEditingController e = TextEditingController(text: s);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: Text("Information")),
         body: Padding(
             padding: const EdgeInsets.all(30),
             child: Card(

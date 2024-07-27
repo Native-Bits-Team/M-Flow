@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:m_flow/components/profile_drawer.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
 import 'package:m_flow/functions/json_db.dart';
@@ -14,7 +15,15 @@ import 'package:m_flow/widgets/dialog_widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:flutter_math_fork/flutter_math.dart';
+
+
+class TurnBold extends Intent {
+  const TurnBold();
+}
+
+class SaveProject extends Intent {
+  const SaveProject();
+}
 
 // import 'package:permission_handler/permission_handler.dart';
 
@@ -366,15 +375,30 @@ class _FormPageState extends State<FormPage> {
                     )
                   ]),
                   Expanded(
-                    child: TextField(
+                    child: 
+                    Shortcuts(shortcuts: <ShortcutActivator,Intent>{
+                      LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyB): const TurnBold(),
+                      LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyS): const SaveProject(),
+                    },
+                    child: Actions(
+                      actions: {
+                        TurnBold: CallbackAction(onInvoke: (intent) {
+                          _formatText("**", "**");
+                        }),
+                        SaveProject: CallbackAction(onInvoke: (intent) {
+                          saveMFlowFile(content: markdownText);
+                        })
+                      },
+                      child: Focus( // is this needed for shotcuts to work?
+                        child: TextField(
                       controller: leftController,
                       decoration: const InputDecoration(
                         hintText: 'What\'s on your mind?',
                       ),
                       maxLines: null,
                       minLines: 50,
-                    ),
-                  ),
+                    ))),
+                  )),
                 ],
               ),
             ),

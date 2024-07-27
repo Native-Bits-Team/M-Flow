@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter_math_fork/ast.dart';
+
 
 
 Map<String, dynamic> globalDatabase = {};
@@ -129,10 +132,23 @@ loadMFlowFile(String? path) async {
     return;
   }
   var fileContent = await File(path).readAsString();
+  print("test");
   if (fileContent.startsWith("mflow")){
     //if (fileContent.startsWith() == "0.1"){
       Map<String, dynamic> data =  jsonDecode(fileContent.substring(10));
+      print(data);
       return data;
     //}
   }
+}
+
+saveMFlowFile({String content = ""}) async {
+    Map<String, dynamic> data ={
+      "content" : content
+    };
+  FilePicker.platform.saveFile(dialogTitle: "Save Project", allowedExtensions: ["mflow", "md"], fileName: "project.mflow").then((path){
+    if (path != null){
+      File(path).writeAsStringSync("mflow\n0.1\n${jsonEncode(data)}");
+    }
+  });
 }

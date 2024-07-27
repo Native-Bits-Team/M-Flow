@@ -267,7 +267,7 @@ class _ExportDialogState extends State<ExportDialog> {
                 SizedBox(
                   width: 400,
                   child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton.icon(
                         onPressed: () {
@@ -280,9 +280,9 @@ class _ExportDialogState extends State<ExportDialog> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
-                          side: BorderSide(color: Colors.white, width: 0.2),
-                          shadowColor: Colors.black.withOpacity(0.3), // Shadow color and opacity
-                          elevation: 2, // Optional: add a border color
+                        //  side: BorderSide(color: Colors.white, width: 0.2),
+                      //    shadowColor: Colors.black.withOpacity(0.3), // Shadow color and opacity
+                    //      elevation: 2, // Optional: add a border color
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -309,10 +309,10 @@ class _ExportDialogState extends State<ExportDialog> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
-                          backgroundColor: Colors.transparent, // Set to transparent if you want to define your own background
-                          side: BorderSide(color: Colors.white, width: 0.2), // Thinner border
-                          shadowColor: Colors.black.withOpacity(0.3), // Shadow color and opacity
-                          elevation: 2, // Shadow elevation
+                        //  backgroundColor: Colors.transparent, // Set to transparent if you want to define your own background
+                        //  side: BorderSide(color: Colors.white, width: 0.2), // Thinner border
+                     //     shadowColor: Colors.black,//.withOpacity(0.9), // Shadow color and opacity
+                       //   elevation: 4, // Shadow elevation
                         ),
                       )
                     ],
