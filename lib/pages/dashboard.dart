@@ -18,7 +18,8 @@ class DashBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 5, 24, 32),
+          title: const Text("M-Flow"),
+          //backgroundColor: const Color.fromARGB(255, 5, 24, 32),
         ),
 
         // *DRAWER : -------------------------------------------------------------------------------- *
@@ -158,7 +159,10 @@ class DashBoard extends StatelessWidget {
                                       })
                                 ])
                           ]))),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 32),
+                  const Text("Recent Documents", textScaler: TextScaler.linear(1.5),),
+                  const SizedBox(height: 16),
+
                   Expanded(child: ProjectGrid())
                 ])));
   }

@@ -442,20 +442,21 @@ class _FormPageState extends State<FormPage> {
                       ),
                       child: DropdownMenu(
                         // label: const Text("Theme: "),
-                        trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60,),
+                        trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60),
                         initialSelection: getDropThemeEntries().first.value, // TODO: FIX THIS
                         inputDecorationTheme: const InputDecorationTheme(
                           contentPadding: EdgeInsets.all(9.0),
                           constraints: BoxConstraints(maxHeight: 35),
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
+                          border: InputBorder.none,
                           // border: OutlineInputBorder(
                           //   borderSide: BorderSide(color: Colors.red, width: 0.5),
                           //   borderRadius: BorderRadius.circular(16.0),
                           // ),
                           isCollapsed: true,
                         ),
-                        textStyle: const TextStyle(fontSize: 13),
+                        //textStyle: const TextStyle(fontSize: 13),
                         onSelected: (valueName) {
                           setState(() {
                             loadThemeFile(valueName as String);

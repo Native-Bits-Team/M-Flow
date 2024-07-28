@@ -15,7 +15,6 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-
 _MyAppState? globalAppHandler;
 
 class _MyAppState extends State<MyApp> {
@@ -32,7 +31,6 @@ class _MyAppState extends State<MyApp> {
     initDatabaseAndThemes();
     theme = getTheme();
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +75,6 @@ class _MyAppState extends State<MyApp> {
         textStyle: WidgetStatePropertyAll(TextStyle(color: Color(HexColor(theme["firstColor"]).value), fontWeight: FontWeight.bold)), // Invalid Constant Error
         side: WidgetStatePropertyAll(BorderSide(color: Color(HexColor(theme["firstColor"]).value), width: 1.0)),// Invalid Constant Error
         )
-        
         ),
       )
     );
