@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import 'package:m_flow/functions/mark_down_styler.dart';
 import 'package:m_flow/functions/string_utilities.dart';
 import 'package:m_flow/main.dart';
 import 'package:m_flow/pages/dashboard.dart';
+import 'package:m_flow/pages/settings.dart';
 import 'package:m_flow/widgets/dialog_widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -111,6 +111,13 @@ class _FormPageState extends State<FormPage> {
   // }
 
   void _updateRightField() {
+    if (globalDatabase["settings"]["autosave"]){
+    if (!_debounce!.isActive){
+      _debounce = Timer(const Duration(minutes: 5), (){
+        autoSave();
+      });
+    }
+    }
     setState(() {
       markdownText = getUserInput(); // get user input from this method...
     });
@@ -230,15 +237,14 @@ class _FormPageState extends State<FormPage> {
     //   stopper = false;
     //   updateStyle();
     // }
-    List<DropdownMenuEntry> dropEntries = [];
+   /* List<DropdownMenuEntry> dropEntries = []; // Moved to json_db.dart;
     Directory("assets/themes").listSync().forEach((entry){
       File data = File(entry.path);
       if (data.existsSync()){
       Map<String, dynamic> dataD =  jsonDecode(data.readAsStringSync());
       dropEntries.add(DropdownMenuEntry(value: dataD["themeFileName"], label: dataD["themeName"]));
-
       }
-    });
+    });*/
     temp = this;
     return Scaffold(
       appBar: AppBar(
@@ -248,8 +254,8 @@ class _FormPageState extends State<FormPage> {
 
       // *DRAWER : -------------------------------------------------------------------------------- *
       drawer: ProfileDrawer(
-        onExportTap: () {
-          showDialog(
+        onSettingsTap: () {
+        /*  showDialog(
             context: context,
             builder: (BuildContext context) {
               return ExportDialog(
@@ -258,17 +264,18 @@ class _FormPageState extends State<FormPage> {
                 markdownStyle: temp!.markdownStyle,
               );
             },
-          );
-        },
-
-        onIceTap: () {},
-
-        onDashTap: () {
+          );*/
+          
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const DashBoard()));
+              MaterialPageRoute(builder: (context) => SettingsPanel()));
         },
-
-        onGitTap: () {
+        onDashTap: () {
+          //Navigator.push(context,
+            //  MaterialPageRoute(builder: (context) => const DashBoard()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> DashBoard()));
+        },
+/*
+        onDashTap: () {
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -315,7 +322,7 @@ class _FormPageState extends State<FormPage> {
               );
             },
           );
-        }, // GitTap ends here
+        }, */// GitTap ends here
       ),
       // *DRAWER : -------------------------------------------------------------------------------- *
 
@@ -364,7 +371,7 @@ class _FormPageState extends State<FormPage> {
 
                     IconButton(
                       onPressed: () {
-                        final mathExpressionTemplate = r'$$your_math_expression_here$$';
+                        const mathExpressionTemplate = r'$$your_math_expression_here$$';
                         leftController.text = leftController.text.replaceRange(
                           leftController.selection.start,
                           leftController.selection.end,
@@ -436,8 +443,8 @@ class _FormPageState extends State<FormPage> {
                       child: DropdownMenu(
                         // label: const Text("Theme: "),
                         trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60,),
-                        initialSelection: dropEntries.first.value, // TODO: FIX THIS
-                        inputDecorationTheme: InputDecorationTheme(
+                        initialSelection: getDropThemeEntries().first.value, // TODO: FIX THIS
+                        inputDecorationTheme: const InputDecorationTheme(
                           contentPadding: EdgeInsets.all(9.0),
                           constraints: BoxConstraints(maxHeight: 35),
                           enabledBorder: InputBorder.none,
@@ -451,20 +458,20 @@ class _FormPageState extends State<FormPage> {
                         textStyle: const TextStyle(fontSize: 13),
                         onSelected: (valueName) {
                           setState(() {
-                            loadThemeFile(valueName);
+                            loadThemeFile(valueName as String);
                             updateStyle();
                           });
                         },
-                        dropdownMenuEntries: dropEntries
+                        dropdownMenuEntries: getDropThemeEntries()
                       )
                     ),
 
-                    Spacer(), // Pushes icons to the rightmost edge
+                    const Spacer(), // Pushes icons to the rightmost edge
 
                     Row(
                       // mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        IconButton(
+                    /*    IconButton(
                           onPressed: () {
                             //implement here
                           },
@@ -472,7 +479,7 @@ class _FormPageState extends State<FormPage> {
                             Icons.icecream,
                             color: Colors.greenAccent,
                           ),
-                          color: Colors.greenAccent),
+                          color: Colors.greenAccent)*/
                         
                         IconButton(
                           onPressed: () {
@@ -668,6 +675,8 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom, {String? tempTheme}) {
       textScaler: TextScaler.linear(zoom));
 }
 
+
+/* For now, this is not needed
 class ParameterDialog extends StatefulWidget {
   final BuildContext dialogContext;
 
@@ -722,4 +731,10 @@ class _ParameterDialogState extends State<ParameterDialog> {
       ],
     );
   }
+}
+*/
+
+
+autoSave(){
+  File("autosave${DateTime.now().toUtc().toIso8601String().replaceAll(':', '')}.md").writeAsStringSync(temp!.markdownText);
 }

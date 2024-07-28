@@ -148,7 +148,7 @@ class _FullPreviewScreenState extends State<FullPreviewScreen> {
     super.initState();
 
     if (widget.content.isNotEmpty) {
-      generatePdfImageFromMD(widget.content, widget.markdownStyle, pageIndex: widget.pageIndex)
+      generatePdfImageFromMD(widget.content, widget.markdownStyle, pageIndex: widget.pageIndex, dpiMultiplicator: 2.0)
           .then((imageAndSize) {
         setState(() {
           previewImage = imageAndSize[0];
@@ -164,21 +164,22 @@ class _FullPreviewScreenState extends State<FullPreviewScreen> {
     ratio *= size;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 2, 22, 32),
+     // backgroundColor: const Color.fromARGB(255, 2, 22, 32),
       appBar: AppBar(
-        toolbarHeight: 28,
-        backgroundColor: const Color.fromARGB(255, 2, 22, 32),
+      //  toolbarHeight: 28,
+       // backgroundColor: const Color.fromARGB(255, 2, 22, 32),
       ),
       body: Center(
         child: widget.content.isEmpty
             ? const Text("Nothing to display",
                 style: TextStyle(color: Colors.red))
             : SingleChildScrollView(
-                child: Container(
+                child: Container( // TODO: maybe there is a better solution
                   width: size,
                   height: ratio,
                   decoration: const BoxDecoration(),
                   child: Card(
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
                     child: previewImage ??
                         const Center(child: CircularProgressIndicator()),
                   ),

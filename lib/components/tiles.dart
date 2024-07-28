@@ -20,7 +20,7 @@ class Tiles extends StatelessWidget {
       child: ListTile(
         leading: Icon(
           icon,
-          color: Colors.white,
+          //color: Colors.white,
         ),
         onTap: onTap,
         title: Text(text,

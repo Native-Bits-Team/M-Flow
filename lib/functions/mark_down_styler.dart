@@ -36,21 +36,21 @@ TextStyle makeTextStyleJson(Map<String, dynamic> value){
   Color? decorationColor;
   double? decorationThickness;
   FontWeight? fontWeight;
-  FontStyle? fontStyle;
-  TextBaseline? textBaseline;
-  String? fontFamily;
-  List<String>? fontFamilyFallback;
+  //FontStyle? fontStyle;
+  //TextBaseline? textBaseline;
+  //String? fontFamily;
+  //List<String>? fontFamilyFallback;
   double? fontSize;
-  double? letterSpacing;
-  double? wordSpacing;
-  double? height;
-  TextLeadingDistribution? leadingDistribution;
-  Locale? locale;
+  //double? letterSpacing;
+  //double? wordSpacing;
+  //double? height;
+  //TextLeadingDistribution? leadingDistribution;
+  //Locale? locale;
   Paint background = Paint();
   Paint? foreground;
-  List<Shadow>? shadows;
-  List<FontFeature> fontFeatures;
-  List<FontVariation> fontVariations;
+  //List<Shadow>? shadows;
+  //List<FontFeature> fontFeatures;
+  //List<FontVariation> fontVariations;
 /////
 ///
 
@@ -104,11 +104,11 @@ Decoration makeBoxDecorationJson(Map<String, dynamic> value){
   double borderRadiusValue = 0;
 
   Color? color;
-  DecorationImage? image;
+  //DecorationImage? image;
   BoxBorder? border;
-  List<BoxShadow>? boxShadow;
-  Gradient? gradient;
-  BlendMode? backgroundBlendMode;
+  //List<BoxShadow>? boxShadow;
+  //Gradient? gradient;
+  //BlendMode? backgroundBlendMode;
 
   //BoxShape shape = BoxShape.rectangle;
 

@@ -4,13 +4,11 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:m_flow/components/profile_drawer_dashboard.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
 import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/form_page.dart';
 import 'package:m_flow/pages/information.dart';
-import 'package:m_flow/pages/profile_page.dart';
 import 'package:m_flow/pages/settings.dart';
 
 class DashBoard extends StatelessWidget {
@@ -24,12 +22,13 @@ class DashBoard extends StatelessWidget {
         ),
 
         // *DRAWER : -------------------------------------------------------------------------------- *
-        drawer: ProfileDrawerDashboard(
+     /*   Imad: The main page doesn't really need a drawer, most things are already shown
+     drawer: ProfileDrawerDashboard(
           onProfileTap: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const ProfilePage()));
           },
-        ),
+        ),*/
         // *DRAWER : -------------------------------------------------------------------------------- *
 
         body: Padding(
@@ -92,7 +91,8 @@ class DashBoard extends StatelessWidget {
                                               }));
                                             });
                                           } else {
-                                            Navigator.push(context,MaterialPageRoute(builder: (context) {
+                                            loadFormPage(context, result.files.first.path, title: result.files.first.name);
+                                           /* Navigator.push(context,MaterialPageRoute(builder: (context) {
                                               return FormPage(
                                                 initText: File(result.files[0]
                                                         .path as String)
@@ -102,7 +102,7 @@ class DashBoard extends StatelessWidget {
                                                       result.files.first.name
                                                 },
                                               );
-                                            }));
+                                            }));*/
                                           }
                                         });
                                       },
@@ -123,18 +123,21 @@ class DashBoard extends StatelessWidget {
                                       },
                                       label: const Text("New Document"))
                                 ]),
-                            Column(
+                            const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  TextButton.icon(
-                                      label: const Text("Load From URL"),
-                                      icon: const Icon(Icons.add),
-                                      onPressed: () {}),
-                                const SizedBox(height: 20),
-                                TextButton.icon(
-                                      label: const Text("Load From Template"),
-                                      icon: const Icon(Icons.add),
-                                      onPressed: () {}),
+                                 // Spacer(),
+                                  /*TextButton.icon(
+                                      style: const ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blueGrey), backgroundColor: WidgetStatePropertyAll(Colors.grey)),
+                                      label: const Text("NOT WORKING: Load From URL"),
+                                      icon: const Icon(Icons.error),
+                                      onPressed: () {}),*/
+                                SizedBox(height: 20),
+                                /*TextButton.icon(
+                                      style: const ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blueGrey), backgroundColor: WidgetStatePropertyAll(Colors.grey)),
+                                      label: const Text("NOT WORKING: Load From Template"),
+                                      icon: const Icon(Icons.error),
+                                      onPressed: () {}),*/
                                 ]),
                                // const SizedBox.expand(child: Text("e"),),
                                 Column(
@@ -177,6 +180,7 @@ class DocPreview extends StatefulWidget {
 class _DocPreviewState extends State<DocPreview> {
   Widget? previewImageBytes;
   String test = ""; // This is temporary
+  bool enabled = true;
   Timer? _debounce;
   @override
   Widget build(BuildContext context) {
@@ -184,6 +188,7 @@ class _DocPreviewState extends State<DocPreview> {
       //ScreenshotController sController = ScreenshotController();
 
       if (!File(widget.projectPath).existsSync()) {
+        enabled =false;
         // TODO: Maybe there is an alternative that doesn't use File object
         previewImageBytes = const Tooltip(
             message: "File Not Found",
@@ -235,10 +240,10 @@ class _DocPreviewState extends State<DocPreview> {
         hoverElevation: 0.2,
         elevation: 0.1,
         padding: EdgeInsets.zero,
-        onLongPress: () {
+        onLongPress: () { // TODO: make it right click
           showMenu(
               context: context,
-              position: const RelativeRect.fromLTRB(10, 10, 10, 10),
+              position: const RelativeRect.fromLTRB(10, 10, 10, 10), // TODO: mouse position
               items: [
                 PopupMenuItem(
                     onTap: () {
@@ -252,7 +257,8 @@ class _DocPreviewState extends State<DocPreview> {
               ]);
         },
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+          if (!enabled){return;};
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
             return FormPage(
               initText: test,
               fileData: const {"title": "M-Flow"},
@@ -316,19 +322,22 @@ class _ProjectGridState extends State<ProjectGrid> {
 
     // List<Map<String, dynamic>> projectsPath = [];
 
-    var list = getDatabase()["projects"]["recentOpen"];
-    var projList = getDatabase()["projects"]["list"];
+    //var list = getDatabase()["projects"]["recentOpen"]; // Moved to json_db.dart
+   // var projList = getDatabase()["projects"]["list"];
     //widget.previewLength = size;
-    list.forEach((key, value) {
+    //list.forEach((key, value) { // Moved to json_db.dart
       // maybe we should save the data as json too, rather then a list
-      pathPreviewTemp.add(list[key]["filePath"]);
-      namePreviewTemp.add(list[key]["fileName"]);
-    });
+      //pathPreviewTemp.add(list[key]["filePath"]);
+      //namePreviewTemp.add(list[key]["fileName"]);
+    //});
 
     // projList.forEach((key, value){
     //projectsPath.add(value);
     //});
 
+    List<List<String>> result = getMostRecentOpens();
+    namePreviewTemp = result[0];
+    pathPreviewTemp = result[1];
     if (pathPreviewTemp.toString() == widget.pathPreview.toString() &&
         namePreviewTemp.toString() == widget.namePreview.toString()) {
       return;
@@ -339,4 +348,15 @@ class _ProjectGridState extends State<ProjectGrid> {
       });
     }
   }
+}
+
+
+loadFormPage(BuildContext context, String? path, {String title = "M-Flow"}){
+  if (path == null){
+    return;
+  }
+  Navigator.push(context,MaterialPageRoute(builder: (context) {
+  return FormPage(
+  initText: File(path).readAsStringSync(),fileData: {"title":title});
+  }));
 }

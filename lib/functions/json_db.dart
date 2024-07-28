@@ -2,12 +2,25 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter_math_fork/ast.dart';
-
+import 'package:flutter/material.dart';
 
 
 Map<String, dynamic> globalDatabase = {};
 Map<String, dynamic> globalTheme = {};
+List<DropdownMenuEntry<Object>> themeDropEntries = [];
+
+
+updateAndSave(List<String> parameterPath,String key, dynamic value){
+  Map<String, dynamic> tempGlobalDatabase = globalDatabase;
+  for (String i in parameterPath){
+    tempGlobalDatabase = tempGlobalDatabase[i];
+  }
+  tempGlobalDatabase[key] = value;
+  for (String i in parameterPath.reversed){
+    tempGlobalDatabase = {i: tempGlobalDatabase};
+  }
+  globalDatabase.addAll(tempGlobalDatabase);
+}
 
 initDatabaseAndThemes(){
 
@@ -18,6 +31,8 @@ initDatabaseAndThemes(){
     globalDatabase = newDatabase();
     loadThemeFile("github_dark");
   }
+
+  updateDropThemeEntries();
 }
 
 newDatabase(){
@@ -148,7 +163,44 @@ saveMFlowFile({String content = ""}) async {
     };
   FilePicker.platform.saveFile(dialogTitle: "Save Project", allowedExtensions: ["mflow", "md"], fileName: "project.mflow").then((path){
     if (path != null){
+      if (path.endsWith(".mflow")){
       File(path).writeAsStringSync("mflow\n0.1\n${jsonEncode(data)}");
+      } else {
+        File(path).writeAsStringSync(content);
+      }
     }
   });
+}
+
+
+List<List<String>> getMostRecentOpens(){
+      List<String> filePaths = [];
+      List<String> fileNames = [];
+      var list = getDatabase()["projects"]["recentOpen"];
+      list.forEach((key, value) {
+        // maybe we should save the data as json too, rather then a list
+        filePaths.add(list[key]["filePath"]);
+        fileNames.add(list[key]["fileName"]);
+      });
+      return [fileNames, filePaths];
+}
+
+
+updateDropThemeEntries(){
+  themeDropEntries.clear();
+      Directory("assets/themes").listSync().forEach((entry){
+      File data = File(entry.path);
+      if (data.existsSync()){
+      Map<String, dynamic> dataD =  jsonDecode(data.readAsStringSync());
+      themeDropEntries.add(DropdownMenuEntry(value: dataD["themeFileName"], label: dataD["themeName"]));
+      }
+    });
+}
+
+List<DropdownMenuEntry<Object>> getDropThemeEntries(){
+  return themeDropEntries;
+}
+
+getGlobalDatabase(){
+  return globalDatabase;
 }

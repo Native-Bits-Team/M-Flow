@@ -398,8 +398,8 @@ class Styler {
           //Create a table with the rows stored in rowChildren
           case "table":
             var ch = <pw.TableRow>[];
-            var cellfill = PdfColors.white;
-            var border = pw.Border.all(width: 1, color: PdfColors.white);
+            //var cellfill = PdfColors.white; // NBT
+            //var border = pw.Border.all(width: 1, color: PdfColors.white); // NBT
             Future<void> addRows(Node e, Style s) async {
               for (var r in e.nodes) {
                 var cl = <pw.Widget>[];
@@ -420,10 +420,10 @@ class Styler {
                   c as Element;
                   if (c.localName == "th") {
                     //cellfill = PdfColors.grey300; // NBT
-                    cellfill = PdfColor(1.0, 0.0, 0.0,0.0); // NBT
-                    border = const pw.Border(
-                        bottom: pw.BorderSide(width: 2),
-                        top: pw.BorderSide(color: PdfColors.white));
+                    //cellfill = const PdfColor(1.0, 0.0, 0.0,0.0); // NBT
+                    //border = const pw.Border(
+                      //  bottom: pw.BorderSide(width: 2),
+                        //top: pw.BorderSide(color: PdfColors.white));
                     ws = await widgetChildren(
                         c,
                         Style(
@@ -431,18 +431,18 @@ class Styler {
                         ));
                   } else {
                     //cellfill = PdfColors.white; // NBT
-                    cellfill = PdfColor(1.0,0.0,0.0,0.0); // NBT
-                    border = pw.Border.all(width: 0, color: PdfColors.white);
+                    //cellfill = const PdfColor(1.0,0.0,0.0,0.0); // NBT
+                    //border = pw.Border.all(width: 0, color: PdfColors.white);
                   }
                   //cl.add(pw.Column(children: ws, crossAxisAlignment: align)); // NBT
-                  cl.add(pw.Expanded(child: pw.Padding(padding: pw.EdgeInsets.all(15.0),child:pw.Expanded(child: pw.Column(children: ws, crossAxisAlignment: align, mainAxisAlignment: pw.MainAxisAlignment.center))))); // NBT
+                  cl.add(pw.Expanded(child: pw.Padding(padding: const pw.EdgeInsets.all(15.0),child:pw.Expanded(child: pw.Column(children: ws, crossAxisAlignment: align, mainAxisAlignment: pw.MainAxisAlignment.center))))); // NBT
                 }
                 ch.add(pw.TableRow(
                     children: cl,
                    // decoration: pw.BoxDecoration(border: pw.Border.all(width: 3.0, color: p.PdfColors.blue)) // NBT
                     decoration:
                         //pw.BoxDecoration(color: cellfill, border: border) // NBT
-                        pw.BoxDecoration(border: pw.Border.all(width: 1.0, color: p.PdfColors.white), borderRadius: pw.BorderRadius.all(pw.Radius.circular(1.0))) // NBT
+                        pw.BoxDecoration(border: pw.Border.all(width: 1.0, color: p.PdfColors.white), borderRadius: const pw.BorderRadius.all(pw.Radius.circular(1.0))) // NBT
                         ));
               }
             }
@@ -532,7 +532,7 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style)
   }
 }
 
-Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0, String? tempTheme}) async {
+Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0, String? tempTheme, double dpiMultiplicator = 1.0}) async {
   if (md2 == ""){
     return [null,0]; // TODO: Should be removed
   }
@@ -566,7 +566,7 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
     theme: mStyleToThemeData(style)),
    build: (context) => ch.widget ?? []));
   Uint8List t = await doc.save();
-  Stream<PdfRaster> r = Printing.raster(t, dpi: PdfPageFormat.inch ); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
+  Stream<PdfRaster> r = Printing.raster(t, dpi: PdfPageFormat.inch*dpiMultiplicator); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
                                                                       // PdfPageFormat.inch is 72.0, I learned it from page_format.dart form pdf dependency
   PdfRaster j = await r.elementAt(pageIndex);
   Uint8List k = await j.toPng();

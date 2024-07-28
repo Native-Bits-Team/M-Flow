@@ -44,7 +44,8 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: const FormPage(initText: "Test", fileData: {"title": "test"}),
       theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
+      //colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
+      drawerTheme: DrawerThemeData(backgroundColor: Color(HexColor(theme["backgroundColor"]).value), shape: const ContinuousRectangleBorder()),
       //iconTheme: IconThemeData(color: Color(HexColor(theme["backgroundColor"]).value)),
       inputDecorationTheme: const InputDecorationTheme(enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white54)),
       border: OutlineInputBorder(),
@@ -58,7 +59,9 @@ class _MyAppState extends State<MyApp> {
       cardTheme: CardTheme(color: Color(HexColor(theme["backgroundColor"]).value),
       shadowColor: Colors.black,
       elevation: 3.0),
-
+      listTileTheme: ListTileThemeData(
+        iconColor: Color(HexColor(theme["firstColor"]).value)
+      ),
       scaffoldBackgroundColor: Color(HexColor(theme["pageBackgroundColor"]).value),
       dialogBackgroundColor: Color(HexColor(theme["pageBackgroundColor"]).value),
       dialogTheme: const DialogTheme(titleTextStyle: TextStyle(color: Colors.white)),// Invalid Constant Error
@@ -66,8 +69,8 @@ class _MyAppState extends State<MyApp> {
       textTheme: typographySwitcher(int.parse(theme["typography"])),
       //primaryTextTheme: typographySwitcher(int.parse(theme["typography"])),
       textButtonTheme: TextButtonThemeData(style : ButtonStyle(
-        elevation: WidgetStatePropertyAll(2.0),
-        shadowColor: WidgetStatePropertyAll(Colors.black),
+        elevation: const WidgetStatePropertyAll(2.0),
+        shadowColor: const WidgetStatePropertyAll(Colors.black),
         //backgroundColor: WidgetStatePropertyAll(Color(HexColor(theme["backgroundColor"]).value)),// Invalid Constant Error
         backgroundColor: WidgetStatePropertyAll(Color(HexColor(theme["backgroundColor"]).value)),
         iconColor: WidgetStatePropertyAll(Color(HexColor(theme["firstColor"]).value)),
