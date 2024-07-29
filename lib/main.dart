@@ -1,8 +1,12 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/dashboard.dart';
-import 'package:m_flow/pages/form_page.dart';
+//import 'package:m_flow/pages/form_page.dart';
+import 'package:window_manager/window_manager.dart';
 
 void main() => runApp(const MyApp());
 
@@ -34,21 +38,33 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    print("size");
+    //windowManager.setSize(Size(1920,1920)).onError((error,s){print(error);print(s);}); // [TRANSPARENCY] I have confirmed the source of this is variable is the dependency itself
+
+    Timer(Duration(seconds: 3),(){
+
+    windowManager.setTitle("M-Flow");
+    windowManager.focus();
+    windowManager.setFullScreen(true); // TODO: This doesn't work
+    print("done");
+    });
+    print("size done");
     //Color firstColor = theme["firstColor"];
     //TextStyle textStyle = const TextStyle();
     globalAppHandler = this;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const FormPage(initText: "Test", fileData: {"title": "test"}),
+      home: const DashBoard(),
+      //FormPage(initText: "Test", fileData: {"title": "test"}),
       theme: ThemeData(
       //colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       drawerTheme: DrawerThemeData(backgroundColor: Color(HexColor(theme["backgroundColor"]).value), shape: const ContinuousRectangleBorder()),
       //iconTheme: IconThemeData(color: Color(HexColor(theme["backgroundColor"]).value)),
-      inputDecorationTheme: const InputDecorationTheme(enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white54)),
-      border: OutlineInputBorder(),
+      inputDecorationTheme: InputDecorationTheme(enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white54)),
+      border: const OutlineInputBorder(),
       //hintStyle: TextStyle(color: Colors.white38),
-      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.lightBlue))),
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(HexColor(theme["firstColor"]).value)))),
 
       appBarTheme: AppBarTheme(centerTitle: true, toolbarHeight: 40, backgroundColor: Color(HexColor(theme["backgroundColor"]).value), titleTextStyle: TextStyle(color: Color(HexColor(theme["firstColor"]).value), fontSize: 20)),
 
@@ -62,18 +78,19 @@ class _MyAppState extends State<MyApp> {
       ),
       scaffoldBackgroundColor: Color(HexColor(theme["pageBackgroundColor"]).value),
       dialogBackgroundColor: Color(HexColor(theme["pageBackgroundColor"]).value),
-      dialogTheme: const DialogTheme(titleTextStyle: TextStyle(color: Colors.white)),// Invalid Constant Error
+      dialogTheme: const DialogTheme(titleTextStyle: TextStyle(color: Colors.white)),
       //textTheme: Typography.blackMountainView, // Got the idea from TextTheme and its copyWith() details
       textTheme: typographySwitcher(int.parse(theme["typography"])),
+      hintColor: Color(HexColor(theme["firstColor"]).value).withAlpha(80),
       //primaryTextTheme: typographySwitcher(int.parse(theme["typography"])),
       textButtonTheme: TextButtonThemeData(style : ButtonStyle(
         elevation: const WidgetStatePropertyAll(2.0),
         shadowColor: const WidgetStatePropertyAll(Colors.black),
-        //backgroundColor: WidgetStatePropertyAll(Color(HexColor(theme["backgroundColor"]).value)),// Invalid Constant Error
+        //backgroundColor: WidgetStatePropertyAll(Color(HexColor(theme["backgroundColor"]).value)),
         backgroundColor: WidgetStatePropertyAll(Color(HexColor(theme["backgroundColor"]).value)),
         iconColor: WidgetStatePropertyAll(Color(HexColor(theme["firstColor"]).value)),
-        textStyle: WidgetStatePropertyAll(TextStyle(color: Color(HexColor(theme["firstColor"]).value), fontWeight: FontWeight.bold)), // Invalid Constant Error
-        side: WidgetStatePropertyAll(BorderSide(color: Color(HexColor(theme["firstColor"]).value), width: 1.0)),// Invalid Constant Error
+        textStyle: WidgetStatePropertyAll(TextStyle(color: Color(HexColor(theme["firstColor"]).value), fontWeight: FontWeight.bold)), 
+        side: WidgetStatePropertyAll(BorderSide(color: Color(HexColor(theme["firstColor"]).value), width: 1.0)),
         )
         ),
       )

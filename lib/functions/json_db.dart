@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 Map<String, dynamic> globalDatabase = {};
 Map<String, dynamic> globalTheme = {};
-List<DropdownMenuEntry<Object>> themeDropEntries = [];
+List<DropdownMenuEntry<Object>> themeDropEntries = [const DropdownMenuEntry(value: "default", label: "Default")];
 
 
 updateAndSave(List<String> parameterPath,String key, dynamic value){
@@ -128,6 +128,11 @@ removeRecentOpen(String? path, String? fileName) {
 }
 
 loadThemeFile(String? themePath) {
+  if (themePath == "default"){
+    // TODO: Add a default theme here
+    globalTheme = jsonDecode(File("assets/themes/github_dark.json").readAsStringSync());
+    return;
+  }
   if (themePath == null){
     return;
   }
@@ -147,11 +152,9 @@ loadMFlowFile(String? path) async {
     return;
   }
   var fileContent = await File(path).readAsString();
-  print("test");
   if (fileContent.startsWith("mflow")){
     //if (fileContent.startsWith() == "0.1"){
       Map<String, dynamic> data =  jsonDecode(fileContent.substring(10));
-      print(data);
       return data;
     //}
   }
@@ -188,6 +191,7 @@ List<List<String>> getMostRecentOpens(){
 
 updateDropThemeEntries(){
   themeDropEntries.clear();
+  themeDropEntries.add(const DropdownMenuEntry(value: "default", label: "Default"));
       Directory("assets/themes").listSync().forEach((entry){
       File data = File(entry.path);
       if (data.existsSync()){

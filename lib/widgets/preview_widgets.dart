@@ -9,10 +9,10 @@ import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
 class DocumentPreview extends StatefulWidget {
   final String content;
   final MarkdownStyleSheet markdownStyle;
-  DocumentPreview(this.content, {super.key, required this.markdownStyle});
+  const DocumentPreview(this.content, {super.key, required this.markdownStyle});
 
   @override
-  _DocumentPreviewState createState() => _DocumentPreviewState();
+  createState() => _DocumentPreviewState();
 }
 
 class _DocumentPreviewState extends State<DocumentPreview> {
@@ -137,7 +137,7 @@ class FullPreviewScreen extends StatefulWidget {
   const FullPreviewScreen(this.content, {required this.pageIndex, required this.markdownStyle, super.key});
 
   @override
-  _FullPreviewScreenState createState() => _FullPreviewScreenState();
+  createState() => _FullPreviewScreenState();
 }
 
 class _FullPreviewScreenState extends State<FullPreviewScreen> {

@@ -57,6 +57,9 @@ class DashBoard extends StatelessWidget {
                                               "md",
                                               "mflow"
                                             ]).then((result) {
+                                              if (result == null){
+                                                return;
+                                              }
                                           if (result!.files.first.path == "") {
                                             return;
                                           }
@@ -68,7 +71,7 @@ class DashBoard extends StatelessWidget {
                                                     result.files.first.path)
                                                 .then((data) {
                                               if (data == null) {
-                                                print("ERROR");
+                                                //print("ERROR");
                                                 return;
                                               }
                                               if (data["title"] == null ||
@@ -77,7 +80,7 @@ class DashBoard extends StatelessWidget {
                                                     result.files.first.name;
                                               }
                                               if (data["content"] == null){
-                                                print("Error");
+                                                //print("Error");
                                               }
                                               Navigator.push(context,
                                                   MaterialPageRoute(
@@ -148,14 +151,14 @@ class DashBoard extends StatelessWidget {
                                       label: const Text("Settings"),
                                       icon: const Icon(Icons.settings),
                                       onPressed: () {
-                                      Navigator.push(context,MaterialPageRoute(builder: (context) {return SettingsPanel();}));
+                                      Navigator.push(context,MaterialPageRoute(builder: (context) {return const SettingsPanel();}));
                                       }),
                                       const SizedBox(height: 20),
                                   TextButton.icon(
                                       label: const Text("Info"),
                                       icon: const Icon(Icons.info),
                                       onPressed: () {
-                                          Navigator.push(context,MaterialPageRoute(builder: (context) {return InfoPage();}));
+                                          Navigator.push(context,MaterialPageRoute(builder: (context) {return const InfoPage();}));
                                       })
                                 ])
                           ]))),
@@ -176,7 +179,7 @@ class DocPreview extends StatefulWidget {
       required this.parentHandle});
   final String projectPath;
   final String projectName;
-  final _ProjectGridState parentHandle; // Should be removed
+  final _ProjectGridState parentHandle; // TODO: Should be removed
   @override
   State<DocPreview> createState() => _DocPreviewState();
 }
@@ -187,26 +190,30 @@ class _DocPreviewState extends State<DocPreview> {
   bool enabled = true;
   Timer? _debounce;
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+        print(previewImageBytes);
+    print(widget.projectPath);
     if (previewImageBytes == null && widget.projectPath != "") {
       //ScreenshotController sController = ScreenshotController();
-
-      if (!File(widget.projectPath).existsSync()) {
+      var file = File(widget.projectPath);
+      print(file.existsSync());
+      if (!file.existsSync()) {
         enabled =false;
         // TODO: Maybe there is an alternative that doesn't use File object
         previewImageBytes = const Tooltip(
             message: "File Not Found",
             child: Icon(Icons.info, color: Colors.red));
       } else {
-      if (_debounce?.isActive ?? false)
+      if (_debounce?.isActive ?? false){
         _debounce!.cancel(); // Credits to NBT member Madhur for this code
-
+      }
       _debounce = Timer(const Duration(milliseconds: 200), () {
         // This was added to remove lag when switching to the dashbaord, this isn't a permenent solution, as all previews will
         // update at the same time, a better solution would be to make preview update one by one, or in a spread thread, etc...
         // TODO: Implment a better solution
 
-        File(widget.projectPath).readAsString().then((text) {
+        file.readAsString().then((text) {
           // TODO: Wrong way of handling opening and closing a file?
           if (text.startsWith("mflow")) {
             Map<String, dynamic> data = jsonDecode(text.substring(10));
@@ -237,6 +244,9 @@ class _DocPreviewState extends State<DocPreview> {
         });
       });}
     }
+  }
+  @override
+  Widget build(BuildContext context) {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Expanded(
@@ -251,17 +261,15 @@ class _DocPreviewState extends State<DocPreview> {
               items: [
                 PopupMenuItem(
                     onTap: () {
-                      removeRecentOpen(widget.projectPath, widget.projectName)
-                          .then(() {
-                        widget.parentHandle
-                            .updatePreviews(); // TODO: Replace this method
-                      });
+                      removeRecentOpen(widget.projectPath, widget.projectName);//.then(() {
+                      widget.parentHandle.updatePreviews(); // TODO: Replace this method
+                    //  });
                     },
                     child: const Text("Delete"))
               ]);
         },
         onPressed: () {
-          if (!enabled){return;};
+          if (!enabled){return;}
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
             return FormPage(
               initText: test,
@@ -298,13 +306,17 @@ class _ProjectGridState extends State<ProjectGrid> {
           childAspectRatio: 0.65,
           mainAxisSpacing: 10.0,
           crossAxisSpacing: 10.0);
-
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    updatePreviews();
+  }
+  @override
+  Widget build(BuildContext context) { // TODO: There is a bug here
     List<DocPreview> childPreview = [];
     //if (!widget.init){
     //widget.init = true;
-    updatePreviews();
+    //updatePreviews();
     //}
     for (int j = 0; j < widget.pathPreview.length; ++j) {
       childPreview.add(DocPreview(
@@ -312,6 +324,7 @@ class _ProjectGridState extends State<ProjectGrid> {
         projectName: widget.namePreview[j],
         parentHandle: this, // TODO: Is there an alternative to this?
       ));
+      print(widget.pathPreview[j]);
       //childPreview[j].projectPath = widget.pathPreview[j];
       //childPreview[j].projectName = widget.namePreview[j];
       //childPreview[j].parentHandle = this;
@@ -321,6 +334,8 @@ class _ProjectGridState extends State<ProjectGrid> {
   }
 
   void updatePreviews() {
+    Timer(Duration(milliseconds: 30),(){
+      print("updated");
     List<String> pathPreviewTemp = [];
     List<String> namePreviewTemp = [];
 
@@ -351,9 +366,9 @@ class _ProjectGridState extends State<ProjectGrid> {
         widget.namePreview = namePreviewTemp;
       });
     }
-  }
+  });
 }
-
+}
 
 loadFormPage(BuildContext context, String? path, {String title = "M-Flow"}){
   if (path == null){

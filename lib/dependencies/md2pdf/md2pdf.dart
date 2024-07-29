@@ -262,7 +262,7 @@ class Styler {
 if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
         if (e.text!.startsWith(r'$$') && e.text!.endsWith(r'$$')) {
           // Block math expression
-          return Chunk(widget: [pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!.replaceAll(r'$$', ''),textStyle: TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255))))))]); // Check NBT # 1 below
+          return Chunk(widget: [pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!.replaceAll(r'$$', ''),textStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255))))))]); // Check NBT # 1 below
         } else {
           // Inline math expression
           final parts = e.text!.split(r'$');
@@ -272,7 +272,7 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
               return Chunk(text: pw.TextSpan(baseline: 0, style: style.style(), text: parts[i])); // [TRANSPARENCY] Got it from normal return below
             } else {
               //widgets.add(Math.tex(parts[i],textStyle: TextStyle(fontSize: 16),));
-              return Chunk(widget: [pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!,textStyle: TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255))))))]); // Copy Pasted it from above
+              return Chunk(widget: [pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!,textStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255))))))]); // Copy Pasted it from above
             }
           }
         }

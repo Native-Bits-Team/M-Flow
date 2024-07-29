@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class InfoPage extends StatelessWidget {
+  const InfoPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     ScrollController w = ScrollController();
@@ -12,7 +14,7 @@ class InfoPage extends StatelessWidget {
     s += "\n\n\nIf you noticed that we missed a license please notify the team!";
     TextEditingController e = TextEditingController(text: s);
     return Scaffold(
-      appBar: AppBar(title: Text("Information")),
+      appBar: AppBar(title: const Text("Information")),
         body: Padding(
             padding: const EdgeInsets.all(30),
             child: Card(

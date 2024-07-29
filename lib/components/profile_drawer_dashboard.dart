@@ -5,7 +5,7 @@ import 'package:m_flow/components/tiles.dart';
 class ProfileDrawerDashboard extends StatelessWidget {
   final void Function()? onProfileTap;
 
-  ProfileDrawerDashboard({
+  const ProfileDrawerDashboard({
     super.key,
     required this.onProfileTap,
   });

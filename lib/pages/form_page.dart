@@ -83,7 +83,7 @@ class _FormPageState extends State<FormPage> {
         });
       }
     } catch (e) {
-      print('Error: $e');
+      //print('Error: $e');
       // Handle the error, e.g., show an error message to the user
     }
   }
@@ -267,12 +267,12 @@ class _FormPageState extends State<FormPage> {
           );*/
           
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => SettingsPanel()));
+              MaterialPageRoute(builder: (context) => const SettingsPanel()));
         },
         onDashTap: () {
           //Navigator.push(context,
             //  MaterialPageRoute(builder: (context) => const DashBoard()));
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> DashBoard()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const DashBoard()));
         },
 /*
         onDashTap: () {
@@ -443,7 +443,7 @@ class _FormPageState extends State<FormPage> {
                       child: DropdownMenu(
                         // label: const Text("Theme: "),
                         trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60),
-                        initialSelection: getDropThemeEntries().first.value, // TODO: FIX THIS
+                        initialSelection: getDropThemeEntries().isEmpty ? "default" : (widget.fileData["theme"] ?? "default"), // TODO: FIX THIS
                         inputDecorationTheme: const InputDecorationTheme(
                           contentPadding: EdgeInsets.all(9.0),
                           constraints: BoxConstraints(maxHeight: 35),

@@ -25,8 +25,15 @@ String addSidesToWord(String text, int start, String symbol){
     findEnd = endsWithOneOf([',',' '], split.substring(0, i));
     if (findEnd){
       end = i-1; // -1 to remove the space itself
+      //split = split.substring(0, end-symbol.length);
       break;
     }
+  }
+  print(symbol.length);
+  print(text.substring(start, start+end));
+  if (text.substring(start, start+end).startsWith(symbol) && text.substring(start, start+end).endsWith(symbol)){
+    print(split.replaceFirst(symbol, '').substring(0, end-symbol.length));
+    text = text.replaceRange(start, start+end, split.replaceFirst(symbol, '').substring(0, split.length-symbol.length));
   }
   String newText = symbol;
   newText += text.substring(start, start+end);
