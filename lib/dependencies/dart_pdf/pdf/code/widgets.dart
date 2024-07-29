@@ -60,3 +60,4 @@ export 'src/widgets/text_style.dart';
 export 'src/widgets/theme.dart';
 export 'src/widgets/widget.dart';
 export 'src/widgets/wrap.dart';
+//export 'src/widgets/nbt_math.dart'; // NBT | [TRANSPARENCY] widget_wrapper may have played a role into adding this line here | EDIT: Deprecated, see nbt_math.dart for more info

@@ -387,7 +387,7 @@ if (text.text.contains(r'\$') || text.text.contains(r'$$')) {
         if (text.text.startsWith(r'$$') && text.text.endsWith(r'$$')) {
           // Block math expression
           _inlines.last.children.add(
-            Math.tex(text.text.replaceAll(r'$$', ''),textStyle: TextStyle(fontSize: 16)));
+            Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2));
         } else {
           // Inline math expression
           final parts = text.text.split(r'$');
@@ -395,7 +395,7 @@ if (text.text.contains(r'\$') || text.text.contains(r'$$')) {
             if (i % 2 == 0) {
               _inlines.last.children.add(Text(text.text));
             } else {
-              _inlines.last.children.add(Math.tex(parts[i],textStyle: TextStyle(fontSize: 16)));
+              _inlines.last.children.add(Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2));
             }
           }
         }

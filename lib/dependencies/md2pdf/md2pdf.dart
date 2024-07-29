@@ -13,6 +13,7 @@ import 'dart:typed_data';
 //import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart' as w;
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
@@ -31,6 +32,9 @@ import 'package:printing/printing.dart';
 import 'package:m_flow/dependencies/dart_pdf/pdf/code/pdf.dart';
 import 'package:m_flow/dependencies/dart_pdf/pdf/code/pdf.dart' as p;
 import 'package:m_flow/dependencies/dart_pdf/pdf/code/widgets.dart' as pw;
+
+
+import 'package:screenshot/screenshot.dart';
 
 
 // computed style is a stack, each time we encounter an element like <p>... we push its style onto the stack, then pop it off at </p>
@@ -254,6 +258,26 @@ class Styler {
   Future<Chunk> format(Node e) async {
     switch (e.nodeType) {
       case Node.TEXT_NODE:
+// NBT Starts | Credits to Madhur | Modified by Imad
+if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
+        if (e.text!.startsWith(r'$$') && e.text!.endsWith(r'$$')) {
+          // Block math expression
+          return Chunk(widget: [pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!.replaceAll(r'$$', ''),textStyle: TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255))))))]); // Check NBT # 1 below
+        } else {
+          // Inline math expression
+          final parts = e.text!.split(r'$');
+          for (int i = 0; i < parts.length; i++) {
+            if (i % 2 == 0) {
+              //widgets.add(MarkdownBody(data: parts[i],styleSheet: style,));
+              return Chunk(text: pw.TextSpan(baseline: 0, style: style.style(), text: parts[i])); // [TRANSPARENCY] Got it from normal return below
+            } else {
+              //widgets.add(Math.tex(parts[i],textStyle: TextStyle(fontSize: 16),));
+              return Chunk(widget: [pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!,textStyle: TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255))))))]); // Copy Pasted it from above
+            }
+          }
+        }
+    }
+// NBT ENDS
         return Chunk(
             text:
                 pw.TextSpan(baseline: 0, style: style.style(), text: (e.text)));
@@ -458,9 +482,9 @@ class Styler {
             await addRows(e.nodes[0], Style(weight: pw.FontWeight.bold)); // NBT
             await addRows(e.nodes[1], Style(weight: pw.FontWeight.bold, color: PdfColors.white, boxDecoration: pw.BoxDecoration(border: pw.Border.all(width: 3.0), color: p.PdfColors.blue))); // NBT
             return Chunk(widget: [pw.Table(children: ch)]);
-          case "img":
-            //var imageBody = await getImage(e.attributes["src"]);
-            var imageBody = await getImageNBT(e.attributes["src"]);
+          case "img": // MD2PDF # 1
+            //var imageBody = await getImage(e.attributes["src"]); // NBT
+            var imageBody = await getImageNBT(e.attributes["src"]); // NBT
 
             var imageRender = pw.MemoryImage(imageBody);
             return Chunk(widget: [pw.Image(imageRender)]);
@@ -545,6 +569,17 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
 
   var document = parse(htmlx);
   Chunk ch = await Styler().format(document.body!);
+  //var controllerS = ScreenshotController();
+  //var math = Screenshot(child: Math.tex(md2.replaceAll(r'$$', ''), textStyle: TextStyle(fontSize: 13.0, color: Color.fromRGBO(255, 255, 255, 255)),), controller: controllerS,);
+  //var bytes = await controllerS.capture();
+  //var bytes = await controllerS.captureFromWidget(Math.tex(md2.replaceAll(r'$$', ''), textStyle: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255)))); // [TRANSPARENCY] I looked back into ScreenShot Documentation to find this function | NBT # 1
+  //controllerS.captureAndSave("test");
+  //print(bytes);
+  //var b = await bytes!.toByteData();
+ // File("test.png").writeAsBytesSync(bytes);
+  //ch.widget!.add(
+    //pw.Image(pw.MemoryImage(bytes!))//, height: bytes.height.toDouble(), width: bytes.width.toDouble()) // [TRANSPARENCY] Check 'MD2PDF # 1' Above to see where I got this method from
+    //);
   var doc = pw.Document(
     compress: true,
     version: p.PdfVersion.pdf_1_5,);
