@@ -68,11 +68,23 @@ class _InlineElement {
 
   final String? tag;
 
-  /// Created by merging the style defined for this element's [tag] in the
-  /// delegate's [MarkdownStyleSheet] with the style of its parent.
+  /// Created by merging the style defined for this element's [\\tag] in the
+  /// delegate's [\\MarkdownStyleSheet] with the style of its parent.
   final TextStyle? style;
 
   final List<Widget> children = <Widget>[];
+  
+
+  // ADDED FOR PROVIDING SUPPORT FOR SUBSCRIPT USING TILDE `~`...
+  TextStyle applySubscriptStyle(TextStyle baseStyle) {
+    return baseStyle.copyWith(
+      fontFeatures: <FontFeature>[
+        FontFeature.enable('subs'), // Subscript font feature
+      ],
+    );
+  }
+  // ADDED FOR PROVIDING SUPPORT FOR SUBSCRIPT USING TILDE `~`...
+
 }
 
 /// A delegate used by [MarkdownBuilder] to control the widgets it creates.
@@ -380,10 +392,57 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
         ),
       );
     } else {
-String o = text.text;TextAlign k; if (text.text.startsWith("w\$")){k = TextAlign.center; o = text.text.replaceFirst("w\$","");}else{k = _textAlignForBlockTag(_currentBlockTag);} // NBT
-TextDecoration? d; if (text.text.startsWith("d\$")){d = TextDecoration.underline; o = text.text.replaceFirst("d\$","");} // NBT
-////////////// NBT Starts, Credits to NBT member Madhur for original Code, Modified by Imad Laggoune
-if (text.text.contains(r'\$') || text.text.contains(r'$$')) {
+      String o = text.text;
+      TextAlign k; 
+      if (text.text.startsWith("w\$")){
+        k = TextAlign.center; o = text.text.replaceFirst("w\$","");
+      } else {
+        k = _textAlignForBlockTag(_currentBlockTag);
+      } // NBT
+
+      TextDecoration? d; 
+      
+      if (text.text.startsWith("d\$")){
+        d = TextDecoration.underline; 
+        o = text.text.replaceFirst("d\$","");
+      } // NBT
+      
+      // NBT`````````````````````````````````````````````````````````````````````````````````````````````````````
+      // This didn;t worked out, Can remove this``````````````````````````````````````
+      // // Handling subscript with tildes (~) and superscript with carets (^)
+      // if (o.startsWith("~") && o.endsWith("~")) {
+      //   // Subscript
+      //   final subscriptText = o.substring(1, o.length - 1);
+      //   child = _buildRichText(
+      //     TextSpan(
+      //       style: _inlines.last.style!.copyWith(
+      //         fontFeatures: [FontFeature.subscripts()],
+      //       ),
+      //       text: _isInBlockquote ? subscriptText : trimText(subscriptText),
+      //       recognizer: _linkHandlers.isNotEmpty ? _linkHandlers.last : null,
+      //     ),
+      //     textAlign: k,
+      //   );
+      // } else if (o.startsWith("^") && o.endsWith("^")) {
+      //   // Superscript
+      //   final superscriptText = o.substring(1, o.length - 1);
+      //   child = _buildRichText(
+      //     TextSpan(
+      //       style: _inlines.last.style!.copyWith(
+      //         fontFeatures: [FontFeature.superscripts()],
+      //       ),
+      //       text: _isInBlockquote ? superscriptText : trimText(superscriptText),
+      //       recognizer: _linkHandlers.isNotEmpty ? _linkHandlers.last : null,
+      //     ),
+      //     textAlign: k,
+      //   );
+      // }
+      // ```````````````````````````````````````````````````````````````````````````````````````
+      // NBT```````````````````````````````````````````````````````````````````````````````````````````
+
+
+      //////////// NBT Starts, Credits to NBT member Madhur for original Code, Modified by Imad Laggoune
+      if (text.text.contains(r'\$') || text.text.contains(r'$$')) {
         if (text.text.startsWith(r'$$') && text.text.endsWith(r'$$')) {
           // Block math expression
           _inlines.last.children.add(
@@ -400,8 +459,9 @@ if (text.text.contains(r'\$') || text.text.contains(r'$$')) {
           }
         }
       }
-////////////// NBT Ends
-TextStyle t = _inlines.last.style!.copyWith(decoration: d);
+      ////////////// NBT Ends
+      
+      TextStyle t = _inlines.last.style!.copyWith(decoration: d);  // Apply the text style decoration
       child = _buildRichText(
         TextSpan(
           style: _isInBlockquote
@@ -416,7 +476,20 @@ TextStyle t = _inlines.last.style!.copyWith(decoration: d);
         //textAlign: _textAlignForBlockTag(_currentBlockTag),
         textAlign: k
       );
+      
+      // NBT starts here........
+
+      // Apply the _buildTextWithFormatting method to handle subscripts and superscripts
+      // Ensure text formatting is correctly applied within blockquote context if necessary
+      child = _buildTextWithFormatting(
+        _isInBlockquote ? o : trimText(o),  // Pass text with or without blockquote formatting
+        t, // Pass the updated text style with decoration
+      );
+
+      // NBT ends here.............
+
     }
+
     if (child != null) {
       _inlines.last.children.add(child);
     }
@@ -429,7 +502,7 @@ TextStyle t = _inlines.last.style!.copyWith(decoration: d);
     final String tag = element.tag;
 
     if (_isBlockTag(tag)) {
-if (element.textContent.startsWith("w\$")){_addAnonymousBlockIfNeeded(center: true);}else{_addAnonymousBlockIfNeeded();} //NBT
+      if (element.textContent.startsWith("w\$")){_addAnonymousBlockIfNeeded(center: true);}else{_addAnonymousBlockIfNeeded();} //NBT
       //_addAnonymousBlockIfNeeded();
 
       final _BlockElement current = _blocks.removeLast();
@@ -1048,4 +1121,100 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
       );
     }
   }
+
+
+  // NBT
+  // TODO: Optimize
+  // CUSTOM WIDGET TO APPLY THE SUB & SUPERSCRIPT FEATURES....
+  Widget _buildTextWithFormatting(String text, TextStyle style) {
+    final List<Widget> children = <Widget>[]; // List to hold the individual text widgets
+
+    int i = 0;  // Index to traverse through the input text
+    while (i < text.length) {
+      if (text.startsWith('~', i)) {
+        // Check if the current position has a subscript marker '~'
+
+        int j = i + 1;  // Start searching for the closing '~' from the next character
+        while (j < text.length && text[j] != '~') {
+         j++;  // Find the index of the closing '~'
+        }
+        if (j < text.length) {
+          final String subscriptText = text.substring(i + 1, j);  // Extract the subscript text
+          children.add(
+            Stack(
+              alignment: Alignment.bottomCenter,  // Align the subscript text to the bottom center
+              children: <Widget>[
+
+                Text(
+                  ' ', // Add an empty Text widget to reserve space for the subscript text
+                  style: style,
+                ),
+                Text(
+                  subscriptText,
+                  style: style.copyWith(
+                    fontSize: style.fontSize! * 0.8, 
+                    fontWeight: FontWeight.bold
+                  ),
+                  textAlign: TextAlign.center,  // Center align the subscript text
+                ),
+              ],
+            ),
+          );
+          i = j + 1; // Move index past the closing '~'
+        } else {
+          // If no closing '~' is found, treat the '~' as regular text
+          children.add(Text('~', style: style));
+          i++;
+        }
+      } else if (text.startsWith('^', i)) {
+        // Check if the current position has a superscript marker '^'
+
+        int j = i + 1;  // Start searching for the closing '^' from the next character
+        while (j < text.length && text[j] != '^') {
+          j++;  // Find the index of the closing '^'
+        }
+        if (j < text.length) {
+          // If a closing '^' is found
+          final String superscriptText = text.substring(i + 1, j);  // Extract the superscript text
+          children.add(
+            Stack(
+              alignment: Alignment.topCenter,  // Align the superscript text to the top center
+              children: <Widget>[
+                Text(
+                  ' ', // Add an empty Text widget to reserve space for the superscript text
+                  style: style,
+                ),
+                Text(
+                  superscriptText,
+                  style: style.copyWith(
+                    fontSize: style.fontSize! * 0.7,
+                    fontWeight: FontWeight.bold
+                  ),
+                  textAlign: TextAlign.center, // Center align the superscript text
+                ),
+              ],
+            ),
+          );
+          i = j + 1;  // Move index past the closing '^'
+        } else {
+           // If no closing '^' is found, treat the '^' as regular text
+          children.add(Text('^', style: style));
+          i++;
+        }
+      } else {
+        // Handle regular text
+        int j = i; // Start searching for the next special character from the current index
+        while (j < text.length && text[j] != '~' && text[j] != '^') {
+          j++;  // Find the index of the next special character or end of the text
+        }
+        children.add(Text(text.substring(i, j), style: style));  // Add the regular text to the list
+        i = j;  // Move index to the next character to process
+      }
+    }
+    
+    // Return a Wrap widget that arranges the text widgets in a line breakable layout
+    return Wrap(children: children);
+  }
+  // NBT Ends
+
 }
