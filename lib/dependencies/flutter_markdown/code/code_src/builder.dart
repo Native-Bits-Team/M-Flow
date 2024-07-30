@@ -481,11 +481,16 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
 
       // Apply the _buildTextWithFormatting method to handle subscripts and superscripts
       // Ensure text formatting is correctly applied within blockquote context if necessary
-      child = _buildTextWithFormatting(
+      if (o.contains('~') || o.contains('^')){
+      var result = _buildTextWithFormatting(
         _isInBlockquote ? o : trimText(o),  // Pass text with or without blockquote formatting
         t, // Pass the updated text style with decoration
+        styleSheet
       );
-
+      if (result != null){
+        child = result;
+      }
+      }
       // NBT ends here.............
 
     }
@@ -1126,9 +1131,9 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
   // NBT
   // TODO: Optimize
   // CUSTOM WIDGET TO APPLY THE SUB & SUPERSCRIPT FEATURES....
-  Widget _buildTextWithFormatting(String text, TextStyle style) {
+  dynamic _buildTextWithFormatting(String text, TextStyle style, MarkdownStyleSheet sheet) {
     final List<Widget> children = <Widget>[]; // List to hold the individual text widgets
-
+    String toBeAdded = "";
     int i = 0;  // Index to traverse through the input text
     while (i < text.length) {
       if (text.startsWith('~', i)) {
@@ -1139,15 +1144,16 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
          j++;  // Find the index of the closing '~'
         }
         if (j < text.length) {
-          final String subscriptText = text.substring(i + 1, j);  // Extract the subscript text
+          final String subscriptText = toBeAdded + text.substring(i + 1, j);  // Extract the subscript text
+          toBeAdded = "";
           children.add(
             Stack(
               alignment: Alignment.bottomCenter,  // Align the subscript text to the bottom center
               children: <Widget>[
-
-                Text(
-                  ' ', // Add an empty Text widget to reserve space for the subscript text
+                Text.rich( // [TRANSPARENCY] learned it from builder.dart
+                  const TextSpan(text: ' '), // Add an empty Text widget to reserve space for the subscript text 
                   style: style,
+                  textScaler: sheet.textScaler,
                 ),
                 Text(
                   subscriptText,
@@ -1163,7 +1169,8 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
           i = j + 1; // Move index past the closing '~'
         } else {
           // If no closing '~' is found, treat the '~' as regular text
-          children.add(Text('~', style: style));
+          toBeAdded = '~';
+          //children.add(Text.rich(const TextSpan(text: '~'), style: style, textScaler: sheet.textScaler));
           i++;
         }
       } else if (text.startsWith('^', i)) {
@@ -1175,14 +1182,17 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
         }
         if (j < text.length) {
           // If a closing '^' is found
-          final String superscriptText = text.substring(i + 1, j);  // Extract the superscript text
+          final String superscriptText = toBeAdded + text.substring(i + 1, j);  // Extract the superscript text
+          toBeAdded = '';
           children.add(
             Stack(
+              fit: StackFit.expand,
               alignment: Alignment.topCenter,  // Align the superscript text to the top center
               children: <Widget>[
-                Text(
-                  ' ', // Add an empty Text widget to reserve space for the superscript text
+                Text.rich(
+                  const TextSpan(text: ' '), // Add an empty Text widget to reserve space for the superscript text
                   style: style,
+                  textScaler: sheet.textScaler,
                 ),
                 Text(
                   superscriptText,
@@ -1198,16 +1208,18 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
           i = j + 1;  // Move index past the closing '^'
         } else {
            // If no closing '^' is found, treat the '^' as regular text
-          children.add(Text('^', style: style));
+           toBeAdded = '^';
+          //children.add(Text.rich(const TextSpan(text: '^'), style: style, textScaler: sheet.textScaler,));
           i++;
         }
       } else {
+       // return null;
         // Handle regular text
         int j = i; // Start searching for the next special character from the current index
         while (j < text.length && text[j] != '~' && text[j] != '^') {
           j++;  // Find the index of the next special character or end of the text
         }
-        children.add(Text(text.substring(i, j), style: style));  // Add the regular text to the list
+        children.add(Text.rich(TextSpan(text: toBeAdded + text.substring(i, j)), style: style, textScaler: sheet.textScaler));  // Add the regular text to the list
         i = j;  // Move index to the next character to process
       }
     }

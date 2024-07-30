@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
 import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
@@ -27,13 +28,13 @@ class ExportDialog extends StatefulWidget {
 class _ExportDialogState extends State<ExportDialog> {
   List<String> exportFormatOptions = ["HTML", "PDF", "MD"];
   String exportFormat = "PDF";
-  TextEditingController pathParameter =
-      TextEditingController(text: "Document_1.pdf");
-  TextEditingController authorName = TextEditingController(text: "Mr. YOU");
+  //TextEditingController pathParameter =
+    //  TextEditingController(text: "");
+  TextEditingController authorName = TextEditingController(text: "");
   TextEditingController documentTitle =
-      TextEditingController(text: "Document_1.pdf");
+      TextEditingController(text: "");
   TextEditingController documentSubject =
-      TextEditingController(text: "Be Creative...");
+      TextEditingController(text: "");
 
   bool _showAuthorAndSubject = true;
 
@@ -41,23 +42,23 @@ class _ExportDialogState extends State<ExportDialog> {
   void updateTextFields(String format) {
     switch (format) {
       case "HTML":
-        pathParameter.text = "Document_1";
-        documentTitle.text = "Document_1";
+     //   pathParameter.text = "Document_1";
+     //   documentTitle.text = "Document_1";
         _showAuthorAndSubject = false;
         break;
       case "PDF":
-        pathParameter.text = "Document_1.pdf";
-        documentTitle.text = "Document_1.pdf";
+      //  pathParameter.text = "Document_1.pdf";
+       // documentTitle.text = "Document_1.pdf";
         _showAuthorAndSubject = true;
         break;
       case "MD":
-        pathParameter.text = "Document_1.md";
-        documentTitle.text = "Document_1.md";
+      //  pathParameter.text = "Document_1.md";
+        //documentTitle.text = "Document_1.md";
         _showAuthorAndSubject = false;
         break;
       default:
-        pathParameter.text = "Document_1.pdf";
-        documentTitle.text = "Document_1.pdf";
+      //  pathParameter.text = "Document_1.pdf";
+        //documentTitle.text = "Document_1.pdf";
         _showAuthorAndSubject = true;
         break;
     }
@@ -68,7 +69,7 @@ class _ExportDialogState extends State<ExportDialog> {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      title: const Text("Document Export Settings"),
+      title: const Text("Document Export Settings", style: TextStyle(fontWeight: FontWeight.bold), textScaler: TextScaler.linear(1.3)),
       elevation: 3.0,
       contentPadding:
           const EdgeInsets.only(top: 26, bottom: 22.0, left: 11, right: 11),
@@ -89,54 +90,61 @@ class _ExportDialogState extends State<ExportDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      //SizedBox(
+                    //    width: 300,
+                  //      child: Row(
+                        //  crossAxisAlignment: CrossAxisAlignment.start,
+                          //children: [
+                       //     Container(
+                         //     width: 100, // FIXED WIDTH FOR LABELS
+                           //   padding: const EdgeInsets.only(top: 22),
+                           //   child: const Text("Export Path: ",
+                            //      style:
+                             //         TextStyle(fontWeight: FontWeight.bold)),
+                            //),
+                            //const SizedBox(width: 30.0),
+                     //       Expanded(
+                       //       child: TextField(
+                         //       controller: pathParameter,
+                           //     decoration: const InputDecoration(
+                             //     border: OutlineInputBorder(),
+                               //   hintText: 'Enter export path',
+                               // ),
+                              //),
+                            //),
+                          //],
+                      //  ),
+                      //),
+                     // const SizedBox(height: 10.0),
                       SizedBox(
-                        width: 300,
+                        width: 350,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 100, // FIXED WIDTH FOR LABELS
-                              padding: const EdgeInsets.only(top: 22),
-                              child: const Text("Export Path: ",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            const SizedBox(width: 30.0),
+                          //  Container(
+                            //  width: 100, // FIXED WIDTH FOR LABELS
+                              //padding: const EdgeInsets.only(top: 22),
+                              //child: 
+                              const Expanded(
+                                flex: 60,
+                                child: 
+                              Text("Doc. Title: ", strutStyle: StrutStyle(height: 3),
+                                //  style:
+                              //        TextStyle(fontWeight: FontWeight.bold)),
+                            )),
+                            //const SizedBox(width: 30.0),
+                            const Spacer(),
                             Expanded(
-                              child: TextField(
-                                controller: pathParameter,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  hintText: 'Enter export path',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
-                      SizedBox(
-                        width: 300,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 100, // FIXED WIDTH FOR LABELS
-                              padding: const EdgeInsets.only(top: 22),
-                              child: const Text("Doc Title: ",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            const SizedBox(width: 30.0),
-                            Expanded(
+                              flex: 61,
                               child: TextField(
                                 controller: documentTitle,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
-                                  hintText: 'Enter Doc Title',
+                                  hintText: '...',
                                 ),
                               ),
                             ),
+                          //Spacer()
                           ],
                         ),
                       ),
@@ -144,27 +152,31 @@ class _ExportDialogState extends State<ExportDialog> {
                       Visibility(
                         visible: _showAuthorAndSubject,
                         child: SizedBox(
-                          width: 300,
+                          width: 350,
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                width: 100, // FIXED WIDTH FOR LABELS
-                                padding: const EdgeInsets.only(top: 22),
-                                child: const Text("Author Name: ",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              const SizedBox(width: 30.0),
+                              //Container(
+                                //width: 100, // FIXED WIDTH FOR LABELS
+                                //padding: const EdgeInsets.only(top: 22),
+                                //child: 
+                                const Expanded(flex: 60,child: Text("Author Name: ", strutStyle: StrutStyle(height: 3),
+                                  //  style:
+                                    //    TextStyle(fontWeight: FontWeight.bold)),
+                              )),
+                              //const SizedBox(width: 30.0),
+                              const Spacer(),
                               Expanded(
+                                flex: 61,
                                 child: TextField(
                                   controller: authorName,
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
-                                    hintText: 'Enter author name',
+                                    hintText: '...',
                                   ),
                                 ),
                               ),
+                            //Spacer()
                             ],
                           ),
                         ),
@@ -173,24 +185,27 @@ class _ExportDialogState extends State<ExportDialog> {
                       Visibility(
                         visible: _showAuthorAndSubject,
                         child: SizedBox(
-                          width: 300,
+                          width: 350,
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                width: 100, // FIXED WIDTH FOR LABELS
-                                padding: const EdgeInsets.only(top: 14),
-                                child: const Text("Doc Subject: ",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              const SizedBox(width: 30.0),
+                              //Container(
+                                //width: 100, // FIXED WIDTH FOR LABELS
+                                //padding: const EdgeInsets.only(top: 14),
+                                //child: 
+                                const Expanded(flex: 60, child: Text("Doc. Subject: ", strutStyle: StrutStyle(height: 3),
+                                  //  style:
+                                    //    TextStyle(fontWeight: FontWeight.bold)),
+                              )),
+                              //const SizedBox(width: 30.0),
+                              const Spacer(),
                               Expanded(
+                                flex: 61,
                                 child: TextField(
                                   controller: documentSubject,
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
-                                    hintText: 'Enter Doc Subject',
+                                    hintText: '...',
                                   ),
                                 ),
                               ),
@@ -266,7 +281,7 @@ class _ExportDialogState extends State<ExportDialog> {
                 SizedBox(
                   width: 400,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton.icon(
                         onPressed: () {
@@ -274,45 +289,53 @@ class _ExportDialogState extends State<ExportDialog> {
                         },
                         icon: const Icon(Icons.cancel),
                         label: const Text("Cancel", style: TextStyle(fontSize: 13.5),),
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
+                    //    style: TextButton.styleFrom(
+                      //    shape: RoundedRectangleBorder(
+                        //    borderRadius: BorderRadius.circular(10.0),
+                          //),
+                          //padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
                         //  side: BorderSide(color: Colors.white, width: 0.2),
                       //    shadowColor: Colors.black.withOpacity(0.3), // Shadow color and opacity
                     //      elevation: 2, // Optional: add a border color
-                        ),
+                     //   ),
                       ),
                       const SizedBox(width: 20),
                       TextButton.icon(
                         onPressed: () {
+                          var fp = FilePicker.platform;
+                          fp.saveFile(dialogTitle: "Export", fileName: "Document" + "." +exportFormat.toLowerCase(), allowedExtensions: [exportFormat.toLowerCase()]).then((result){
+                            if (result == null){
+                              return;
+                            }
                           if (exportFormat == exportFormatOptions[0]) {
                             mdtopdf(widget.markdownTextExport,
-                                pathParameter.text, true, widget.markdownStyle);
+                                result, true, widget.markdownStyle);
+                        Navigator.of(widget.dialogContext).pop();
                           } else if (exportFormat == exportFormatOptions[1]) {
                             mdtopdf(widget.markdownTextExport,
-                                pathParameter.text, false, widget.markdownStyle);
+                                result, false, widget.markdownStyle);
+                            Navigator.of(widget.dialogContext).pop();
                           } else {
-                            File(pathParameter.text)
+                            File(result)
                                 .writeAsString(widget.markdownTextExport)
                                 .then((value) {
                               Navigator.of(widget.dialogContext).pop();
                             });
                           }
+                          });
                         },
                         icon: const Icon(Icons.save),
                         label: const Text("Export", style: TextStyle(fontSize: 13.5),),
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
+                     //   style: TextButton.styleFrom(
+                       //   shape: RoundedRectangleBorder(
+                         //   borderRadius: BorderRadius.circular(10.0),
+                         // ),
+                         // padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
                         //  backgroundColor: Colors.transparent, // Set to transparent if you want to define your own background
                         //  side: BorderSide(color: Colors.white, width: 0.2), // Thinner border
                      //     shadowColor: Colors.black,//.withOpacity(0.9), // Shadow color and opacity
                        //   elevation: 4, // Shadow elevation
-                        ),
+                        //),
                       )
                     ],
                   ),

@@ -157,7 +157,12 @@ class _FormPageState extends State<FormPage> {
 
 //  // updateStyle() method OPTIMIZATION APPROACH - II (using _debounce())----------------------------------------
 
-  void updateStyle() {
+  void updateStyle({bool? zoomOnly}) {
+    if (zoomOnly != null && zoomOnly){
+      setState(() {
+        markdownStyle = markdownStyleZoom(zoom, markdownStyle);
+      });
+    }
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 90), () {
@@ -420,7 +425,7 @@ class _FormPageState extends State<FormPage> {
                         onPressed: () {
                           zoom += 0.2;
                           setState(() {
-                            updateStyle();
+                            updateStyle(zoomOnly: true);
                           });
                         },
                         icon: const Icon(Icons.zoom_in)),
@@ -428,7 +433,7 @@ class _FormPageState extends State<FormPage> {
                         onPressed: () {
                           zoom -= 0.2;
                           setState(() {
-                            updateStyle();
+                            updateStyle(zoomOnly: true);
                           });
                         },
                         icon: const Icon(Icons.zoom_out)),
@@ -676,6 +681,10 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom, {String? tempTheme}) {
       textScaler: TextScaler.linear(zoom));
 }
 
+
+MarkdownStyleSheet markdownStyleZoom(double zoom, MarkdownStyleSheet style){
+  return style.copyWith(textScaler: TextScaler.linear(zoom));
+}
 
 /* For now, this is not needed
 class ParameterDialog extends StatefulWidget {
