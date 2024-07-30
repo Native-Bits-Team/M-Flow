@@ -43,4 +43,5 @@ app.*.map.json
 
 .vscode/
 NOTES
+lib/pages/extra.dart
 *.mflow
