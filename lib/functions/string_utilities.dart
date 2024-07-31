@@ -32,8 +32,9 @@ String addSidesToWord(String text, int start, String symbol){
   print(symbol.length);
   print(text.substring(start, start+end));
   if (text.substring(start, start+end).startsWith(symbol) && text.substring(start, start+end).endsWith(symbol)){
-    print(split.replaceFirst(symbol, '').substring(0, end-symbol.length));
-    text = text.replaceRange(start, start+end, split.replaceFirst(symbol, '').substring(0, split.length-symbol.length));
+    print(split.replaceFirst(symbol, '').substring(0, end-symbol.length*2));
+    text = text.replaceRange(start, start+end, split.replaceFirst(symbol, '').substring(0, end-symbol.length*2));
+    return text;
   }
   String newText = symbol;
   newText += text.substring(start, start+end);

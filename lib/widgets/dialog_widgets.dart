@@ -116,7 +116,10 @@ class _ExportDialogState extends State<ExportDialog> {
                       //  ),
                       //),
                      // const SizedBox(height: 10.0),
-                      SizedBox(
+                     
+                      Visibility(visible: !_showAuthorAndSubject, child: const SizedBox(width:350, child: Text("Warning: The Preview may not match the exported file.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent),))),
+                      Visibility(visible: _showAuthorAndSubject,
+                      child: SizedBox(
                         width: 350,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,7 +150,7 @@ class _ExportDialogState extends State<ExportDialog> {
                           //Spacer()
                           ],
                         ),
-                      ),
+                      )),
                       const SizedBox(height: 10.0),
                       Visibility(
                         visible: _showAuthorAndSubject,

@@ -41,9 +41,11 @@ class FormPage extends StatefulWidget {
 }
 
 class _FormPageState extends State<FormPage> {
+  FocusNode focusGuider = FocusNode();
   TextEditingController leftController = TextEditingController();
   String markdownText = ""; // Initialized an empty variable of type 'String' to store markdown text...
   MarkdownStyleSheet markdownStyle = MarkdownStyleSheet();
+  bool notSaved = false;
   //Color? themeBackgroundColor; // Maybe replace with global theme
   // bool stopper = true;
   double zoom = 1.0;
@@ -118,6 +120,7 @@ class _FormPageState extends State<FormPage> {
       });
     }
     }
+    notSaved = true;
     setState(() {
       markdownText = getUserInput(); // get user input from this method...
     });
@@ -214,6 +217,9 @@ class _FormPageState extends State<FormPage> {
         start,
         prefix,
       );
+      focusGuider.requestFocus();
+      leftController.selection = TextSelection(baseOffset: start + prefix.length, extentOffset: start + prefix.length);
+
     } else {
       // Handle when text is selected
       String selectedText = leftController.text.substring(start, end);
@@ -402,8 +408,9 @@ class _FormPageState extends State<FormPage> {
                         })
                       },
                       child: Focus( // is this needed for shotcuts to work?
-                        child: TextField(
+                        child: TextField( // [TRANSPARENCY] Imad : I mistankely opened text_field.dart
                       controller: leftController,
+                      focusNode: focusGuider, // The Description is useful
                       decoration: const InputDecoration(
                         hintText: 'What\'s on your mind?',
                       ),
@@ -447,8 +454,9 @@ class _FormPageState extends State<FormPage> {
                       ),
                       child: DropdownMenu(
                         // label: const Text("Theme: "),
+                        enableFilter: true,
                         trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60),
-                        initialSelection: getDropThemeEntries().isEmpty ? "default" : (widget.fileData["theme"] ?? "default"), // TODO: FIX THIS
+                        initialSelection: getDropThemeEntries().isEmpty ? "default" : (widget.fileData["theme"] ?? "default"),
                         inputDecorationTheme: const InputDecorationTheme(
                           contentPadding: EdgeInsets.all(9.0),
                           constraints: BoxConstraints(maxHeight: 35),
