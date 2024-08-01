@@ -174,7 +174,12 @@ class _FormPageState extends State<FormPage> {
 
 //  // updateStyle() method OPTIMIZATION APPROACH - II (using _debounce())----------------------------------------
 
-  void updateStyle() {
+  void updateStyle({bool zoomChangedOnly = false}) {
+    if (zoomChangedOnly){
+      setState(() {
+      markdownStyle = buildMarkdownStyleZoomChange(markdownStyle, zoom);
+      });
+    }
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 90), () {
@@ -460,7 +465,7 @@ class _FormPageState extends State<FormPage> {
                         onPressed: () {
                           zoom += 0.2;
                           setState(() {
-                            updateStyle();
+                            updateStyle(zoomChangedOnly: true);
                           });
                         },
                         icon: const Icon(Icons.zoom_in)),
@@ -468,7 +473,7 @@ class _FormPageState extends State<FormPage> {
                         onPressed: () {
                           zoom -= 0.2;
                           setState(() {
-                            updateStyle();
+                            updateStyle(zoomChangedOnly: true);
                           });
                         },
                         icon: const Icon(Icons.zoom_out)),
@@ -657,7 +662,9 @@ class PreviewPanel extends StatelessWidget {
   }*/
 }
 
-
+MarkdownStyleSheet buildMarkdownStyleZoomChange(MarkdownStyleSheet style, double zoom){
+  return style.copyWith(textScaler: TextScaler.linear(zoom));
+}
 
 MarkdownStyleSheet buildMarkdownStyle(double zoom, {String? tempTheme}) {
   Map<String, dynamic> themeValues;

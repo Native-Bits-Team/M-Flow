@@ -462,6 +462,17 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
       ////////////// NBT Ends
       
       TextStyle t = _inlines.last.style!.copyWith(decoration: d);  // Apply the text style decoration
+// NBT
+
+      if (o.contains('~') || o.contains('^')){
+      child = _buildTextWithFormatting(
+        _isInBlockquote ? o : trimText(o),  // Pass text with or without blockquote formatting
+        t, // Pass the updated text style with decoration
+        styleSheet
+      );
+      } else{
+
+//NBT ENDS
       child = _buildRichText(
         TextSpan(
           style: _isInBlockquote
@@ -481,10 +492,7 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
 
       // Apply the _buildTextWithFormatting method to handle subscripts and superscripts
       // Ensure text formatting is correctly applied within blockquote context if necessary
-      child = _buildTextWithFormatting(
-        _isInBlockquote ? o : trimText(o),  // Pass text with or without blockquote formatting
-        t, // Pass the updated text style with decoration
-      );
+      }
       // NBT ends here.............
 
     }
@@ -1128,7 +1136,7 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
   // This method builds a RichText widget with support for custom formatting.
   // It interprets specific charactars (`~` for subscript and `^` for superscript)
   // within the input text and applies the corresponding formatting.
-  Widget _buildTextWithFormatting(String text, TextStyle style) {
+  Widget _buildTextWithFormatting(String text, TextStyle style, MarkdownStyleSheet styleSheet) {
 
     // List to hold all the formatted spans (text segments with specific styles)
     final List<InlineSpan> spans = <InlineSpan>[];
@@ -1154,9 +1162,10 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
           spans.add(
             WidgetSpan(
               child: Transform.translate(
-                offset: const Offset(0, 3), // adjust vertical offset for subscript
+                offset: Offset(0, styleSheet.textScaler != null ? styleSheet.textScaler!.scale(3.0*2.0) : 3.0), // adjust vertical offset for subscript
                 child: Text(
                   subscriptText,
+                  textScaler: styleSheet.textScaler,
                   style: style.copyWith(
                     fontSize: style.fontSize! * 0.8, // Slightly smaller font size
                     fontWeight: FontWeight.bold, // Make subscript bold
@@ -1188,9 +1197,10 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
           spans.add(
             WidgetSpan(
               child: Transform.translate(
-                offset: const Offset(0, -3), // adjust vertical offset for superscript
+                offset: Offset(0, styleSheet.textScaler != null ? -styleSheet.textScaler!.scale(3.0*2.0) : -3.0), // adjust vertical offset for superscript
                 child: Text(
                   superscriptText,
+                  textScaler: styleSheet.textScaler,
                   style: style.copyWith(
                     fontSize: style.fontSize! * 0.7, // Even smaller font size
                     fontWeight: FontWeight.bold, // Make superscript bold
@@ -1214,7 +1224,7 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
         }
 
         // Add the regular text to the spans list without any special formatting
-        spans.add(TextSpan(text: text.substring(i, j), style: style));
+        spans.add(TextSpan(text: text.substring(i, j), style: style.copyWith(fontSize: styleSheet.textScaler!.scale(style.fontSize ?? 16.0)))); // TODO: 16.0 is a const
         i = j; // Move the index to the next character to be processed
       }
     }
