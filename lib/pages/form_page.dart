@@ -83,7 +83,7 @@ class _FormPageState extends State<FormPage> {
         });
       }
     } catch (e) {
-      //print('Error: $e');
+      print('Error: $e');
       // Handle the error, e.g., show an error message to the user
     }
   }
@@ -157,12 +157,7 @@ class _FormPageState extends State<FormPage> {
 
 //  // updateStyle() method OPTIMIZATION APPROACH - II (using _debounce())----------------------------------------
 
-  void updateStyle({bool? zoomOnly}) {
-    if (zoomOnly != null && zoomOnly){
-      setState(() {
-        markdownStyle = markdownStyleZoom(zoom, markdownStyle);
-      });
-    }
+  void updateStyle() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 90), () {
@@ -272,12 +267,12 @@ class _FormPageState extends State<FormPage> {
           );*/
           
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const SettingsPanel()));
+              MaterialPageRoute(builder: (context) => SettingsPanel()));
         },
         onDashTap: () {
           //Navigator.push(context,
             //  MaterialPageRoute(builder: (context) => const DashBoard()));
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const DashBoard()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> DashBoard()));
         },
 /*
         onDashTap: () {
@@ -425,7 +420,7 @@ class _FormPageState extends State<FormPage> {
                         onPressed: () {
                           zoom += 0.2;
                           setState(() {
-                            updateStyle(zoomOnly: true);
+                            updateStyle();
                           });
                         },
                         icon: const Icon(Icons.zoom_in)),
@@ -433,7 +428,7 @@ class _FormPageState extends State<FormPage> {
                         onPressed: () {
                           zoom -= 0.2;
                           setState(() {
-                            updateStyle(zoomOnly: true);
+                            updateStyle();
                           });
                         },
                         icon: const Icon(Icons.zoom_out)),
@@ -448,9 +443,9 @@ class _FormPageState extends State<FormPage> {
                       child: DropdownMenu(
                         // label: const Text("Theme: "),
                         trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60),
-                        initialSelection: getDropThemeEntries().isEmpty ? "default" : (widget.fileData["theme"] ?? "default"), // TODO: FIX THIS
+                        initialSelection: getDropThemeEntries().first.value, // TODO: FIX THIS
                         inputDecorationTheme: const InputDecorationTheme(
-                          contentPadding: EdgeInsets.all(9.0),
+                          contentPadding: EdgeInsets.all(7.0),
                           constraints: BoxConstraints(maxHeight: 35),
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
@@ -546,6 +541,8 @@ class _FormPageState extends State<FormPage> {
 //     );
 //   }
 // }
+
+
 
 class PreviewPanel extends StatelessWidget {
   final String markdownText; // used to declare a variable that can only be assigned once...
@@ -681,10 +678,6 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom, {String? tempTheme}) {
       textScaler: TextScaler.linear(zoom));
 }
 
-
-MarkdownStyleSheet markdownStyleZoom(double zoom, MarkdownStyleSheet style){
-  return style.copyWith(textScaler: TextScaler.linear(zoom));
-}
 
 /* For now, this is not needed
 class ParameterDialog extends StatefulWidget {

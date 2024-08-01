@@ -281,7 +281,7 @@ class _ExportDialogState extends State<ExportDialog> {
                 SizedBox(
                   width: 400,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton.icon(
                         onPressed: () {
@@ -289,6 +289,9 @@ class _ExportDialogState extends State<ExportDialog> {
                         },
                         icon: const Icon(Icons.cancel),
                         label: const Text("Cancel", style: TextStyle(fontSize: 13.5),),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 11),
+                        ),
                     //    style: TextButton.styleFrom(
                       //    shape: RoundedRectangleBorder(
                         //    borderRadius: BorderRadius.circular(10.0),
@@ -326,12 +329,14 @@ class _ExportDialogState extends State<ExportDialog> {
                         },
                         icon: const Icon(Icons.save),
                         label: const Text("Export", style: TextStyle(fontSize: 13.5),),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 11),
+                        ),
                      //   style: TextButton.styleFrom(
                        //   shape: RoundedRectangleBorder(
                          //   borderRadius: BorderRadius.circular(10.0),
                          // ),
                          // padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
-                        //  backgroundColor: Colors.transparent, // Set to transparent if you want to define your own background
                         //  side: BorderSide(color: Colors.white, width: 0.2), // Thinner border
                      //     shadowColor: Colors.black,//.withOpacity(0.9), // Shadow color and opacity
                        //   elevation: 4, // Shadow elevation
