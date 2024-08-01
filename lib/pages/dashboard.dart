@@ -60,7 +60,7 @@ class DashBoard extends StatelessWidget {
                                               if (result == null){
                                                 return;
                                               }
-                                          if (result!.files.first.path == "") {
+                                          if (result.files.first.path == "") {
                                             return;
                                           }
                                           addRecentOpen(result.files.first.path,
@@ -82,6 +82,8 @@ class DashBoard extends StatelessWidget {
                                               if (data["content"] == null){
                                                 //print("Error");
                                               }
+                                              data["mflow"] = true;
+                                              data["filePath"] = result.files.first.path;
                                               Navigator.push(context,
                                                   MaterialPageRoute(
                                                       builder: (context) {
@@ -95,7 +97,7 @@ class DashBoard extends StatelessWidget {
                                               }));
                                             });
                                           } else {
-                                            loadFormPage(context, result.files.first.path, title: result.files.first.name);
+                                            loadFormPage(context, result.files.first.path!,false, title: result.files.first.name);
                                            /* Navigator.push(context,MaterialPageRoute(builder: (context) {
                                               return FormPage(
                                                 initText: File(result.files[0]
@@ -273,7 +275,7 @@ class _DocPreviewState extends State<DocPreview> {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
             return FormPage(
               initText: test,
-              fileData: const {"title": "M-Flow"},
+              fileData: {"title": widget.projectName, "filePath" : widget.projectPath},
             );
           }));
         },
@@ -370,12 +372,12 @@ class _ProjectGridState extends State<ProjectGrid> {
 }
 }
 
-loadFormPage(BuildContext context, String? path, {String title = "M-Flow"}){
+loadFormPage(BuildContext context, String path, bool isMflowFile ,{String title = "M-Flow"}){
   if (path == null){
     return;
   }
   Navigator.push(context,MaterialPageRoute(builder: (context) {
   return FormPage(
-  initText: File(path).readAsStringSync(),fileData: {"title":title});
+  initText: File(path).readAsStringSync(),fileData: {"title":title, "filePath" : path, "mflow" : isMflowFile});
   }));
 }
