@@ -31,9 +31,11 @@ _FormPageState? temp;
 
 class FormPage extends StatefulWidget {
   final String initText;
-  final Map<String, dynamic> fileData;
+  final String initTitle;
+  final String? initPath;
+  final String? initTheme;
 
-  const FormPage({super.key, required this.initText, required this.fileData}); // '?': Denotes that key can be of type 'null' or 'key'...
+  const FormPage({super.key, required this.initText, required this.initTitle, this.initPath, this.initTheme = "default"}); // '?': Denotes that key can be of type 'null' or 'key'...
   // We can choose not to provide a Key when instantiating FormPage...
   //final String initText = "";
   @override
@@ -41,6 +43,9 @@ class FormPage extends StatefulWidget {
 }
 
 class _FormPageState extends State<FormPage> {
+  late String title;
+  late String? path;
+
   FocusNode focusGuider = FocusNode();
   TextEditingController leftController = TextEditingController();
   String markdownText = ""; // Initialized an empty variable of type 'String' to store markdown text...
@@ -93,6 +98,8 @@ class _FormPageState extends State<FormPage> {
   @override
   void initState() {
     super.initState();
+    title = widget.initTitle;
+    path = widget.initPath;
     markdownText = widget.initText;
     leftController.text = markdownText;
     leftController.addListener(_updateRightField);
@@ -113,6 +120,9 @@ class _FormPageState extends State<FormPage> {
   // }
 
   void _updateRightField() {
+    if (markdownText == getUserInput()){
+      return;
+    }
     if (globalDatabase["settings"]["autosave"]){
     if (!_debounce!.isActive){
       _debounce = Timer(const Duration(minutes: 5), (){
@@ -120,8 +130,12 @@ class _FormPageState extends State<FormPage> {
       });
     }
     }
-    notSaved = true;
+    //notSaved = true;
     setState(() {
+      if (!notSaved){
+        title = title + '*';
+        notSaved = true;
+      }
       markdownText = getUserInput(); // get user input from this method...
     });
   }
@@ -259,7 +273,7 @@ class _FormPageState extends State<FormPage> {
     temp = this;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.fileData["title"],
+        title: Text(title,
             //style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)
             )),
 
@@ -404,7 +418,26 @@ class _FormPageState extends State<FormPage> {
                           _formatText("**", "**");
                         }),
                         SaveProject: CallbackAction(onInvoke: (intent) {
-                          saveMFlowFile(content: markdownText);
+                          if (path != null){
+                            saveMFlowFile(content: markdownText, path: path);
+                            setState(() {
+                                title = widget.initTitle;
+                            notSaved = false;
+
+                            });
+                          } else{
+                          var p = saveMFlowFile(content: markdownText).then((nPath){
+                            if (nPath == null){
+                              return;
+                            }
+                            path = nPath;
+                            setState(() {
+                                title = widget.initTitle;
+                                notSaved = false;
+
+                            });
+                          });
+                          }
                         })
                       },
                       child: Focus( // is this needed for shotcuts to work?
@@ -456,7 +489,7 @@ class _FormPageState extends State<FormPage> {
                         // label: const Text("Theme: "),
                         enableFilter: true,
                         trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60),
-                        initialSelection: getDropThemeEntries().isEmpty ? "default" : (widget.fileData["theme"] ?? "default"),
+                        initialSelection: getDropThemeEntries().isEmpty ? "default" : widget.initTheme,
                         inputDecorationTheme: const InputDecorationTheme(
                           contentPadding: EdgeInsets.all(9.0),
                           constraints: BoxConstraints(maxHeight: 35),

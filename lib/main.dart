@@ -18,7 +18,7 @@ void main() {
     await windowManager.show();
     await windowManager.focus();
 
-    await windowManager.setIcon("icon.ico"); // Used ImageToIcon to generate this .ico file
+    //await windowManager.setIcon("icon.ico"); // Used ImageToIcon to generate this .ico file
 
     //await windowManager.setProgressBar(0.1);
     //await windowManager.setPreventClose(true);
@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: const FormPage(
-            initText: "Test TEST TEST", fileData: {"title": "test"}),
+            initText: "Test TEST TEST", initTitle: "Test"),
         theme: ThemeData(
           //colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
           drawerTheme: DrawerThemeData(

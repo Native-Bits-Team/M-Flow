@@ -284,7 +284,7 @@ class _ExportDialogState extends State<ExportDialog> {
                 SizedBox(
                   width: 400,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center, // NOTE: making it center was NBT member Madhur Pandey Idea
                     children: [
                       TextButton.icon(
                         onPressed: () {

@@ -29,10 +29,7 @@ String addSidesToWord(String text, int start, String symbol){
       break;
     }
   }
-  print(symbol.length);
-  print(text.substring(start, start+end));
   if (text.substring(start, start+end).startsWith(symbol) && text.substring(start, start+end).endsWith(symbol)){
-    print(split.replaceFirst(symbol, '').substring(0, end-symbol.length*2));
     text = text.replaceRange(start, start+end, split.replaceFirst(symbol, '').substring(0, end-symbol.length*2));
     return text;
   }

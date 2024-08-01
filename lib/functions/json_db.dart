@@ -160,19 +160,33 @@ loadMFlowFile(String? path) async {
   }
 }
 
-saveMFlowFile({String content = ""}) async {
+Future<String?> saveMFlowFile({String content = "", String? path}) async {
     Map<String, dynamic> data ={
       "content" : content
     };
-  FilePicker.platform.saveFile(dialogTitle: "Save Project", allowedExtensions: ["mflow", "md"], fileName: "project.mflow").then((path){
-    if (path != null){
-      if (path.endsWith(".mflow")){
+  if (path == null){
+  var o = await FilePicker.platform.saveFile(dialogTitle: "Save Project", allowedExtensions: ["mflow", "md"], fileName: "project.mflow");
+  //.then((path){
+    if (o != null){
+      if (o.endsWith(".mflow")){
+      File(o).writeAsStringSync("mflow\n0.1\n${jsonEncode(data)}");
+      } else {
+        File(o).writeAsStringSync(content);
+      }
+      return o;
+    } else {
+      return null;
+    }
+  //});
+  
+  } else {
+    if (path.endsWith(".mflow")){
       File(path).writeAsStringSync("mflow\n0.1\n${jsonEncode(data)}");
       } else {
         File(path).writeAsStringSync(content);
       }
-    }
-  });
+  }
+  return null;
 }
 
 

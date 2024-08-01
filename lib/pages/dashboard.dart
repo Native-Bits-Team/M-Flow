@@ -74,16 +74,16 @@ class DashBoard extends StatelessWidget {
                                                 //print("ERROR");
                                                 return;
                                               }
-                                              if (data["title"] == null ||
-                                                  data["title"] == "") {
-                                                data["title"] =
-                                                    result.files.first.name;
-                                              }
+                                          //    if (data["title"] == null ||
+                                            //      data["title"] == "") {
+                                              //  data["title"] =
+                                                //    result.files.first.name;
+                                              //}
                                               if (data["content"] == null){
                                                 //print("Error");
                                               }
-                                              data["mflow"] = true;
-                                              data["filePath"] = result.files.first.path;
+                                              //data["mflow"] = true;
+                                           //   data["filePath"] = result.files.first.path;
                                               Navigator.push(context,
                                                   MaterialPageRoute(
                                                       builder: (context) {
@@ -92,7 +92,9 @@ class DashBoard extends StatelessWidget {
                                                   //File(result.files[0]
                                                     //      .path as String)
                                                       //.readAsStringSync(),
-                                                  fileData: data,
+                                                  //fileData: data,
+                                                  initTitle: data["title"] == "" || data["title"] == null ? result.files.first.name : data["title"],
+                                                  initPath: result.files.first.path,
                                                 );
                                               }));
                                             });
@@ -123,7 +125,7 @@ class DashBoard extends StatelessWidget {
                                           //addNewValue("projects", {"projectName": "Unknown", "filePath" : "README.md"});
                                           return const FormPage(
                                             initText: "",
-                                            fileData: {"title": "M-Flow"},
+                                            initTitle: "M-Flow",
                                           );
                                         }));
                                       },
@@ -194,12 +196,12 @@ class _DocPreviewState extends State<DocPreview> {
   @override
   void initState() {
     super.initState();
-        print(previewImageBytes);
-    print(widget.projectPath);
-    if (previewImageBytes == null && widget.projectPath != "") {
+    updatePreview();
+  }
+  void updatePreview({bool force = false}){
+    if ((previewImageBytes == null && widget.projectPath != "") || force) {
       //ScreenshotController sController = ScreenshotController();
       var file = File(widget.projectPath);
-      print(file.existsSync());
       if (!file.existsSync()) {
         enabled =false;
         // TODO: Maybe there is an alternative that doesn't use File object
@@ -216,11 +218,13 @@ class _DocPreviewState extends State<DocPreview> {
         // TODO: Implment a better solution
 
         file.readAsString().then((text) {
+          test = text;
           // TODO: Wrong way of handling opening and closing a file?
           if (text.startsWith("mflow")) {
             Map<String, dynamic> data = jsonDecode(text.substring(10));
+            test = data["content"];
             generatePdfImageFromMD(
-                    text, buildMarkdownStyle(1.0, tempTheme: data["theme"]),
+                    data["content"], buildMarkdownStyle(1.0, tempTheme: data["theme"]),
                     tempTheme: data["theme"])
                 .then((imageAndSize) {
               setState(() {
@@ -236,7 +240,6 @@ class _DocPreviewState extends State<DocPreview> {
               });
             });
           }
-          test = text;
 
           //sController.captureFromWidget(MarkdownBody(data: text)).then((data){
           //setState(() {
@@ -247,9 +250,15 @@ class _DocPreviewState extends State<DocPreview> {
       });}
     }
   }
+void checkPreviewInfo(){
+  if (widget.projectPath != "" && previewImageBytes.runtimeType == Tooltip && File(widget.projectPath).existsSync()){
+    previewImageBytes = const CircularProgressIndicator();
+    updatePreview(force: true);
+  }
+}
   @override
   Widget build(BuildContext context) {
-
+  checkPreviewInfo(); // TODO: This method removes a RecentOpen and then regenerate all DocPreviews, a better solution would to just delete the most recent then the button of it
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Expanded(
           child: MaterialButton(
@@ -265,6 +274,8 @@ class _DocPreviewState extends State<DocPreview> {
                     onTap: () {
                       removeRecentOpen(widget.projectPath, widget.projectName);//.then(() {
                       widget.parentHandle.updatePreviews(); // TODO: Replace this method
+                      // dispose();
+                      
                     //  });
                     },
                     child: const Text("Delete"))
@@ -275,7 +286,8 @@ class _DocPreviewState extends State<DocPreview> {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
             return FormPage(
               initText: test,
-              fileData: {"title": widget.projectName, "filePath" : widget.projectPath},
+              initTitle: widget.projectName,
+              initPath : widget.projectPath,
             );
           }));
         },
@@ -326,7 +338,6 @@ class _ProjectGridState extends State<ProjectGrid> {
         projectName: widget.namePreview[j],
         parentHandle: this, // TODO: Is there an alternative to this?
       ));
-      print(widget.pathPreview[j]);
       //childPreview[j].projectPath = widget.pathPreview[j];
       //childPreview[j].projectName = widget.namePreview[j];
       //childPreview[j].parentHandle = this;
@@ -337,7 +348,6 @@ class _ProjectGridState extends State<ProjectGrid> {
 
   void updatePreviews() {
     Timer(Duration(milliseconds: 30),(){
-      print("updated");
     List<String> pathPreviewTemp = [];
     List<String> namePreviewTemp = [];
 
@@ -372,12 +382,26 @@ class _ProjectGridState extends State<ProjectGrid> {
 }
 }
 
-loadFormPage(BuildContext context, String path, bool isMflowFile ,{String title = "M-Flow"}){
-  if (path == null){
-    return;
-  }
+loadFormPage(BuildContext context, String path, bool isMflowFile ,{String title = "M-Flow"}) {
+  if (isMflowFile){
   Navigator.push(context,MaterialPageRoute(builder: (context) {
   return FormPage(
-  initText: File(path).readAsStringSync(),fileData: {"title":title, "filePath" : path, "mflow" : isMflowFile});
+  initText: File(path).readAsStringSync(), initTitle : title , 
+  initPath : path,
+  // "mflow" : isMflowFile}
+  );
   }));
+
+  } else {
+    loadMFlowFile(path).then((data){
+    Navigator.push(context,MaterialPageRoute(builder: (context) {
+  return FormPage(
+  initText: data["content"], initTitle : title , 
+  initPath : path,
+  // "mflow" : isMflowFile}
+  );
+  }));
+
+    });
+  }
 }
