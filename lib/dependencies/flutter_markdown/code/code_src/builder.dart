@@ -481,16 +481,10 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
 
       // Apply the _buildTextWithFormatting method to handle subscripts and superscripts
       // Ensure text formatting is correctly applied within blockquote context if necessary
-      if (o.contains('~') || o.contains('^')){
-      var result = _buildTextWithFormatting(
+      child = _buildTextWithFormatting(
         _isInBlockquote ? o : trimText(o),  // Pass text with or without blockquote formatting
         t, // Pass the updated text style with decoration
-        styleSheet
       );
-      if (result != null){
-        child = result;
-      }
-      }
       // NBT ends here.............
 
     }
@@ -1129,103 +1123,104 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
 
 
   // NBT
-  // TODO: Optimize
   // CUSTOM WIDGET TO APPLY THE SUB & SUPERSCRIPT FEATURES....
-  dynamic _buildTextWithFormatting(String text, TextStyle style, MarkdownStyleSheet sheet) {
-    final List<Widget> children = <Widget>[]; // List to hold the individual text widgets
-    String toBeAdded = "";
-    int i = 0;  // Index to traverse through the input text
-    while (i < text.length) {
-      if (text.startsWith('~', i)) {
-        // Check if the current position has a subscript marker '~'
 
-        int j = i + 1;  // Start searching for the closing '~' from the next character
+  // This method builds a RichText widget with support for custom formatting.
+  // It interprets specific charactars (`~` for subscript and `^` for superscript)
+  // within the input text and applies the corresponding formatting.
+  Widget _buildTextWithFormatting(String text, TextStyle style) {
+
+    // List to hold all the formatted spans (text segments with specific styles)
+    final List<InlineSpan> spans = <InlineSpan>[];
+    
+    // Start iterating over the characters in the input text
+    int i = 0;
+    while (i < text.length) {
+
+      // Check if the current character is a subscript marker '~'
+      if (text.startsWith('~', i)) {
+        int j = i + 1;
+
+        // Find the closing '~' to determine the subscript text
         while (j < text.length && text[j] != '~') {
-         j++;  // Find the index of the closing '~'
+          j++;
         }
+
+        // If a closing '~' is found, apply the subscript formatting
         if (j < text.length) {
-          final String subscriptText = toBeAdded + text.substring(i + 1, j);  // Extract the subscript text
-          toBeAdded = "";
-          children.add(
-            Stack(
-              alignment: Alignment.bottomCenter,  // Align the subscript text to the bottom center
-              children: <Widget>[
-                Text.rich( // [TRANSPARENCY] learned it from builder.dart
-                  const TextSpan(text: ' '), // Add an empty Text widget to reserve space for the subscript text 
-                  style: style,
-                  textScaler: sheet.textScaler,
-                ),
-                Text(
+          final String subscriptText = text.substring(i + 1, j);
+
+          // Create a WidgetSpan for subscript with a vertical offset
+          spans.add(
+            WidgetSpan(
+              child: Transform.translate(
+                offset: const Offset(0, 3), // adjust vertical offset for subscript
+                child: Text(
                   subscriptText,
                   style: style.copyWith(
-                    fontSize: style.fontSize! * 0.8, 
-                    fontWeight: FontWeight.bold
+                    fontSize: style.fontSize! * 0.8, // Slightly smaller font size
+                    fontWeight: FontWeight.bold, // Make subscript bold
                   ),
-                  textAlign: TextAlign.center,  // Center align the subscript text
                 ),
-              ],
+              ),
             ),
           );
-          i = j + 1; // Move index past the closing '~'
+          i = j + 1; // Move the index to the character after the closing '~'
         } else {
-          // If no closing '~' is found, treat the '~' as regular text
-          toBeAdded = '~';
-          //children.add(Text.rich(const TextSpan(text: '~'), style: style, textScaler: sheet.textScaler));
+          // If no closing '~' is found, treat it as a regular character
+          spans.add(TextSpan(text: '~', style: style));
           i++;
         }
+       // Check if the current character is a superscript marker '^'
       } else if (text.startsWith('^', i)) {
-        // Check if the current position has a superscript marker '^'
+        int j = i + 1;
 
-        int j = i + 1;  // Start searching for the closing '^' from the next character
+        // Find the closing '^' to determine the superscript text
         while (j < text.length && text[j] != '^') {
-          j++;  // Find the index of the closing '^'
+          j++;
         }
+
+        // If a closing '^' is found, apply the superscript formatting
         if (j < text.length) {
-          // If a closing '^' is found
-          final String superscriptText = toBeAdded + text.substring(i + 1, j);  // Extract the superscript text
-          toBeAdded = '';
-          children.add(
-            Stack(
-              fit: StackFit.expand,
-              alignment: Alignment.topCenter,  // Align the superscript text to the top center
-              children: <Widget>[
-                Text.rich(
-                  const TextSpan(text: ' '), // Add an empty Text widget to reserve space for the superscript text
-                  style: style,
-                  textScaler: sheet.textScaler,
-                ),
-                Text(
+          final String superscriptText = text.substring(i + 1, j);
+
+          // Create a WidgetSpan for superscript with a vertical offset
+          spans.add(
+            WidgetSpan(
+              child: Transform.translate(
+                offset: const Offset(0, -3), // adjust vertical offset for superscript
+                child: Text(
                   superscriptText,
                   style: style.copyWith(
-                    fontSize: style.fontSize! * 0.7,
-                    fontWeight: FontWeight.bold
+                    fontSize: style.fontSize! * 0.7, // Even smaller font size
+                    fontWeight: FontWeight.bold, // Make superscript bold
                   ),
-                  textAlign: TextAlign.center, // Center align the superscript text
                 ),
-              ],
+              ),
             ),
           );
-          i = j + 1;  // Move index past the closing '^'
+          i = j + 1; // Move the index to the character after the closing '^'
         } else {
-           // If no closing '^' is found, treat the '^' as regular text
-           toBeAdded = '^';
-          //children.add(Text.rich(const TextSpan(text: '^'), style: style, textScaler: sheet.textScaler,));
+          // If no closing '^' is found, treat it as a regular character
+          spans.add(TextSpan(text: '^', style: style));
           i++;
         }
+        // If the current character is neither '~' nor '^', it's regular text
       } else {
-       // return null;
-        // Handle regular text
-        int j = i; // Start searching for the next special character from the current index
+        int j = i;
+        // Collect all consecutive regular text characters
         while (j < text.length && text[j] != '~' && text[j] != '^') {
-          j++;  // Find the index of the next special character or end of the text
+          j++;
         }
-        children.add(Text.rich(TextSpan(text: toBeAdded + text.substring(i, j)), style: style, textScaler: sheet.textScaler));  // Add the regular text to the list
-        i = j;  // Move index to the next character to process
+
+        // Add the regular text to the spans list without any special formatting
+        spans.add(TextSpan(text: text.substring(i, j), style: style));
+        i = j; // Move the index to the next character to be processed
       }
     }
     
-    // Return a Wrap widget that arranges the text widgets in a line breakable layout
-    return Wrap(children: children);
+    // Return a RichText widget that displays all the spans with the applied formatting
+    return RichText(text: TextSpan(children: spans));
   }
   // NBT Ends
 
