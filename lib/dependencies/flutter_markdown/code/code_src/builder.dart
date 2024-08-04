@@ -1199,8 +1199,21 @@ if (text.endsWith('w\$')){
 
     while (i < text.length) {
 
+    if (text[i] == '\\') {
+      // Check if the next character is part of a known escape sequence
+      if (i + 1 < text.length && (text[i + 1] == '-' || text[i + 1] == '~' || text[i + 1] == '^')) {
+        // If yes, treat the next character as a literal
+        spans.add(TextSpan(text: text[i + 1], style: style));
+        i += 2; // Skip past the escape sequence
+      } else {
+        // If the backslash is not followed by a known character, treat it as a literal
+        spans.add(TextSpan(text: '\\', style: style));
+        i += 1; // Move to the next character
+      }
+    } 
+
+    else if (text.startsWith('-', i) && (i == 0 || text[i - 1] != '\\')) {
       // Check if the current segment is underlined (enclosed in '-')
-      if (text.startsWith('-', i)) {
         int j = i + 2;
 
         // Find the closing '-' to determine the underlined text
@@ -1297,7 +1310,7 @@ if (text.endsWith('w\$')){
       } else {
         int j = i;
         // Collect all consecutive regular text characters
-        while (j < text.length && text[j] != '~' && text[j] != '^' && !text.startsWith('-', j)) {
+        while (j < text.length && text[j] != '~' && text[j] != '^' && !text.startsWith('-', j) && text[j] != '\\') {
           j++;
         }
 
