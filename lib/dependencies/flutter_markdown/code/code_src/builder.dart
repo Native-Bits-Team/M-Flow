@@ -238,7 +238,8 @@ class MarkdownBuilder implements md.NodeVisitor {
 
     int? start;
     if (_isBlockTag(tag)) {
-if (element.textContent.startsWith("w\$")){_addAnonymousBlockIfNeeded(center: true);}else{_addAnonymousBlockIfNeeded();} //NBT
+if (element.textContent.endsWith("ww\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 2);}else //NBT
+if (element.textContent.endsWith("w\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 1);} else {_addAnonymousBlockIfNeeded();} // NBT
 ////////////// NBT Starts, Credits to NBT member Madhur for original Code, Modified to Work here by Imad Laggoune
 /*
 if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) {
@@ -393,18 +394,24 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
       );
     } else {
       String o = text.text;
-      TextAlign k; 
-      if (text.text.startsWith("w\$")){
-        k = TextAlign.center; o = text.text.replaceFirst("w\$","");
-      } else {
+      TextAlign k;
+      if (text.text.endsWith("ww\$")){
+        k = TextAlign.end; //o = text.text.replaceFirst("w\$","");
+        o = text.text.replaceRange(text.text.length-3, text.text.length, '');
+      } else if (text.text.endsWith("w\$")) {
+        k = TextAlign.center;
+        o = text.text.replaceRange(text.text.length-2, text.text.length, '');
+      }
+      else {
         k = _textAlignForBlockTag(_currentBlockTag);
       } // NBT
 
       TextDecoration? d; 
       
-      if (text.text.startsWith("d\$")){
+      if (text.text.endsWith("d\$")){
         d = TextDecoration.underline; 
-        o = text.text.replaceFirst("d\$","");
+        //o = text.text.replaceFirst("d\$","");
+        o = text.text.replaceRange(text.text.length-2, text.text.length, '');
       } // NBT
       
       // NBT`````````````````````````````````````````````````````````````````````````````````````````````````````
@@ -509,7 +516,8 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
     final String tag = element.tag;
 
     if (_isBlockTag(tag)) {
-      if (element.textContent.startsWith("w\$")){_addAnonymousBlockIfNeeded(center: true);}else{_addAnonymousBlockIfNeeded();} //NBT
+      if (element.textContent.endsWith("ww\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 2);}else //NBT
+      if (element.textContent.endsWith("w\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 1);}else {_addAnonymousBlockIfNeeded();} // NBT
       //_addAnonymousBlockIfNeeded();
 
       final _BlockElement current = _blocks.removeLast();
@@ -832,7 +840,7 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
     parent.nextListIndex += 1;
   }
 
-  void _addAnonymousBlockIfNeeded({bool center = false}) {
+  void _addAnonymousBlockIfNeeded({int alignmentIndex = 0}) { // NBT MODIFIED
     if (_inlines.isEmpty) {
       return;
     }
@@ -841,7 +849,16 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
     TextAlign textAlign = TextAlign.start;
     EdgeInsets textPadding = EdgeInsets.zero;
     if (_isBlockTag(_currentBlockTag)) {
-if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;}else{blockAlignment = _wrapAlignmentForBlockTag(_currentBlockTag); textAlign = _textAlignForBlockTag(_currentBlockTag);} // NBT
+      // NBT STARTS
+if (alignmentIndex == 1){
+  blockAlignment = WrapAlignment.center;
+  textAlign = TextAlign.center;
+  }else if (alignmentIndex == 2){
+    blockAlignment = WrapAlignment.end;
+    textAlign = TextAlign.end;
+  }
+  else {blockAlignment = _wrapAlignmentForBlockTag(_currentBlockTag); textAlign = _textAlignForBlockTag(_currentBlockTag);} // NBT
+// NBT ENDS
       //blockAlignment = _wrapAlignmentForBlockTag(_currentBlockTag);
       //textAlign = _textAlignForBlockTag(_currentBlockTag);
       textPadding = _textPaddingForBlockTag(_currentBlockTag);

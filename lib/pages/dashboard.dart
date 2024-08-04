@@ -265,7 +265,7 @@ void checkPreviewInfo(){
         hoverElevation: 0.2,
         elevation: 0.1,
         padding: EdgeInsets.zero,
-        onLongPress: () { // TODO: make it right click
+       /* onLongPress: () { // TODO: make it right click
           showMenu(
               context: context,
               position: const RelativeRect.fromLTRB(10, 10, 10, 10), // TODO: mouse position
@@ -280,7 +280,7 @@ void checkPreviewInfo(){
                     },
                     child: const Text("Delete"))
               ]);
-        },
+        },*/
         onPressed: () {
           if (!enabled){return;}
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
@@ -293,6 +293,7 @@ void checkPreviewInfo(){
         },
         color: Colors.transparent,
         child: previewImageBytes,
+
       )),
       const SizedBox(height: 5),
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [

@@ -17,7 +17,9 @@ import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
+import 'package:m_flow/dependencies/dart_pdf/pdf/code/src/widgets/text.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
+import 'package:m_flow/dependencies/flutter_markdown/code/code_src/builder.dart' as b;
 //import 'package:pdf/widgets.dart' as pw;
 import 'package:markdown/markdown.dart' as md;
 //import 'package:m_flow/dependencies/markdown/code/markdown.dart' as md;
@@ -204,33 +206,61 @@ class Styler {
     style.push(s, e);
     List<pw.Widget> r = [];
     List<pw.TextSpan> spans = [];
-    clear() {
+    clear({TextAlign align = TextAlign.start }) {
       if (spans.isNotEmpty) {
+           // if (e.text!.endsWith('w\$')){align = TextAlign.center;}
         // turn text into widget
-        r.add(pw.RichText(text: pw.TextSpan(children: spans)));
+        if (align == TextAlign.center){
+        r.add(pw.Center(child:pw.RichText(text: pw.TextSpan(children: spans)))); // [TRANSPARENCY] I got the idea from REF #2
+        } else if(align == TextAlign.end){
+          r.add(pw.Align(alignment: pw.Alignment.centerRight, child: pw.RichText(text: pw.TextSpan(children: spans))));
+        }
+        else {
+          r.add(pw.RichText(text: pw.TextSpan(children: spans)));
+        }
+        //print(align);
         spans = [];
       }
     }
-
+    var alignment = TextAlign.start;
     for (var o in e.nodes) {
       var ch = await format(o);
       if (ch.widget != null) {
         clear();
         r = [...r, ...ch.widget!];
       } else if (ch.text != null) {
-        if (s.bullet != null){ // NBT
-          if (ch.text!.text == "\n"){ // NBT
-            continue; // NBT
-          } // 
-          spans.add(pw.TextSpan(text: ch.text!.text!.replaceAll("\n", ""))); // This was added to fix a "bug" that causes a newline to be added causing text not to be next to the "bullet"
-          spans.add(const pw.TextSpan(text: "\n\n")); // 
-          continue; // 
-        } //
+        pw.FontWeight fw = pw.FontWeight.normal;
+        double fontSize = 16;
+      //  if (s.bullet != null){ // NBT
+       //   if (ch.text!.text == "\n"){ // NBT
+         //   continue; // NBT
+         // } // 
+         if (ch.text!.text != null && ch.text!.text != ''){
+          if (e.nodeType == Node.ELEMENT_NODE){
+            var k = e as Element;
+            if (k.localName!.startsWith('h')){
+              fw = pw.FontWeight.bold;
+              fontSize = 24 - double.parse(k.localName!.substring(1)) * 2;
+              print(k.localName);
+              print(e.text);
+            }; 
+          }
+          if (ch.text!.text!.endsWith('w\$')){alignment = TextAlign.center;ch.text = pw.TextSpan(text: ch.text!.text!.replaceRange(ch.text!.text!.length-2, ch.text!.text!.length, ''), style: ch.text!.style!.copyWith(fontWeight: fw, fontSize: fontSize));
+          } else if (ch.text!.text!.endsWith('ww\$')){
+            alignment = TextAlign.end;
+            ch.text = pw.TextSpan(text: ch.text!.text!.replaceRange(ch.text!.text!.length-3, ch.text!.text!.length, ''), style: ch.text!.style!.copyWith(fontWeight: fw, fontSize: fontSize));
+          }
+          
+          }
+          //spans.add(pw.TextSpan(text: ch.text!.text!.replaceAll("\n", ""))); // This was added to fix a "bug" that causes a newline to be added causing text not to be next to the "bullet"
+          //spans.add(const pw.TextSpan(text: "\n\n")); // 
+          //continue; // 
+       // } //
         //ch.text = pw.TextSpan(text: ch.text!.text, style: ch.text!.style!.copyWith(height: )); // NBT
         spans.add(ch.text!);
       }
     }
-    clear();
+    clear(align: alignment);
     style.pop();
     return r;
   }
@@ -276,6 +306,40 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
             }
           }
         }
+    }
+    //b.MarkdownBuilder().buildTextWithFormatting(text, style, styleSheet);
+    //b.buildTextWithFormatting(e.text!, style.style())
+    if (e.text!.contains('~') || e.text!.contains('^')){
+      return Chunk(widget: [buildTextWithFormattingPDF(e.text ?? "", style.style().copyWith(fontSize: 16))]);
+    }
+    pw.FontWeight fw = pw.FontWeight.normal;
+    double fontSize = 28;
+    //if (e.text!.endsWith('ww\$')){
+      if (e.parentNode!.nodeType == Node.ELEMENT_NODE){
+        var k = e.parentNode as Element;
+        if (k.localName!.startsWith('h')){
+          fw = pw.FontWeight.bold;
+          fontSize = 26.0 - int.parse(k.localName!.substring(1))*2; // [TRANSPARENCY] Ref #3
+        }
+      }
+      if (e.text!.endsWith("ww\$")){
+      e.text = e.text!.replaceRange(e.text!.length-3, e.text!.length, '');
+      return Chunk(widget: [pw.Align(alignment: pw.Alignment.topRight,child: pw.RichText(text: pw.TextSpan(text: e.text, style: pw.TextStyle(fontSize: fontSize, fontWeight: fw)), textAlign: pw.TextAlign.end))]);
+
+
+    } else
+    if (e.text!.endsWith('w\$')){
+      //print("t");
+      //print(await widgetChildren(e, Style()));
+      //return Chunk(widget: await widgetChildren(e, Style())); // [TRANSPARENCY] Ref #1
+
+
+      e.text = e.text!.replaceRange(e.text!.length-2, e.text!.length, '');
+      return Chunk(widget: [pw.Center(child: pw.RichText(text: pw.TextSpan(text: e.text, style: pw.TextStyle(fontSize: fontSize, fontWeight: fw)), textAlign: pw.TextAlign.center))]);
+
+
+      //e.text = e.text!.replaceRange(e.text!.length-2, e.text!.length, '');
+      //return Chunk(widget: [pw.Center(child:pw.RichText(text: pw.TextSpan(baseline: 0, style: style.style(), text: (e.text))))]);
     }
 // NBT ENDS
         return Chunk(
@@ -382,14 +446,14 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
                     ),
                   ])
             ]);
-          case "h1":
+          case "h1": // REF #3
             return Chunk(
                 widget: await widgetChildren(
                     e, Style(weight: pw.FontWeight.bold, height: 24)));
           case "h2":
             return Chunk(
                 widget: await widgetChildren(
-                    e, Style(weight: pw.FontWeight.bold, height: 22)));
+                    e, Style(weight: pw.FontWeight.bold, height: 22))); // REF #1
           case "h3":
             return Chunk(
                 widget: await widgetChildren(
@@ -459,7 +523,7 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
                     //border = pw.Border.all(width: 0, color: PdfColors.white);
                   }
                   //cl.add(pw.Column(children: ws, crossAxisAlignment: align)); // NBT
-                  cl.add(pw.Expanded(child: pw.Padding(padding: const pw.EdgeInsets.all(15.0),child:pw.Expanded(child: pw.Column(children: ws, crossAxisAlignment: align, mainAxisAlignment: pw.MainAxisAlignment.center))))); // NBT
+                  cl.add(pw.Expanded(child: pw.Padding(padding: const pw.EdgeInsets.all(15.0),child:pw.Expanded(child: pw.Column(children: ws, crossAxisAlignment: align, mainAxisAlignment: pw.MainAxisAlignment.center))))); // NBT // REF #2
                 }
                 ch.add(pw.TableRow(
                     children: cl,
@@ -512,6 +576,8 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
 
 //mdtopdf(String path, String out) async {
 mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style) async {
+  //md2 = md2.replaceAll('\n', '');
+  md2 = md2.replaceAll('\n\n', '\n');
   var htmlx = md.markdownToHtml(md2,
       inlineSyntaxes: [md.InlineHtmlSyntax()],
       blockSyntaxes: [
@@ -522,7 +588,8 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style)
       ],
       extensionSet: md.ExtensionSet.gitHubWeb);
       if (htmlOrPdf){
-  File("$exportPath.html").writeAsString(htmlx);
+  //File("$exportPath.html").writeAsString(htmlx);
+  File(exportPath).writeAsString(htmlx);
   return;
       }
   var document = parse(htmlx);
@@ -560,7 +627,23 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
   if (md2 == ""){
     return [null,0]; // TODO: Should be removed
   }
-  var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()],
+  md2 = md2.replaceAll('\n\n', '\n'); // THis fixes a bug
+ /* var listS = md2.split('\n');
+  var nmd2 = "";
+  listS.forEach((line){
+    if (line.startsWith('w\$')){
+      nmd2 += line.replaceFirst('w\$', '');
+      nmd2 += 'w\$';
+      nmd2 += '\n';
+    } else {
+      nmd2 +=line;
+      nmd2 += '\n';
+    }
+  });
+  */
+  //md2.replaceAll('w\$', '');
+  //var htmlx = md.markdownToHtml(nmd2, inlineSyntaxes: [md.InlineHtmlSyntax()],
+  var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()], // COPY PASTED
   blockSyntaxes: [const md.TableSyntax(),
   const md.FencedCodeBlockSyntax(),
   const md.HeaderWithIdSyntax(),
@@ -640,3 +723,149 @@ pw.TextStyle textStylePDFtoPaint(TextStyle? tStyle){
     );
   return l;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // NBT
+  // NOTE: this function was copyed from flutter_markdown dependency build.dart file, original code by Madhur Pandey | Modified by Imad Laggoune
+
+
+  // CUSTOM WIDGET TO APPLY THE SUB & SUPERSCRIPT FEATURES....
+
+  // This method builds a RichText widget with support for custom formatting.
+  // It interprets specific charactars (`~` for subscript and `^` for superscript)
+  // within the input text and applies the corresponding formatting.
+pw.RichText buildTextWithFormattingPDF(String text, pw.TextStyle style) {
+    var alignment = pw.TextAlign.start;
+    // List to hold all the formatted spans (text segments with specific styles)
+    final List<pw.InlineSpan> spans = <pw.InlineSpan>[];
+    
+    // Start iterating over the characters in the input text
+    int i = 0;
+    while (i < text.length) {
+
+      // Check if the current character is a subscript marker '~'
+      if (text.startsWith('~', i)) {
+        int j = i + 1;
+
+        // Find the closing '~' to determine the subscript text
+        while (j < text.length && text[j] != '~') {
+          j++;
+        }
+
+        // If a closing '~' is found, apply the subscript formatting
+        if (j < text.length) {
+          final String subscriptText = text.substring(i + 1, j);
+
+          // Create a WidgetSpan for subscript with a vertical offset
+          spans.add(
+            pw.WidgetSpan(
+              child: pw.Transform.translate(
+                offset: p.PdfPoint(0, -3.0*3.0),//styleSheet.textScaler != null ? -styleSheet.textScaler!.scale(3.0*2.0) : -3.0), // adjust vertical offset for subscript
+                child: pw.Text(
+                  subscriptText,
+                  //textScaler: styleSheet.textScaler.,
+                //  textScaleFactor: styleSheet.textScaler!.textScaleFactor,
+                  style: style.copyWith(
+                    fontSize: style.fontSize! * 0.8, // Slightly smaller font size
+                    fontWeight: pw.FontWeight.bold, // Make subscript bold
+                  ),
+                ),
+              ),
+            ),
+          );
+          i = j + 1; // Move the index to the character after the closing '~'
+        } else {
+          // If no closing '~' is found, treat it as a regular character
+          spans.add(pw.TextSpan(text: '~', style: style));
+          i++;
+        }
+       // Check if the current character is a superscript marker '^'
+      } else if (text.startsWith('^', i)) {
+        int j = i + 1;
+
+        // Find the closing '^' to determine the superscript text
+      //  while (j < text.length && text[j] != '^') {
+        //  j++;
+        //}
+
+        // If a closing '^' is found, apply the superscript formatting
+        var result = findClosing(text, '^', j);
+        if (result != -1) {
+          j = result;
+          final String superscriptText = text.substring(i + 1, j);
+
+          // Create a WidgetSpan for superscript with a vertical offset
+          spans.add(
+            pw.WidgetSpan(
+              child: pw.Transform.translate(
+                //offset: Offset(0, styleSheet.textScaler != null ? -styleSheet.textScaler!.scale(3.0*2.0) : -3.0), // adjust vertical offset for superscript
+                offset: p.PdfPoint(0, 3.0*2.0),//styleSheet.textScaler != null ? -styleSheet.textScaler!.scale(3.0*2.0) : -3.0),
+                child: pw.Text(
+                  superscriptText,
+                  //textScaler: styleSheet.textScaler,
+                //  textScaleFactor: styleSheet.textScaler!.textScaleFactor,
+                  style: style.copyWith(
+                    fontSize: style.fontSize! * 0.7, // Even smaller font size
+                    fontWeight: pw.FontWeight.bold, // Make superscript bold
+                  ),
+                ),
+              ),
+            ),
+          );
+          i = j + 1; // Move the index to the character after the closing '^'
+        } else {
+          // If no closing '^' is found, treat it as a regular character
+          spans.add(pw.TextSpan(text: '^', style: style));
+          i++;
+        }
+        // If the current character is neither '~' nor '^', it's regular text
+   /*   } else if(text.startsWith('w\$', i)){
+        print(text.substring(i,i+2));
+        text = text.replaceRange(i, i+2, '');
+        i++;
+        print(text);
+        alignment = pw.TextAlign.center;
+        print("aligned");
+      //  var result = findClosing(text, 'w\$', i);
+      //  if (result != -1){
+        //spans.add(pw.TextSpan(text: text.substring(i, result)));
+        //}*/
+      } else {
+        int j = i;
+        // Collect all consecutive regular text characters
+        while (j < text.length && text[j] != '~' && text[j] != '^'){// && text[j] != 'w\$') {
+          j++;
+        }
+
+        // Add the regular text to the spans list without any special formatting
+        spans.add(pw.TextSpan(text: text.substring(i, j)));//, style: style.copyWith(fontSize: styleSheet.textScaler!.scale(style.fontSize ?? 16.0)))); // TODO: 16.0 is a const
+        i = j; // Move the index to the next character to be processed
+      }
+    }
+    // Return a RichText widget that displays all the spans with the applied formatting
+    return pw.RichText(text: pw.TextSpan(children: spans), textAlign: pw.TextAlign.end);
+  }
+
+
+  int findClosing(String text, String symbol, int start){
+        while (start < text.length && text[start] != symbol) {
+          start++;
+        }
+        if (start < text.length){
+          return start;
+        } else {
+          return -1;
+        }
+  }
+  // NBT Ends

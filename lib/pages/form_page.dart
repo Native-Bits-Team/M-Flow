@@ -204,6 +204,12 @@ class _FormPageState extends State<FormPage> {
         lines[i] = lines[i].replaceFirst('m\$ ',
             '\u200B'); // Unicode character for a zero-width space (ZWSP).
         // It is a non-printing character that doesn't produce any visible space or mark, but it is still present in the text
+      } else if (lines[i].startsWith('w\$')){
+        lines[i] = lines[i].replaceFirst('w\$', '');
+        lines[i] += 'w\$';
+      } else if (lines[i].startsWith('ww\$')){
+        lines[i] = lines[i].replaceFirst('ww\$', '');
+        lines[i] += 'ww\$';
       }
     }
 
@@ -392,6 +398,9 @@ class _FormPageState extends State<FormPage> {
                         await _handleUploadImage(); // go to the top...
                       },icon: const Icon(Icons.upload_file)
                     ),
+                    //IconButton(onPressed: (){}, icon: Icon(Icons.align_horizontal_left)),
+                    IconButton(onPressed: (){}, icon: Icon(Icons.align_horizontal_center)),
+                    IconButton(onPressed: (){}, icon: Icon(Icons.align_horizontal_right)),
 
 
                     IconButton(
