@@ -462,9 +462,10 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
       ////////////// NBT Ends
       
       TextStyle t = _inlines.last.style!.copyWith(decoration: d);  // Apply the text style decoration
-// NBT
+      
+      // NBT
 
-      if (o.contains('~') || o.contains('^')){
+      if (o.contains('~') || o.contains('^') || o.contains('-')){
       child = _buildTextWithFormatting(
         _isInBlockquote ? o : trimText(o),  // Pass text with or without blockquote formatting
         t, // Pass the updated text style with decoration
@@ -472,7 +473,9 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
       );
       } else{
 
-//NBT ENDS
+      //NBT ENDS
+
+
       child = _buildRichText(
         TextSpan(
           style: _isInBlockquote
@@ -1140,13 +1143,38 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
 
     // List to hold all the formatted spans (text segments with specific styles)
     final List<InlineSpan> spans = <InlineSpan>[];
-    
+
     // Start iterating over the characters in the input text
     int i = 0;
+
     while (i < text.length) {
 
+      // Check if the current segment is underlined (enclosed in '-')
+      if (text.startsWith('-', i)) {
+        int j = i + 2;
+
+        // Find the closing '-' to determine the underlined text
+        while (j < text.length && !text.startsWith('-', j)) {
+          j++;
+        }
+
+        if (j < text.length) {
+          final String underlineText = text.substring(i + 1, j);
+
+          spans.add(TextSpan(
+            text: underlineText,
+            style: style.copyWith(decoration: TextDecoration.underline),
+          ));
+          i = j + 1; // Move past the closing '-'
+        } else {
+          spans.add(TextSpan(text: '-', style: style));
+          i += 1;
+        }
+      }
+
+
       // Check if the current character is a subscript marker '~'
-      if (text.startsWith('~', i)) {
+      else if (text.startsWith('~', i)) {
         int j = i + 1;
 
         // Find the closing '~' to determine the subscript text
@@ -1219,7 +1247,7 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
       } else {
         int j = i;
         // Collect all consecutive regular text characters
-        while (j < text.length && text[j] != '~' && text[j] != '^') {
+        while (j < text.length && text[j] != '~' && text[j] != '^' && !text.startsWith('-', j)) {
           j++;
         }
 
@@ -1233,5 +1261,6 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
     return RichText(text: TextSpan(children: spans));
   }
   // NBT Ends
+
 
 }
