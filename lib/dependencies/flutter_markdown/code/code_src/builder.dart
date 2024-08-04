@@ -397,10 +397,14 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
       TextAlign k;
       if (text.text.endsWith("r\$")){
         k = TextAlign.end; //o = text.text.replaceFirst("w\$","");
+        if (!(text.text.contains('~') || text.text.contains('-') || text.text.contains('^'))){
         o = text.text.replaceRange(text.text.length-3, text.text.length, '');
+        }
       } else if (text.text.endsWith("w\$")) {
         k = TextAlign.center;
+        if (!(text.text.contains('~') || text.text.contains('-') || text.text.contains('^'))){
         o = text.text.replaceRange(text.text.length-2, text.text.length, '');
+        }
       }
       else {
         k = _textAlignForBlockTag(_currentBlockTag);
@@ -408,11 +412,11 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
 
       TextDecoration? d; 
       
-      if (text.text.endsWith("d\$")){
-        d = TextDecoration.underline; 
+    //  if (text.text.endsWith("d\$")){
+      //  d = TextDecoration.underline; 
         //o = text.text.replaceFirst("d\$","");
-        o = text.text.replaceRange(text.text.length-2, text.text.length, '');
-      } // NBT
+       // o = text.text.replaceRange(text.text.length-2, text.text.length, '');
+      //} // NBT
       
       // NBT`````````````````````````````````````````````````````````````````````````````````````````````````````
       // This didn;t worked out, Can remove this``````````````````````````````````````
@@ -1179,7 +1183,14 @@ if (alignmentIndex == 1){
   // It interprets specific charactars (`~` for subscript and `^` for superscript)
   // within the input text and applies the corresponding formatting.
   Widget _buildTextWithFormatting(String text, TextStyle style, MarkdownStyleSheet styleSheet) {
-
+var aIndex = 0;
+if (text.endsWith('w\$')){
+  text = text.replaceRange(text.length-2, text.length, '');
+  aIndex = 1;
+} else if (text.endsWith('r\$')){
+  text = text.replaceRange(text.length-2, text.length, '');
+  aIndex = 2;
+}
     // List to hold all the formatted spans (text segments with specific styles)
     final List<InlineSpan> spans = <InlineSpan>[];
 
@@ -1291,11 +1302,19 @@ if (alignmentIndex == 1){
         }
 
         // Add the regular text to the spans list without any special formatting
-        spans.add(TextSpan(text: text.substring(i, j), style: style.copyWith(fontSize: styleSheet.textScaler!.scale(style.fontSize ?? 16.0)))); // TODO: 16.0 is a const
+        spans.add(TextSpan(text: text.substring(i, j), style: style.copyWith(fontSize: 
+        //styleSheet.textScaler!.scale(style.fontSize ?? 16.0))
+        styleSheet.textScaler != null ? styleSheet.textScaler!.scale(style.fontSize ?? 16.0) : 16.0
+        ))); // TODO: 16.0 is a const
         i = j; // Move the index to the next character to be processed
       }
     }
-    
+    if (aIndex == 1){
+      print("centered");
+      return Center(child: RichText(text: TextSpan(children: spans), textAlign: TextAlign.center,));
+    } else if (aIndex == 2){
+      return Align(alignment: Alignment.centerRight, child: RichText(text: TextSpan(children: spans), textAlign: TextAlign.end,));
+    }
     // Return a RichText widget that displays all the spans with the applied formatting
     return RichText(text: TextSpan(children: spans));
   }

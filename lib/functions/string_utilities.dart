@@ -23,8 +23,7 @@ String addSidesToWord(String text, int start, String symbol){
   int end = split.length;
 
   for (int i=1; i < split.length; ++i){
-    print(split.substring(0,1));
-    findEnd = endsWithOneOf([',',' ','|','\n',''], split.substring(0, i));
+    findEnd = endsWithOneOf([',',' ','|','\n'], split.substring(0, i));
     if (findEnd){
       end = i-1; // -1 to remove the space itself
       //split = split.substring(0, end-symbol.length);

@@ -399,6 +399,9 @@ void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
                       },
                       icon: const Icon(Icons.format_italic),
                     ),
+                    IconButton(onPressed: (){
+                      _formatText("-", "-");
+                    }, icon: const Icon(Icons.format_underline)),
 
                     IconButton(
                       onPressed: () {

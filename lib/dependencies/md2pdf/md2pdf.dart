@@ -241,9 +241,7 @@ class Styler {
             if (k.localName!.startsWith('h')){
               fw = pw.FontWeight.bold;
               fontSize = 24 - double.parse(k.localName!.substring(1)) * 2;
-              print(k.localName);
-              print(e.text);
-            }; 
+            }
           }
           if (ch.text!.text!.endsWith('w\$')){alignment = TextAlign.center;ch.text = pw.TextSpan(text: ch.text!.text!.replaceRange(ch.text!.text!.length-2, ch.text!.text!.length, ''), style: ch.text!.style!.copyWith(fontWeight: fw, fontSize: fontSize));
           } else if (ch.text!.text!.endsWith('r\$')){
@@ -320,7 +318,7 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
     //b.MarkdownBuilder().buildTextWithFormatting(text, style, styleSheet);
     //b.buildTextWithFormatting(e.text!, style.style())
 
-    if (e.text!.contains('~') || e.text!.contains('^')){
+    if (e.text!.contains('~') || e.text!.contains('^') || e.text!.contains('-')){
       return Chunk(widget: [buildTextWithFormattingPDF(e.text ?? "", style.style().copyWith(fontSize: 16))]);
     }
 
@@ -589,7 +587,15 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
 //mdtopdf(String path, String out) async {
 mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style) async {
   //md2 = md2.replaceAll('\n', '');
-  md2 = md2.replaceAll('\n\n', '\n');
+  //md2 = md2.replaceAll('\n\n', '\n');
+  String s = "";
+  md2.split('\n').forEach((line){
+    if (line.length > 1){
+      s+= line;
+      s+= '\n';
+    }
+  });
+  md2 = s;
   var htmlx = md.markdownToHtml(md2,
       inlineSyntaxes: [md.InlineHtmlSyntax()],
       blockSyntaxes: [
@@ -639,7 +645,21 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
   if (md2 == ""){
     return [null,0]; // TODO: Should be removed
   }
-  md2 = md2.replaceAll('\n\n', '\n'); // THis fixes a bug
+
+  String s = "";
+  md2.split('\n').forEach((line){
+    if (line.length > 1){
+      s += line;
+      s += "\n";
+    }
+  });
+
+  //print('\n'.length);
+  //md2 = md2.replaceAll('\n\n\n\n', '\n\n');
+  //md2 = md2.replaceAll('\n\n', '\n'); // THis fixes a bug
+  md2 = s;
+ // print(md2);
+  //print(md2.contains('\n\n'));
  /* var listS = md2.split('\n');
   var nmd2 = "";
   listS.forEach((line){
@@ -783,6 +803,31 @@ buildTextWithFormattingPDF(String text, pw.TextStyle style) {
     int i = 0;
     while (i < text.length) {
 
+      // COPY PASTED FROM build.dart, Code by Madhur
+      // Check if the current segment is underlined (enclosed in '-')
+      if (text.startsWith('-', i)) {
+        int j = i + 2;
+
+        // Find the closing '-' to determine the underlined text
+        while (j < text.length && !text.startsWith('-', j)) {
+          j++;
+        }
+
+        if (j < text.length) {
+          final String underlineText = text.substring(i + 1, j);
+
+          spans.add(pw.TextSpan(
+            text: underlineText,
+            style: style.copyWith(decoration: pw.TextDecoration.underline),
+          ));
+          i = j + 1; // Move past the closing '-'
+        } else {
+          spans.add(pw.TextSpan(text: '-', style: style));
+          i += 1;
+        }
+      }
+      // END COPY PAST
+
       // Check if the current character is a subscript marker '~'
       if (text.startsWith('~', i)) {
         int j = i + 1;
@@ -873,7 +918,7 @@ buildTextWithFormattingPDF(String text, pw.TextStyle style) {
       } else {
         int j = i;
         // Collect all consecutive regular text characters
-        while (j < text.length && text[j] != '~' && text[j] != '^'){// && text[j] != 'w\$') {
+        while (j < text.length && text[j] != '~' && text[j] != '^' && text[j] != '-'){// && text[j] != 'w\$') {
           j++;
         }
 
@@ -886,9 +931,9 @@ buildTextWithFormattingPDF(String text, pw.TextStyle style) {
 
     if (aIndex == 1){
     //return pw.RichText(text: pw.TextSpan(children: spans), textAlign: pw.TextAlign.end);
-    return pw.Align(alignment: pw.Alignment.centerRight, child: pw.RichText(text: pw.TextSpan(children: spans)));
+    return pw.Align(alignment: pw.Alignment.centerRight, child: pw.RichText(text: pw.TextSpan(children: spans), textAlign: pw.TextAlign.end));
     } else if (aIndex == 2){
-      return pw.Center(child: pw.RichText(text: pw.TextSpan(children: spans)));
+      return pw.Center(child: pw.RichText(text: pw.TextSpan(children: spans), textAlign: pw.TextAlign.center));
     } else {
       return pw.RichText(text: pw.TextSpan(children: spans));
     }
