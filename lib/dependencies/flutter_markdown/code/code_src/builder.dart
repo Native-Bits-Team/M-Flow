@@ -238,7 +238,8 @@ class MarkdownBuilder implements md.NodeVisitor {
 
     int? start;
     if (_isBlockTag(tag)) {
-if (element.textContent.startsWith("w\$")){_addAnonymousBlockIfNeeded(center: true);}else{_addAnonymousBlockIfNeeded();} //NBT
+if (element.textContent.endsWith("r\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 2);}else //NBT
+if (element.textContent.endsWith("w\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 1);} else {_addAnonymousBlockIfNeeded();} // NBT
 ////////////// NBT Starts, Credits to NBT member Madhur for original Code, Modified to Work here by Imad Laggoune
 /*
 if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) {
@@ -393,19 +394,29 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
       );
     } else {
       String o = text.text;
-      TextAlign k; 
-      if (text.text.startsWith("w\$")){
-        k = TextAlign.center; o = text.text.replaceFirst("w\$","");
-      } else {
+      TextAlign k;
+      if (text.text.endsWith("r\$")){
+        k = TextAlign.end; //o = text.text.replaceFirst("w\$","");
+        if (!(text.text.contains('~') || text.text.contains('-') || text.text.contains('^'))){
+        o = text.text.replaceRange(text.text.length-3, text.text.length, '');
+        }
+      } else if (text.text.endsWith("w\$")) {
+        k = TextAlign.center;
+        if (!(text.text.contains('~') || text.text.contains('-') || text.text.contains('^'))){
+        o = text.text.replaceRange(text.text.length-2, text.text.length, '');
+        }
+      }
+      else {
         k = _textAlignForBlockTag(_currentBlockTag);
       } // NBT
 
       TextDecoration? d; 
       
-      if (text.text.startsWith("d\$")){
-        d = TextDecoration.underline; 
-        o = text.text.replaceFirst("d\$","");
-      } // NBT
+    //  if (text.text.endsWith("d\$")){
+      //  d = TextDecoration.underline; 
+        //o = text.text.replaceFirst("d\$","");
+       // o = text.text.replaceRange(text.text.length-2, text.text.length, '');
+      //} // NBT
       
       // NBT`````````````````````````````````````````````````````````````````````````````````````````````````````
       // This didn;t worked out, Can remove this``````````````````````````````````````
@@ -443,18 +454,40 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
 
       //////////// NBT Starts, Credits to NBT member Madhur for original Code, Modified by Imad Laggoune
       if (text.text.contains(r'\$') || text.text.contains(r'$$')) {
-        if (text.text.startsWith(r'$$') && text.text.endsWith(r'$$')) {
+        if (text.text.startsWith(r'$$')){// && text.text.endsWith(r'$$')) {
+        if (text.text.endsWith(r'$$' + "w\$")){
           // Block math expression
-          _inlines.last.children.add(
-            Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2));
+          //_inlines.last.children.add(Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2));
+          _inlines.last.children.add(Center(child: Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('w\$', ''), textScaleFactor: 1.2,)));
+          print(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('w\$', ''));
+        } else if (text.text.endsWith(r'$$' + "r\$")){
+          _inlines.last.children.add(Align(alignment: Alignment.centerRight, child: Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('r\$', ''), textScaleFactor: 1.2)));
         } else {
+          _inlines.last.children.add(Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ")));
+        }
+        return;
+        } else {
+          if (text.text.endsWith(r'$' + 'w\$')){
+            var nText = text.text.replaceAll('w\$', '');
           // Inline math expression
-          final parts = text.text.split(r'$');
+          //final parts = text.text.split(r'$');
+          final parts = nText.split(r'$');
           for (int i = 0; i < parts.length; i++) {
             if (i % 2 == 0) {
-              _inlines.last.children.add(Text(text.text));
+              _inlines.last.children.add(Text(nText));
             } else {
-              _inlines.last.children.add(Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2));
+              _inlines.last.children.add(Center(child:Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2)));
+            }
+          }
+          } else if (text.text.endsWith(r'$' + 'r\$')) {
+            var nText = text.text.replaceAll('r\$', '');
+            final parts = nText.split(r'$');
+            for (int i = 0; i < parts.length; i++){
+              if (i % 2 == 0){
+                _inlines.last.children.add(Text(nText));
+              } else {
+                _inlines.last.children.add(Align(alignment: Alignment.centerRight, child: Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2)));
+              }
             }
           }
         }
@@ -512,7 +545,8 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
     final String tag = element.tag;
 
     if (_isBlockTag(tag)) {
-      if (element.textContent.startsWith("w\$")){_addAnonymousBlockIfNeeded(center: true);}else{_addAnonymousBlockIfNeeded();} //NBT
+      if (element.textContent.endsWith("r\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 2);}else //NBT
+      if (element.textContent.endsWith("w\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 1);}else {_addAnonymousBlockIfNeeded();} // NBT
       //_addAnonymousBlockIfNeeded();
 
       final _BlockElement current = _blocks.removeLast();
@@ -835,7 +869,7 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
     parent.nextListIndex += 1;
   }
 
-  void _addAnonymousBlockIfNeeded({bool center = false}) {
+  void _addAnonymousBlockIfNeeded({int alignmentIndex = 0}) { // NBT MODIFIED
     if (_inlines.isEmpty) {
       return;
     }
@@ -844,7 +878,16 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
     TextAlign textAlign = TextAlign.start;
     EdgeInsets textPadding = EdgeInsets.zero;
     if (_isBlockTag(_currentBlockTag)) {
-if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;}else{blockAlignment = _wrapAlignmentForBlockTag(_currentBlockTag); textAlign = _textAlignForBlockTag(_currentBlockTag);} // NBT
+      // NBT STARTS
+if (alignmentIndex == 1){
+  blockAlignment = WrapAlignment.center;
+  textAlign = TextAlign.center;
+  }else if (alignmentIndex == 2){
+    blockAlignment = WrapAlignment.end;
+    textAlign = TextAlign.end;
+  }
+  else {blockAlignment = _wrapAlignmentForBlockTag(_currentBlockTag); textAlign = _textAlignForBlockTag(_currentBlockTag);} // NBT
+// NBT ENDS
       //blockAlignment = _wrapAlignmentForBlockTag(_currentBlockTag);
       //textAlign = _textAlignForBlockTag(_currentBlockTag);
       textPadding = _textPaddingForBlockTag(_currentBlockTag);
@@ -1140,7 +1183,14 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
   // It interprets specific charactars (`~` for subscript and `^` for superscript)
   // within the input text and applies the corresponding formatting.
   Widget _buildTextWithFormatting(String text, TextStyle style, MarkdownStyleSheet styleSheet) {
-
+var aIndex = 0;
+if (text.endsWith('w\$')){
+  text = text.replaceRange(text.length-2, text.length, '');
+  aIndex = 1;
+} else if (text.endsWith('r\$')){
+  text = text.replaceRange(text.length-2, text.length, '');
+  aIndex = 2;
+}
     // List to hold all the formatted spans (text segments with specific styles)
     final List<InlineSpan> spans = <InlineSpan>[];
 
@@ -1164,7 +1214,6 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
 
     else if (text.startsWith('-', i) && (i == 0 || text[i - 1] != '\\')) {
       // Check if the current segment is underlined (enclosed in '-')
-
         int j = i + 2;
 
         // Find the closing '-' to determine the underlined text
@@ -1266,14 +1315,23 @@ if (center){blockAlignment = WrapAlignment.center; textAlign = TextAlign.center;
         }
 
         // Add the regular text to the spans list without any special formatting
-        spans.add(TextSpan(text: text.substring(i, j), style: style.copyWith(fontSize: styleSheet.textScaler!.scale(style.fontSize ?? 16.0)))); // TODO: 16.0 is a const
+        spans.add(TextSpan(text: text.substring(i, j), style: style.copyWith(fontSize: 
+        //styleSheet.textScaler!.scale(style.fontSize ?? 16.0))
+        styleSheet.textScaler != null ? styleSheet.textScaler!.scale(style.fontSize ?? 16.0) : 16.0
+        ))); // TODO: 16.0 is a const
         i = j; // Move the index to the next character to be processed
       }
     }
-    
+    if (aIndex == 1){
+      print("centered");
+      return Center(child: RichText(text: TextSpan(children: spans), textAlign: TextAlign.center,));
+    } else if (aIndex == 2){
+      return Align(alignment: Alignment.centerRight, child: RichText(text: TextSpan(children: spans), textAlign: TextAlign.end,));
+    }
     // Return a RichText widget that displays all the spans with the applied formatting
     return RichText(text: TextSpan(children: spans));
   }
   // NBT Ends
+
 
 }

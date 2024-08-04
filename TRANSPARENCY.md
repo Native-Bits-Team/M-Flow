@@ -10,7 +10,6 @@ Native Bits Team holds a sets of requirements that a thirdparty library, depende
 * Public Domain licenses such as: CC0, BSD-0, UnLicensed, are prefered choice because the lack of limitations it holds
 * Use of Thirdparty Library or code licensed under GPL licenses is compltely not allowed, and any code that contains this license must be removed.
 
-
 ### Learning During Development
 Native Bits Team have strict rules against using unauthorized work, policies include but may not be limited to:
 

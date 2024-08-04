@@ -73,8 +73,9 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: const FormPage(
-            initText: "Test TEST TEST", initTitle: "Test"),
+        home: DashBoard(),
+        //const FormPage(
+          //  initText: "Test TEST TEST", initTitle: "Test"),
         theme: ThemeData(
           //colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
           drawerTheme: DrawerThemeData(

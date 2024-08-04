@@ -30,11 +30,13 @@
     },
     "p":{
         "fontSize" : "16",
-        "color" : "e6edf3"
+        "color" : "e6edf3",
+        "decorationColor" : "e6edf3"
     },
     "a":{
         "fontSize" : "16",
-        "color" : "4493f8"
+        "color" : "4493f8",
+        "decorationColor" : "e6edf3"
     },
     "code": {
         "fontSize": "16",

@@ -7,9 +7,9 @@ class InfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     ScrollController w = ScrollController();
     String s =
-        "M-Flow 0.1-Alpha, By Native Bits Team\n\n Developers:\n Imad Laggoune | Project Manager and Lead Developer\n Madhur Pandey | Lead Developer\n\nLicenes (For Manually Added Dependencies):\n\nflutter_markdown | BSD-3 | License Text:\n";
+        "M-Flow 0.1-Alpha, By Native Bits Team\n\n Developers:\n Imad Laggoune | Project Manager and Lead Developer\n Madhur Pandey | Lead Developer\n\nLicenes (For Manually Added Dependencies):\n\nflutter_markdown | BSD-3 | License Text:\n\n";
     s += loadLicenseBSDThree();
-    s += "\nmd2pdf | MIT | License Text:";
+    s += "\nmd2pdf | MIT | License Text:\n\n";
     s += loadLicenseMIT();
     s += "\n\n\nIf you noticed that we missed a license please notify the team!";
     TextEditingController e = TextEditingController(text: s);
