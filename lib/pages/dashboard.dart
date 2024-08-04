@@ -215,11 +215,13 @@ class DocPreview extends StatefulWidget {
     required this.projectPath,
     required this.projectName,
     required this.onDelete,
+    required this.deleteJsonDoc,
   });
 
   final String projectPath;
   final String projectName;
   final Function(String, String) onDelete;  // Added it....
+  final Function(String, String) deleteJsonDoc;
 
   @override
   State<DocPreview> createState() => _DocPreviewState();
@@ -241,6 +243,10 @@ class _DocPreviewState extends State<DocPreview> {
   // added it ......................
   void deleteDoc() {
     widget.onDelete(widget.projectPath, widget.projectName);
+  }
+
+  void deleteJsonDoc(){
+    widget.deleteJsonDoc(widget.projectPath, widget.projectName);
   }
   // ..............................
 
@@ -415,35 +421,58 @@ class _DocPreviewState extends State<DocPreview> {
 
 
   // Added it............................................................
+
   void _showDeleteConfirmation(BuildContext context) {
+    bool deleteFromSystem = false; // Local state for checkbox within the dialog
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Confirm Deletion"),
-          content: const Text("Are you sure you want to delete this document permanently?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              // style: TextButton.styleFrom(
-              //   padding: const EdgeInsets.all(9)
-              // ),
-              onPressed: () {
-                deleteDoc(); // Call the delete function
-                Navigator.of(context).pop();
-              },
-              child: const Text("Delete"),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Confirm Deletion"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text("Are you sure you want to delete this document permanently?"),
+                  CheckboxListTile(
+                    title: const Text("Delete from system"),
+                    value: deleteFromSystem,
+                    onChanged: (value) {
+                      setState(() {
+                        deleteFromSystem = value ?? true; // Update the local state
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text("Cancel"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    if (deleteFromSystem) {
+                      deleteDoc(); // Call the deleteDoc method
+                    } else {
+                      deleteJsonDoc(); // Call the deleteJsonDoc method
+                    }
+                  },
+                  child: const Text("Delete"),
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
+
 }
 // Added it............................................................
 
@@ -496,6 +525,7 @@ class _ProjectGridState extends State<ProjectGrid> {
           projectPath: widget.pathPreview[j],
           projectName: widget.namePreview[j],
           onDelete: deleteDocument,
+          deleteJsonDoc: deleteFromJson,
         ));
       } else {
         // Remove orphaned previews
@@ -560,6 +590,41 @@ class _ProjectGridState extends State<ProjectGrid> {
       );
     }
   }
+
+
+  void deleteFromJson(String path, String name) {
+    // print('hello');
+    // Implementation to delete from JSON
+    try {
+      setState(() {
+        widget.pathPreview.remove(path);
+        widget.namePreview.remove(name);
+        // Update the childPreview list
+        childPreview.removeWhere((element) => element.projectPath == path); 
+      });
+      
+      // Hide the current snackbar if there is one
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Document removed from JSON successfully')),
+      );
+    } catch (e) {
+      
+      print(e);
+
+      // Hide the current snackbar if there is one
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error removing document from JSON!')),
+      );
+    }
+  }
+
+
+
+
   // Added it...................................
 
   @override
