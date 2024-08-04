@@ -32,13 +32,8 @@ class ProfileDrawer extends StatelessWidget {
       index+=1;
     }    
     List<Widget> children = [
-const DrawerHeader(
-                child: Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 70,
-                ),
-              ),
+DrawerHeader(
+                child: Image.file(File("assets/icon.png"))),
               Tiles(
                 icon: Icons.home, 
                 text: 'Dashboard',

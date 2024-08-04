@@ -9,7 +9,8 @@ String addSidesToWord(String text, int start, String symbol){
   bool findEnd = false;
   String split = "";
   for (int i=0; i < index; ++i){
-    findStart = text.startsWith(RegExp("(,| )"), start-i); // Got the idea from the description of startsWith function and RegExp description // TODO: Should we use space for this?
+    //findStart = text.startsWith(RegExp("(,| )"), start-i); // Got the idea from the description of startsWith function and RegExp description // TODO: Should we use space for this?
+    findStart = startsWithOneOf([',',' ','|','\n'], text, start-i);
     if (findStart){
       start = start-i+1; // +1 to remove the space itself
       break;
@@ -21,8 +22,9 @@ String addSidesToWord(String text, int start, String symbol){
   split = text.substring(start);
   int end = split.length;
 
-  for (int i=2; i < split.length; ++i){
-    findEnd = endsWithOneOf([',',' '], split.substring(0, i));
+  for (int i=1; i < split.length; ++i){
+    print(split.substring(0,1));
+    findEnd = endsWithOneOf([',',' ','|','\n',''], split.substring(0, i));
     if (findEnd){
       end = i-1; // -1 to remove the space itself
       //split = split.substring(0, end-symbol.length);
@@ -55,3 +57,41 @@ bool endsWithOneOf(List<String> l, String text){
   }
   return endValue;
 }
+
+bool startsWithOneOf(List<String> l, String text, int index){ // Copy Pasted From endsWithOneOf with modifications
+  bool startValue = false;
+  for (var value in l) {
+    if (text.startsWith(value, index)){
+      startValue = true;
+      break;
+    }
+  }
+  return startValue;
+}
+
+String? addToLineStart(String text, int selectionBase, String prefix, {List<String> replacePrefix = const ["w\$", "r\$"]}){
+  var sList = text.split("\n");
+  var counter = 0;
+  for (int i = 0; i < sList.length; i++) {
+    if (sList[i].length + counter >= selectionBase && selectionBase >= counter){
+      for (var rPrefix in replacePrefix) {
+        if (sList[i].startsWith(rPrefix)){
+          if (rPrefix == prefix){
+            return null;
+          }
+          sList[i] = sList[i].replaceFirst(rPrefix, '');
+        }
+      }
+      sList[i] = prefix + sList[i];
+      break;
+    }
+    counter += sList[i].length + 1;
+  }
+
+  String result = "";
+  for (var line in sList) {
+    result += line;
+    result += "\n";
+  }
+  return result;
+  }

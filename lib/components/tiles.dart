@@ -23,7 +23,7 @@ class Tiles extends StatelessWidget {
           //color: Colors.white,
         ),
         onTap: onTap,
-        title: Text(text,
+        title: Text(text, maxLines: 1,
         style: const TextStyle(color: Colors.white),),
       ),
     );

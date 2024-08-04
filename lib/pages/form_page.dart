@@ -118,6 +118,21 @@ class _FormPageState extends State<FormPage> {
   // void _pickImage(){
   //   // will write code here...
   // }
+void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
+    var start = leftController.selection.baseOffset;
+    //var prefix = "";
+    var originalLength = leftController.text.length;
+    var newText = addToLineStart(leftController.text, start, prefix);
+    if (newText == null){
+      focusGuider.requestFocus();
+      leftController.selection = TextSelection(baseOffset: start, extentOffset: start); // [TRANSPARENCY] REF #4
+      return;}
+    leftController.text = newText;
+    var diff = newText.length - originalLength - 1;
+    focusGuider.requestFocus(); // [TRANSPARENCY] REF #4
+    leftController.selection = TextSelection(baseOffset: start + diff, extentOffset: start+ diff ); // [TRANSPARENCY] REF #4
+}
+
 
   void _updateRightField() {
     if (markdownText == getUserInput()){
@@ -207,9 +222,9 @@ class _FormPageState extends State<FormPage> {
       } else if (lines[i].startsWith('w\$')){
         lines[i] = lines[i].replaceFirst('w\$', '');
         lines[i] += 'w\$';
-      } else if (lines[i].startsWith('ww\$')){
-        lines[i] = lines[i].replaceFirst('ww\$', '');
-        lines[i] += 'ww\$';
+      } else if (lines[i].startsWith('r\$')){
+        lines[i] = lines[i].replaceFirst('r\$', '');
+        lines[i] += 'r\$';
       }
     }
 
@@ -221,10 +236,12 @@ class _FormPageState extends State<FormPage> {
   }
 
   // To handle the icons (bold, italic, mathjax, ....) features gracefully
-  void _formatText(String prefix, String suffix, {bool isBlock = false}) {
+  void _formatText(String prefix, String suffix, {bool isBlock = false}) { // NOTE: prefix should be equal in length to the suffix, otherwise it may cause a problem at REF #6
     final start = leftController.selection.start;
     final end = leftController.selection.end;
 
+    var originalLength = leftController.text.length;
+    
     // Check for valid selection
     if (start == -1 || end == -1) {
       return; // Invalid selection
@@ -237,9 +254,9 @@ class _FormPageState extends State<FormPage> {
         start,
         prefix,
       );
-      focusGuider.requestFocus();
-      leftController.selection = TextSelection(baseOffset: start + prefix.length, extentOffset: start + prefix.length);
-
+      focusGuider.requestFocus(); // REF #4
+      //leftController.selection = TextSelection(baseOffset: start + prefix.length, extentOffset: start + prefix.length); // REF #4
+      leftController.selection = TextSelection(baseOffset: start + ((leftController.text.length - originalLength)/2.0).toInt(), extentOffset: start +  ((leftController.text.length - originalLength)/2.0).toInt()); // REF #6
     } else {
       // Handle when text is selected
       String selectedText = leftController.text.substring(start, end);
@@ -258,6 +275,9 @@ class _FormPageState extends State<FormPage> {
       }
 
       leftController.text = leftController.text.replaceRange(start, end, newText);
+
+      focusGuider.requestFocus();
+      leftController.selection = TextSelection(baseOffset: start + ((leftController.text.length - originalLength)/2.0).toInt(), extentOffset: end + ((leftController.text.length - originalLength)/2.0).toInt());
     }
   }
 
@@ -298,12 +318,12 @@ class _FormPageState extends State<FormPage> {
           );*/
           
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => SettingsPanel()));
+              MaterialPageRoute(builder: (context) => const SettingsPanel()));
         },
         onDashTap: () {
           //Navigator.push(context,
             //  MaterialPageRoute(builder: (context) => const DashBoard()));
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> DashBoard()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const DashBoard())); // REF #10
         },
 /*
         onDashTap: () {
@@ -384,23 +404,58 @@ class _FormPageState extends State<FormPage> {
                       onPressed: () {
                         _formatText("`", "`");
                       },
-                      icon: const Icon(Icons.code),
+                      icon: const Icon(Icons.water_drop),
                     ),
                     IconButton(
                       onPressed: () {
-                        _formatText("```\n", "\n```", isBlock: true);
+                        _formatText("\n```\n", "\n```\n", isBlock: true);
                       },
-                      icon: const Icon(Icons.format_quote),
+                      icon: const Icon(Icons.code),
                     ),
+                    IconButton(onPressed: (){
+                      addPrefixToStartWrap(">");
+                    }, icon: const Icon(Icons.format_quote)),
 
                     IconButton(
                       onPressed: () async {
                         await _handleUploadImage(); // go to the top...
-                      },icon: const Icon(Icons.upload_file)
+                      },icon: const Icon(Icons.image)
                     ),
                     //IconButton(onPressed: (){}, icon: Icon(Icons.align_horizontal_left)),
-                    IconButton(onPressed: (){}, icon: Icon(Icons.align_horizontal_center)),
-                    IconButton(onPressed: (){}, icon: Icon(Icons.align_horizontal_right)),
+                    
+                    IconButton(onPressed: (){ // REF #5
+                    addPrefixToStartWrap("");
+                      /*var start = leftController.selection.baseOffset;
+                      var prefix = "";
+                      var originalLength = leftController.text.length;
+                      var newText = addToLineStart(leftController.text, start, prefix);
+                      if (newText == null){return;}
+                      leftController.text = newText;
+                      focusGuider.requestFocus(); // [TRANSPARENCY] REF #4
+                      leftController.selection = TextSelection(baseOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length, extentOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length); // [TRANSPARENCY] REF #4*/
+                    }, icon: const Icon(Icons.align_horizontal_left)),
+                    IconButton(onPressed: (){
+                      addPrefixToStartWrap("w\$");
+                      /*var start = leftController.selection.baseOffset;
+                      var prefix = "w\$";
+                      var originalLength = leftController.text.length;
+                      var newText = addToLineStart(leftController.text, start, prefix);
+                      if (newText == null){print("es");return;}
+                      leftController.text = newText;
+                      focusGuider.requestFocus(); // [TRANSPARENCY] REF #4
+                      leftController.selection = TextSelection(baseOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length, extentOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length); // [TRANSPARENCY] REF #4*/
+                    }, icon: const Icon(Icons.align_horizontal_center)),
+                    IconButton(onPressed: (){
+                      addPrefixToStartWrap("r\$");
+                      /*var start = leftController.selection.baseOffset;
+                      var prefix = "ww\$";
+                      var originalLength = leftController.text.length;
+                      var newText = addToLineStart(leftController.text, start, prefix);
+                      if (newText == null){return;}
+                      leftController.text = newText;
+                      focusGuider.requestFocus(); // [TRANSPARENCY] REF #4
+                      leftController.selection = TextSelection(baseOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length, extentOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length); // [TRANSPARENCY] REF #4*/
+                    }, icon: const Icon(Icons.align_horizontal_right)),
 
 
                     IconButton(
@@ -496,7 +551,7 @@ class _FormPageState extends State<FormPage> {
                       ),
                       child: DropdownMenu(
                         // label: const Text("Theme: "),
-                        enableFilter: true,
+                        //enableFilter: true,
                         trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60),
                         initialSelection: getDropThemeEntries().isEmpty ? "default" : widget.initTheme,
                         inputDecorationTheme: const InputDecorationTheme(

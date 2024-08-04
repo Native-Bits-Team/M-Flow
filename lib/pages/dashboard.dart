@@ -85,7 +85,7 @@ class DashBoard extends StatelessWidget {
                                                 }
                                                 //data["mflow"] = true;
                                              //   data["filePath"] = result.files.first.path;
-                                                Navigator.push(context,
+                                                Navigator.pushReplacement(context, // [T] REF #10
                                                     MaterialPageRoute(
                                                         builder: (context) {
                                                   return FormPage(
@@ -126,7 +126,7 @@ class DashBoard extends StatelessWidget {
                                     TextButton.icon(
                                         icon: const Icon(Icons.add),
                                         onPressed: () {
-                                          Navigator.push(context,
+                                          Navigator.pushReplacement(context, // [TRANSPARENCY] REF #10
                                               MaterialPageRoute(
                                                   builder: (context) {
                                             //addNewValue("projects", {"projectName": "Unknown", "filePath" : "README.md"});
@@ -395,21 +395,24 @@ class _DocPreviewState extends State<DocPreview> {
           }));
         },
         color: Colors.transparent,
-        child: previewImageBytes,
+        child: GridTile(child: previewImageBytes ?? Center(child: CircularProgressIndicator()), header: Align(alignment: Alignment.centerRight, child: IconButton(onPressed: (){
+          _showDeleteConfirmation(context);
+        },icon: Icon(Icons.delete, color: Colors.redAccent,))),),
 
       )),
 
 
       const SizedBox(height: 5),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center, 
-        children: [
-          Text(widget.projectName),
-          IconButton(
-            onPressed: () {_showDeleteConfirmation(context);}, // Added it.............
-            icon: const Icon(Icons.delete)),
-        ]
-      )
+     // Row(
+       // mainAxisAlignment: MainAxisAlignment.center, 
+        //children: [
+        
+          Tooltip(message: widget.projectName,child: Text(widget.projectName, maxLines: 1)),
+          //IconButton(
+            //onPressed: () {_showDeleteConfirmation(context);}, // Added it.............
+            //icon: const Icon(Icons.delete)),
+        //]
+      //)
     ]);
   }
 
@@ -692,7 +695,7 @@ class _ProjectGridState extends State<ProjectGrid> {
 // Needs improvements......................................................................
 loadFormPage(BuildContext context, String path, bool isMflowFile ,{String title = "M-Flow"}) {
   if (isMflowFile){
-  Navigator.push(context,MaterialPageRoute(builder: (context) {
+  Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) { // [T] REF #10
   return FormPage(
   initText: File(path).readAsStringSync(), initTitle : title , 
   initPath : path,
@@ -702,7 +705,7 @@ loadFormPage(BuildContext context, String path, bool isMflowFile ,{String title 
 
   } else {
     loadMFlowFile(path).then((data){
-    Navigator.push(context,MaterialPageRoute(builder: (context) {
+    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) { // [T] REF #10
   return FormPage(
   initText: data["content"], initTitle : title , 
   initPath : path,

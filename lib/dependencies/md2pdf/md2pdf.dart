@@ -246,7 +246,7 @@ class Styler {
             }; 
           }
           if (ch.text!.text!.endsWith('w\$')){alignment = TextAlign.center;ch.text = pw.TextSpan(text: ch.text!.text!.replaceRange(ch.text!.text!.length-2, ch.text!.text!.length, ''), style: ch.text!.style!.copyWith(fontWeight: fw, fontSize: fontSize));
-          } else if (ch.text!.text!.endsWith('ww\$')){
+          } else if (ch.text!.text!.endsWith('r\$')){
             alignment = TextAlign.end;
             ch.text = pw.TextSpan(text: ch.text!.text!.replaceRange(ch.text!.text!.length-3, ch.text!.text!.length, ''), style: ch.text!.style!.copyWith(fontWeight: fw, fontSize: fontSize));
           }
@@ -290,9 +290,14 @@ class Styler {
       case Node.TEXT_NODE:
 // NBT Starts | Credits to Madhur | Modified by Imad
 if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
-        if (e.text!.startsWith(r'$$') && e.text!.endsWith(r'$$')) {
+        if (e.text!.startsWith(r'$$') ){// && e.text!.endsWith(r'$$')) {
+          if (e.text!.endsWith(r'$$' + "r\$")){
           // Block math expression
-          return Chunk(widget: [pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!.replaceAll(r'$$', ''),textStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255))))))]); // Check NBT # 1 below
+          return Chunk(widget: [pw.Align(alignment: pw.Alignment.centerRight,child: pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!.replaceAll(r'$$', '').replaceAll('r\$', ''),textStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255)))))))]); // Check NBT # 1 below | Copy Pasted
+          //return Chunk(widget: [pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!.replaceAll(r'$$', ''),textStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255))))))]); // Check NBT # 1 below
+          } else if (e.text!.endsWith(r'$$' + 'w\$')){
+            return Chunk(widget: [pw.Center(child: pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!.replaceAll(r'$$', '').replaceAll('w\$', ''),textStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255)))))))]); // Check NBT # 1 below | Copy Pasted
+          }
         } else {
           // Inline math expression
           final parts = e.text!.split(r'$');
@@ -302,16 +307,23 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
               return Chunk(text: pw.TextSpan(baseline: 0, style: style.style(), text: parts[i])); // [TRANSPARENCY] Got it from normal return below
             } else {
               //widgets.add(Math.tex(parts[i],textStyle: TextStyle(fontSize: 16),));
-              return Chunk(widget: [pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!,textStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255))))))]); // Copy Pasted it from above
+              if (e.text!.endsWith("r\$")){
+              return Chunk(widget: [pw.Align(alignment: pw.Alignment.centerRight, child:pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!.replaceAll('r\$', ''),textStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255)))))))]); // Copy Pasted
+              } else if (e.text!.endsWith("w\$")){
+                return Chunk(widget: [pw.Center(child:pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!.replaceAll('w\$', ''),textStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255)))))))]); // Copy Pasted
+              }
+              //return Chunk(widget: [pw.Image(pw.MemoryImage(await ScreenshotController().captureFromWidget(Math.tex(e.text!,textStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255))))))]); // Copy Pasted it from above
             }
           }
         }
     }
     //b.MarkdownBuilder().buildTextWithFormatting(text, style, styleSheet);
     //b.buildTextWithFormatting(e.text!, style.style())
+
     if (e.text!.contains('~') || e.text!.contains('^')){
       return Chunk(widget: [buildTextWithFormattingPDF(e.text ?? "", style.style().copyWith(fontSize: 16))]);
     }
+
     pw.FontWeight fw = pw.FontWeight.normal;
     double fontSize = 28;
     //if (e.text!.endsWith('ww\$')){
@@ -322,9 +334,9 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
           fontSize = 26.0 - int.parse(k.localName!.substring(1))*2; // [TRANSPARENCY] Ref #3
         }
       }
-      if (e.text!.endsWith("ww\$")){
+      if (e.text!.endsWith("r\$")){
       e.text = e.text!.replaceRange(e.text!.length-3, e.text!.length, '');
-      return Chunk(widget: [pw.Align(alignment: pw.Alignment.topRight,child: pw.RichText(text: pw.TextSpan(text: e.text, style: pw.TextStyle(fontSize: fontSize, fontWeight: fw)), textAlign: pw.TextAlign.end))]);
+      return Chunk(widget: [pw.Align(alignment: pw.Alignment.centerRight,child: pw.RichText(text: pw.TextSpan(text: e.text, style: pw.TextStyle(fontSize: fontSize, fontWeight: fw)), textAlign: pw.TextAlign.end))]);
 
 
     } else
@@ -718,8 +730,9 @@ pw.TextStyle textStylePDFtoPaint(TextStyle? tStyle){
   pw.TextStyle l = pw.TextStyle(
     fontWeight: fontWeight,
     fontSize: tStyle.fontSize,
-    color: p.PdfColor(tStyle.color!.red.toDouble()/255.0,tStyle.color!.green.toDouble()/255.0, tStyle.color!.blue.toDouble()/255.0,tStyle.color!.alpha.toDouble()/255.0),
-
+    //color: p.PdfColor(tStyle.color!.red.toDouble()/255.0,tStyle.color!.green.toDouble()/255.0, tStyle.color!.blue.toDouble()/255.0,tStyle.color!.alpha.toDouble()/255.0),
+    color: ColorToPdfColor(tStyle.color),
+    decorationColor: ColorToPdfColor(tStyle.decorationColor)
     );
   return l;
 }
@@ -727,6 +740,12 @@ pw.TextStyle textStylePDFtoPaint(TextStyle? tStyle){
 
 
 
+p.PdfColor? ColorToPdfColor(Color? color){
+  if (color == null){
+    return null;
+  }
+  return p.PdfColor(color.red/255.0, color.green/255.0, color.blue/255.0);
+}
 
 
 
@@ -745,8 +764,18 @@ pw.TextStyle textStylePDFtoPaint(TextStyle? tStyle){
   // This method builds a RichText widget with support for custom formatting.
   // It interprets specific charactars (`~` for subscript and `^` for superscript)
   // within the input text and applies the corresponding formatting.
-pw.RichText buildTextWithFormattingPDF(String text, pw.TextStyle style) {
-    var alignment = pw.TextAlign.start;
+//pw.RichText 
+buildTextWithFormattingPDF(String text, pw.TextStyle style) {
+    //var alignment = pw.TextAlign.start;
+    var aIndex = 0;
+    if (text.endsWith("r\$")){
+      text = text.replaceRange(text.length-2, text.length, '');
+      aIndex = 1;
+    } else if (text.endsWith("w\$")){
+      text = text.replaceRange(text.length-2, text.length, '');
+      aIndex = 2;
+    }
+    
     // List to hold all the formatted spans (text segments with specific styles)
     final List<pw.InlineSpan> spans = <pw.InlineSpan>[];
     
@@ -854,7 +883,15 @@ pw.RichText buildTextWithFormattingPDF(String text, pw.TextStyle style) {
       }
     }
     // Return a RichText widget that displays all the spans with the applied formatting
-    return pw.RichText(text: pw.TextSpan(children: spans), textAlign: pw.TextAlign.end);
+
+    if (aIndex == 1){
+    //return pw.RichText(text: pw.TextSpan(children: spans), textAlign: pw.TextAlign.end);
+    return pw.Align(alignment: pw.Alignment.centerRight, child: pw.RichText(text: pw.TextSpan(children: spans)));
+    } else if (aIndex == 2){
+      return pw.Center(child: pw.RichText(text: pw.TextSpan(children: spans)));
+    } else {
+      return pw.RichText(text: pw.TextSpan(children: spans));
+    }
   }
 
 

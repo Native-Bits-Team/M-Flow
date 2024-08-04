@@ -238,7 +238,7 @@ class MarkdownBuilder implements md.NodeVisitor {
 
     int? start;
     if (_isBlockTag(tag)) {
-if (element.textContent.endsWith("ww\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 2);}else //NBT
+if (element.textContent.endsWith("r\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 2);}else //NBT
 if (element.textContent.endsWith("w\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 1);} else {_addAnonymousBlockIfNeeded();} // NBT
 ////////////// NBT Starts, Credits to NBT member Madhur for original Code, Modified to Work here by Imad Laggoune
 /*
@@ -395,7 +395,7 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
     } else {
       String o = text.text;
       TextAlign k;
-      if (text.text.endsWith("ww\$")){
+      if (text.text.endsWith("r\$")){
         k = TextAlign.end; //o = text.text.replaceFirst("w\$","");
         o = text.text.replaceRange(text.text.length-3, text.text.length, '');
       } else if (text.text.endsWith("w\$")) {
@@ -450,18 +450,40 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
 
       //////////// NBT Starts, Credits to NBT member Madhur for original Code, Modified by Imad Laggoune
       if (text.text.contains(r'\$') || text.text.contains(r'$$')) {
-        if (text.text.startsWith(r'$$') && text.text.endsWith(r'$$')) {
+        if (text.text.startsWith(r'$$')){// && text.text.endsWith(r'$$')) {
+        if (text.text.endsWith(r'$$' + "w\$")){
           // Block math expression
-          _inlines.last.children.add(
-            Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2));
+          //_inlines.last.children.add(Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2));
+          _inlines.last.children.add(Center(child: Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('w\$', ''), textScaleFactor: 1.2,)));
+          print(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('w\$', ''));
+        } else if (text.text.endsWith(r'$$' + "r\$")){
+          _inlines.last.children.add(Align(alignment: Alignment.centerRight, child: Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('r\$', ''), textScaleFactor: 1.2)));
         } else {
+          _inlines.last.children.add(Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ")));
+        }
+        return;
+        } else {
+          if (text.text.endsWith(r'$' + 'w\$')){
+            var nText = text.text.replaceAll('w\$', '');
           // Inline math expression
-          final parts = text.text.split(r'$');
+          //final parts = text.text.split(r'$');
+          final parts = nText.split(r'$');
           for (int i = 0; i < parts.length; i++) {
             if (i % 2 == 0) {
-              _inlines.last.children.add(Text(text.text));
+              _inlines.last.children.add(Text(nText));
             } else {
-              _inlines.last.children.add(Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2));
+              _inlines.last.children.add(Center(child:Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2)));
+            }
+          }
+          } else if (text.text.endsWith(r'$' + 'r\$')) {
+            var nText = text.text.replaceAll('r\$', '');
+            final parts = nText.split(r'$');
+            for (int i = 0; i < parts.length; i++){
+              if (i % 2 == 0){
+                _inlines.last.children.add(Text(nText));
+              } else {
+                _inlines.last.children.add(Align(alignment: Alignment.centerRight, child: Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2)));
+              }
             }
           }
         }
@@ -516,7 +538,7 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
     final String tag = element.tag;
 
     if (_isBlockTag(tag)) {
-      if (element.textContent.endsWith("ww\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 2);}else //NBT
+      if (element.textContent.endsWith("r\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 2);}else //NBT
       if (element.textContent.endsWith("w\$")){_addAnonymousBlockIfNeeded(alignmentIndex: 1);}else {_addAnonymousBlockIfNeeded();} // NBT
       //_addAnonymousBlockIfNeeded();
 
