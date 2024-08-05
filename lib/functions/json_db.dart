@@ -47,7 +47,7 @@ newDatabase(){
         "deflat": false,
         "autosave": true,
         "lastFormat": "pdf",
-        "lastTheme": "github",
+        "lastTheme": "github_dark",
         "lastNameUsed": ""
     },
     "projects": {
@@ -136,7 +136,11 @@ loadThemeFile(String? themePath) {
   if (themePath == null){
     return;
   }
+  if (File("assets/themes/$themePath.json").existsSync()){
   globalTheme = jsonDecode(File("assets/themes/$themePath.json").readAsStringSync());
+  } else {
+  globalTheme = jsonDecode(File("assets/themes/github_dark").readAsStringSync());
+  }
 }
 
 loadThemeFileReturn(String? themePath) {
