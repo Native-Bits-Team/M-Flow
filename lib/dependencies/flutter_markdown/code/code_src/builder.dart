@@ -1212,7 +1212,7 @@ if (text.endsWith('w\$')){
       }
     } 
 
-    else if (text.startsWith('-', i) && (i == 0 || text[i - 1] != '\\')) {
+    else if (text.startsWith('-', i) && (i == 0 || text[i - 1 == -1 ? 0 : i-1] != '\\')) {
       // Check if the current segment is underlined (enclosed in '-')
         int j = i + 2;
 
@@ -1323,7 +1323,6 @@ if (text.endsWith('w\$')){
       }
     }
     if (aIndex == 1){
-      print("centered");
       return Center(child: RichText(text: TextSpan(children: spans), textAlign: TextAlign.center,));
     } else if (aIndex == 2){
       return Align(alignment: Alignment.centerRight, child: RichText(text: TextSpan(children: spans), textAlign: TextAlign.end,));

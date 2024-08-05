@@ -115,7 +115,7 @@ class DashBoard extends StatelessWidget {
                                             }
                                           });
                                         },
-                                        label: Align(
+                                        label: const Align(
                                           alignment: Alignment.centerLeft,
                                           child: Text('Open Document'),
                                         ),
@@ -136,7 +136,7 @@ class DashBoard extends StatelessWidget {
                                             );
                                           }));
                                         },
-                                        label: Align(
+                                        label: const Align(
                                           alignment: Alignment.centerLeft,
                                           child: Text('New Document'),
                                         )
@@ -166,7 +166,7 @@ class DashBoard extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
                                     TextButton.icon(
-                                        label: Align(
+                                        label: const Align(
                                           alignment: Alignment.centerLeft,
                                           child: Text('settings'),
                                         ),
@@ -176,7 +176,7 @@ class DashBoard extends StatelessWidget {
                                         }),
                                         const SizedBox(height: 20),
                                     TextButton.icon(
-                                        label: Align(
+                                        label: const Align(
                                           alignment: Alignment.centerLeft,
                                           child: Text('info'),
                                         ),
@@ -210,7 +210,7 @@ class DashBoard extends StatelessWidget {
 // }
 
 class DocPreview extends StatefulWidget {
-  const DocPreview({
+  DocPreview({
     super.key,
     required this.projectPath,
     required this.projectName,
@@ -218,18 +218,18 @@ class DocPreview extends StatefulWidget {
     required this.deleteJsonDoc,
   });
 
-  final String projectPath;
-  final String projectName;
+  String projectPath;
+  String projectName;
   final Function(String, String) onDelete;  // Added it....
   final Function(String, String) deleteJsonDoc;
-
+  Widget? previewImageBytes;
   @override
   State<DocPreview> createState() => _DocPreviewState();
 }
 
 
 class _DocPreviewState extends State<DocPreview> {
-  Widget? previewImageBytes;
+ // Widget? previewImageBytes;
   String test = ""; // This is temporary (used to hold the content of doc)
   bool enabled = true;
   Timer? _debounce;
@@ -246,18 +246,19 @@ class _DocPreviewState extends State<DocPreview> {
   }
 
   void deleteJsonDoc(){
+    //removeRecentOpen(widget.projectPath, widget.projectName);
     widget.deleteJsonDoc(widget.projectPath, widget.projectName);
   }
   // ..............................
 
   void updatePreview({bool force = false}){
-    if ((previewImageBytes == null && widget.projectPath != "") || force) {
+    if ((widget.previewImageBytes == null && widget.projectPath != "") || force) {
       //ScreenshotController sController = ScreenshotController();
       var file = File(widget.projectPath);
       if (!file.existsSync()) {
         setState(() {
           enabled = false;
-          previewImageBytes = const Tooltip(
+          widget.previewImageBytes = const Tooltip(
             message: "File not found!",
             child: Icon(Icons.info, color: Colors.red));
         });
@@ -273,17 +274,17 @@ class _DocPreviewState extends State<DocPreview> {
           if (text.startsWith("mflow")) {
             Map<String, dynamic> data = jsonDecode(text.substring(10));
             test = data["content"];
-            generatePdfImageFromMD(data["content"], buildMarkdownStyle(1.0, tempTheme: data["theme"]), tempTheme: data["theme"])
+            generatePdfImageFromMD(data["content"], buildMarkdownStyle(1.0, tempTheme: data["theme"]), tempTheme: data["theme"], dpiMultiplicator: 0.7, fq: FilterQuality.high)
             .then((imageAndSize) {
               setState(() {
-                previewImageBytes = imageAndSize[0];
+                widget.previewImageBytes = imageAndSize[0];
               });
             });
           } else {
-            generatePdfImageFromMD(text, MarkdownStyleSheet(), tempTheme: "mflow")
+            generatePdfImageFromMD(text, MarkdownStyleSheet(), tempTheme: "mflow", dpiMultiplicator: 0.7, fq: FilterQuality.high)
             .then((imageAndSize) {
               setState(() {
-                previewImageBytes = imageAndSize[0];
+                widget.previewImageBytes = imageAndSize[0];
               });
             });
           }
@@ -348,10 +349,10 @@ class _DocPreviewState extends State<DocPreview> {
 
     void checkPreviewInfo(){
     if (widget.projectPath.isNotEmpty &&
-        previewImageBytes is Tooltip &&
+        widget.previewImageBytes is Tooltip &&
         File(widget.projectPath).existsSync()){
           setState(() {
-            previewImageBytes = const CircularProgressIndicator();
+            widget.previewImageBytes = const CircularProgressIndicator();
           });
           updatePreview(force: true);
       }
@@ -401,9 +402,9 @@ class _DocPreviewState extends State<DocPreview> {
           }));
         },
         color: Colors.transparent,
-        child: GridTile(child: previewImageBytes ?? Center(child: CircularProgressIndicator()), header: Align(alignment: Alignment.centerRight, child: IconButton(onPressed: (){
+        child: GridTile(child: widget.previewImageBytes ?? const Center(child: CircularProgressIndicator()), header: Align(alignment: Alignment.centerRight, child: IconButton(onPressed: (){
           _showDeleteConfirmation(context);
-        },icon: Icon(Icons.delete, color: Colors.redAccent,))),),
+        },icon: const Icon(Icons.delete, color: Colors.redAccent,))),),
 
       )),
 
@@ -413,7 +414,7 @@ class _DocPreviewState extends State<DocPreview> {
        // mainAxisAlignment: MainAxisAlignment.center, 
         //children: [
         
-          Tooltip(message: widget.projectName,child: Text(widget.projectName, maxLines: 1)),
+          Tooltip(message: widget.projectName,child: Center(child: Text(widget.projectName, maxLines: 1))),
           //IconButton(
             //onPressed: () {_showDeleteConfirmation(context);}, // Added it.............
             //icon: const Icon(Icons.delete)),
@@ -434,14 +435,17 @@ class _DocPreviewState extends State<DocPreview> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text("Confirm Deletion"),
+              title: const Text("Confirm Removale", style: TextStyle(fontWeight: FontWeight.bold),),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text("Are you sure you want to delete this document permanently?"),
+                  const Text("Are you sure you want to remove the document?"),
                   CheckboxListTile(
-                    title: const Text("Delete from system"),
+                    title: const Text("Delete from system", style: TextStyle(color: Colors.red),),
                     value: deleteFromSystem,
+                    tileColor: Colors.transparent,
+                    
+                    
                     onChanged: (value) {
                       setState(() {
                         deleteFromSystem = value ?? true; // Update the local state
@@ -458,6 +462,7 @@ class _DocPreviewState extends State<DocPreview> {
                   child: const Text("Cancel"),
                 ),
                 TextButton(
+                  style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.redAccent)),
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
                     if (deleteFromSystem) {
@@ -466,7 +471,7 @@ class _DocPreviewState extends State<DocPreview> {
                       deleteJsonDoc(); // Call the deleteJsonDoc method
                     }
                   },
-                  child: const Text("Delete"),
+                  child: const Text("Delete", style: TextStyle(color: Colors.white),),
                 ),
               ],
             );
@@ -521,23 +526,28 @@ class _ProjectGridState extends State<ProjectGrid> {
 
   // Added it......................................................
   void populateChildPreview() {
+    childPreview.forEach((w){
+      w.previewImageBytes = null;
+      w.projectName = "";
+      w.projectPath = "";
+    });
     childPreview.clear();
     for (int j = 0; j < widget.pathPreview.length; j++) {
-      if (File(widget.pathPreview[j]).existsSync()) {
+     // if (File(widget.pathPreview[j]).existsSync()) {
         childPreview.add(DocPreview(
           projectPath: widget.pathPreview[j],
           projectName: widget.namePreview[j],
           onDelete: deleteDocument,
           deleteJsonDoc: deleteFromJson,
         ));
-      } else {
+     // } else {
         // Remove orphaned previews
-        setState(() {
-          widget.pathPreview.removeAt(j);
-          widget.namePreview.removeAt(j);
-          j--; // Adjust index after removal
-        });
-      }
+       // setState(() {
+         // widget.pathPreview.removeAt(j);
+        //  widget.namePreview.removeAt(j);
+        //  j--; // Adjust index after removal
+        //});
+    //  }
     }
   }
   // Added it......................................................
@@ -567,6 +577,7 @@ class _ProjectGridState extends State<ProjectGrid> {
   // Updates childPreview to remove the corresponding DocPreview widget.
   // Shows a SnackBar with success or error message.
   void deleteDocument(String path, String name) async {
+    removeRecentOpen(path, name);
     try {
       await File(path).delete();
       setState(() {
@@ -580,22 +591,23 @@ class _ProjectGridState extends State<ProjectGrid> {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Document deleted successfully')),
+        const SnackBar(content: Text('Document deleted successfully')),
       );
     } catch (e) {
-      print(e);
+      //print(e);
 
       // Hide the current snackbar if there is one
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting document!')),
+        const SnackBar(content: Text('Error deleting document!')),
       );
     }
   }
 
 
   void deleteFromJson(String path, String name) {
+    removeRecentOpen(path, name);
     // print('hello');
     // Implementation to delete from JSON
     try {
@@ -610,17 +622,17 @@ class _ProjectGridState extends State<ProjectGrid> {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Document removed from JSON successfully')),
+        const SnackBar(content: Text('Document removed successfully')),
       );
     } catch (e) {
       
-      print(e);
+     // print(e);
 
       // Hide the current snackbar if there is one
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error removing document from JSON!')),
+        const SnackBar(content: Text('Error removing document!')),
       );
     }
   }

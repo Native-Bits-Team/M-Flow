@@ -315,11 +315,20 @@ class _ExportDialogState extends State<ExportDialog> {
                             }
                           if (exportFormat == exportFormatOptions[0]) {
                             mdtopdf(widget.markdownTextExport,
-                                result, true, widget.markdownStyle);
+                                result, true, widget.markdownStyle, metadata: {
+                                  "title" : documentTitle.text,
+                                  "author" : authorName.text,
+                                  "subject" : documentSubject.text
+                                });
                         Navigator.of(widget.dialogContext).pop();
                           } else if (exportFormat == exportFormatOptions[1]) {
                             mdtopdf(widget.markdownTextExport,
-                                result, false, widget.markdownStyle);
+                                result, false, widget.markdownStyle,
+                                metadata: {
+                                  "title" : documentTitle.text,
+                                  "author" : authorName.text,
+                                  "subject" : documentSubject.text
+                                });
                             Navigator.of(widget.dialogContext).pop();
                           } else {
                             File(result)

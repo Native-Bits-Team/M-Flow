@@ -19,7 +19,7 @@ import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 import 'package:m_flow/dependencies/dart_pdf/pdf/code/src/widgets/text.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.dart';
-import 'package:m_flow/dependencies/flutter_markdown/code/code_src/builder.dart' as b;
+//import 'package:m_flow/dependencies/flutter_markdown/code/code_src/builder.dart' as b;
 //import 'package:pdf/widgets.dart' as pw;
 import 'package:markdown/markdown.dart' as md;
 //import 'package:m_flow/dependencies/markdown/code/markdown.dart' as md;
@@ -585,7 +585,7 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
 }
 
 //mdtopdf(String path, String out) async {
-mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style) async {
+mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style, {Map<String,dynamic> metadata = const {"title": null, "author" : null, "subject" : null}}) async {
   //md2 = md2.replaceAll('\n', '');
   //md2 = md2.replaceAll('\n\n', '\n');
   String s = "";
@@ -618,9 +618,10 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style)
   var doc = pw.Document(
     compress: true,
     version: p.PdfVersion.pdf_1_5,
-    title: "TESTING TITLE",
-    author: "Me",
-    creator: ""
+    title: metadata["title"],
+    author: metadata["author"],
+    subject: metadata["subject"],
+    creator: "M-Flow 0.1v"
   );
   Color pageBackgroundColor = Color(HexColor(getTheme()["backgroundColor"]).value);
   doc.addPage(pw.MultiPage(
@@ -641,7 +642,7 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style)
   }
 }
 
-Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0, String? tempTheme, double dpiMultiplicator = 1.0}) async {
+Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0, String? tempTheme, double dpiMultiplicator = 1.0, FilterQuality fq = FilterQuality.low}) async {
   if (md2 == ""){
     return [null,0]; // TODO: Should be removed
   }
@@ -720,7 +721,7 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
                                                                       // PdfPageFormat.inch is 72.0, I learned it from page_format.dart form pdf dependency
   PdfRaster j = await r.elementAt(pageIndex);
   Uint8List k = await j.toPng();
-  List<dynamic> imageAndSize = [w.Image.memory(k, width: j.width.toDouble(), height: j.height.toDouble(), fit: BoxFit.fitWidth),doc.document.pdfPageList.pages.length];
+  List<dynamic> imageAndSize = [w.Image.memory(k, width: j.width.toDouble(), height: j.height.toDouble(), fit: BoxFit.fitWidth, filterQuality: fq,),doc.document.pdfPageList.pages.length];
   return imageAndSize;
 }
 
@@ -802,10 +803,26 @@ buildTextWithFormattingPDF(String text, pw.TextStyle style) {
     // Start iterating over the characters in the input text
     int i = 0;
     while (i < text.length) {
+      // COPY PASTED FROM build.dart, Code by Madhur
+    if (text[i] == '\\') {
+      // Check if the next character is part of a known escape sequence
+      if (i + 1 < text.length && (text[i + 1] == '-' || text[i + 1] == '~' || text[i + 1] == '^')) {
+        // If yes, treat the next character as a literal
+        spans.add(pw.TextSpan(text: text[i + 1], style: style));
+        i += 2; // Skip past the escape sequence
+      } else {
+        // If the backslash is not followed by a known character, treat it as a literal
+        spans.add(pw.TextSpan(text: '\\', style: style));
+        i += 1; // Move to the next character
+      }
+    } 
+
+      // END COPY PAST
+
 
       // COPY PASTED FROM build.dart, Code by Madhur
       // Check if the current segment is underlined (enclosed in '-')
-      if (text.startsWith('-', i)) {
+      if (text.startsWith('-', i) && (i==0 || text[i-1 == -1 ? 0 : i-1] != '\\')) {
         int j = i + 2;
 
         // Find the closing '-' to determine the underlined text
@@ -918,7 +935,7 @@ buildTextWithFormattingPDF(String text, pw.TextStyle style) {
       } else {
         int j = i;
         // Collect all consecutive regular text characters
-        while (j < text.length && text[j] != '~' && text[j] != '^' && text[j] != '-'){// && text[j] != 'w\$') {
+        while (j < text.length && text[j] != '~' && text[j] != '^' && text[j] != '-' && text[j] != '\\'){// && text[j] != 'w\$') {
           j++;
         }
 
