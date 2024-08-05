@@ -862,7 +862,7 @@ buildTextWithFormattingPDF(String text, pw.TextStyle style) {
           spans.add(
             pw.WidgetSpan(
               child: pw.Transform.translate(
-                offset: p.PdfPoint(0, -3.0*3.0),//styleSheet.textScaler != null ? -styleSheet.textScaler!.scale(3.0*2.0) : -3.0), // adjust vertical offset for subscript
+                offset: const p.PdfPoint(0, -3.0*3.0),//styleSheet.textScaler != null ? -styleSheet.textScaler!.scale(3.0*2.0) : -3.0), // adjust vertical offset for subscript
                 child: pw.Text(
                   subscriptText,
                   //textScaler: styleSheet.textScaler.,
@@ -901,7 +901,7 @@ buildTextWithFormattingPDF(String text, pw.TextStyle style) {
             pw.WidgetSpan(
               child: pw.Transform.translate(
                 //offset: Offset(0, styleSheet.textScaler != null ? -styleSheet.textScaler!.scale(3.0*2.0) : -3.0), // adjust vertical offset for superscript
-                offset: p.PdfPoint(0, 3.0*2.0),//styleSheet.textScaler != null ? -styleSheet.textScaler!.scale(3.0*2.0) : -3.0),
+                offset: const p.PdfPoint(0, 3.0*2.0),//styleSheet.textScaler != null ? -styleSheet.textScaler!.scale(3.0*2.0) : -3.0),
                 child: pw.Text(
                   superscriptText,
                   //textScaler: styleSheet.textScaler,

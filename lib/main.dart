@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: DashBoard(),
+        home: const DashBoard(),
         //const FormPage(
           //  initText: "Test TEST TEST", initTitle: "Test"),
         theme: ThemeData(

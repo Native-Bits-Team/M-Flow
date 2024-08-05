@@ -309,7 +309,7 @@ class _ExportDialogState extends State<ExportDialog> {
                       TextButton.icon(
                         onPressed: () {
                           var fp = FilePicker.platform;
-                          fp.saveFile(dialogTitle: "Export", fileName: "Document" + "." +exportFormat.toLowerCase(), allowedExtensions: [exportFormat.toLowerCase()]).then((result){
+                          fp.saveFile(dialogTitle: "Export", fileName: "Document.${exportFormat.toLowerCase()}", allowedExtensions: [exportFormat.toLowerCase()]).then((result){
                             if (result == null){
                               return;
                             }

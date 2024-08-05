@@ -193,7 +193,7 @@ class DashBoard extends StatelessWidget {
                   const Text("Recent Documents", textScaler: TextScaler.linear(1.5),),
                   const SizedBox(height: 16),
 
-                  Expanded(child: ProjectGrid())
+                  const Expanded(child: ProjectGrid())
                 ])));
   }
 }
@@ -214,17 +214,17 @@ class DashBoard extends StatelessWidget {
 class DocPreview extends StatefulWidget {
   DocPreview({
     super.key,
-    required this.projectPath,
-    required this.projectName,
+    required this.projectPathW,
+    required this.projectNameW,
     required this.onDelete,
     required this.deleteJsonDoc,
   });
 
-  String projectPath;
-  String projectName;
+  String projectPathW;
+  String projectNameW;
   final Function(String, String) onDelete;  // Added it....
   final Function(String, String) deleteJsonDoc;
-  Widget? previewImageBytes;
+  //Widget? previewImageBytes;
   @override
   State<DocPreview> createState() => _DocPreviewState();
 }
@@ -232,6 +232,10 @@ class DocPreview extends StatefulWidget {
 
 class _DocPreviewState extends State<DocPreview> {
  // Widget? previewImageBytes;
+
+ late String projectPathS;
+ late String projectNameS;
+ Widget? previewImageBytesS;
   String test = ""; // This is temporary (used to hold the content of doc)
   bool enabled = true;
   Timer? _debounce;
@@ -239,32 +243,40 @@ class _DocPreviewState extends State<DocPreview> {
   @override
   void initState() {
     super.initState();
+    projectPathS = widget.projectPathW;
+    projectNameS = widget.projectNameW;
     updatePreview();
   }
 
   // added it ......................
   void deleteDoc() {
-    widget.onDelete(widget.projectPath, widget.projectName);
+    //widget.onDelete(widget.projectPath, widget.projectName);
+    widget.onDelete(projectPathS, projectNameS);
   }
 
   void deleteJsonDoc(){
     //removeRecentOpen(widget.projectPath, widget.projectName);
-    widget.deleteJsonDoc(widget.projectPath, widget.projectName);
+    //widget.deleteJsonDoc(widget.projectPath, widget.projectName);
+    widget.deleteJsonDoc(projectPathS, projectNameS);
   }
   // ..............................
 
   void updatePreview({bool force = false}){
-    if ((widget.previewImageBytes == null && widget.projectPath != "") || force) {
+    //if ((widget.previewImageBytes == null && widget.projectPath != "") || force) {
+    if ((previewImageBytesS == null && projectPathS != "" || force)){
       //ScreenshotController sController = ScreenshotController();
-      var file = File(widget.projectPath);
+      //var file = File(widget.projectPath);
+      var file = File(projectPathS);
       if (!file.existsSync()) {
         setState(() {
           enabled = false;
-          widget.previewImageBytes = const Tooltip(
+          //widget.previewImageBytes = const Tooltip(
+          previewImageBytesS = const Tooltip(
             message: "File not found!",
             child: Icon(Icons.info, color: Colors.red));
         });
       } else {
+        enabled = true;
       _debounce?.cancel(); // Credits to NBT member Madhur for this code
       _debounce = Timer(const Duration(milliseconds: 200), () {
         // This was added to remove lag when switching to the dashbaord, this isn't a permenent solution, as all previews will
@@ -279,14 +291,16 @@ class _DocPreviewState extends State<DocPreview> {
             generatePdfImageFromMD(data["content"], buildMarkdownStyle(1.0, tempTheme: data["theme"]), tempTheme: data["theme"], dpiMultiplicator: 0.7, fq: FilterQuality.high)
             .then((imageAndSize) {
               setState(() {
-                widget.previewImageBytes = imageAndSize[0];
+                //widget.previewImageBytes = imageAndSize[0];
+                previewImageBytesS = imageAndSize[0];
               });
             });
           } else {
             generatePdfImageFromMD(text, MarkdownStyleSheet(), tempTheme: "mflow", dpiMultiplicator: 0.7, fq: FilterQuality.high)
             .then((imageAndSize) {
               setState(() {
-                widget.previewImageBytes = imageAndSize[0];
+                //widget.previewImageBytes = imageAndSize[0];
+                previewImageBytesS = imageAndSize[0];
               });
             });
           }
@@ -348,7 +362,7 @@ class _DocPreviewState extends State<DocPreview> {
   //     });}
   //   }
   // }
-
+/*
     void checkPreviewInfo(){
     if (widget.projectPath.isNotEmpty &&
         widget.previewImageBytes is Tooltip &&
@@ -359,7 +373,22 @@ class _DocPreviewState extends State<DocPreview> {
           updatePreview(force: true);
       }
   }
+*/
 
+void checkPreviewInfo(){
+  //print(projectNameS == widget.projectNameW ? "SAME NAME" : "DIFFERENET NAME");
+  if (projectNameS != widget.projectNameW || projectPathS != widget.projectPathW){
+   // print("ERROR");
+    //print(projectNameS);
+    //print(widget.projectNameW);
+   // setState(() {
+      projectNameS = widget.projectNameW;
+      projectPathS = widget.projectPathW;
+      previewImageBytesS = const Center(child: CircularProgressIndicator());
+      updatePreview(force: true);
+    //});
+  }
+}
 // void checkPreviewInfo(){
 //   if (widget.projectPath != "" && previewImageBytes.runtimeType == Tooltip && File(widget.projectPath).existsSync()){
 //     previewImageBytes = const CircularProgressIndicator();
@@ -368,8 +397,8 @@ class _DocPreviewState extends State<DocPreview> {
 // }
   @override
   Widget build(BuildContext context) {
-    checkPreviewInfo(); // TODO: This method removes a RecentOpen and then regenerate all DocPreviews, a better solution would to just delete the most recent then the button of it
-
+    //checkPreviewInfo(); // TODO: This method removes a RecentOpen and then regenerate all DocPreviews, a better solution would to just delete the most recent then the button of it
+    checkPreviewInfo();
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Expanded(
         child: MaterialButton(
@@ -398,15 +427,18 @@ class _DocPreviewState extends State<DocPreview> {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
             return FormPage(
               initText: test,
-              initTitle: widget.projectName,
-              initPath : widget.projectPath,
+              //initTitle: widget.projectName,
+              //initPath : widget.projectPath,
+              initTitle: projectNameS,
+              initPath: projectPathS,
             );
           }));
         },
         color: Colors.transparent,
-        child: GridTile(child: widget.previewImageBytes ?? const Center(child: CircularProgressIndicator()), header: Align(alignment: Alignment.centerRight, child: IconButton(onPressed: (){
+        child: GridTile(header: Align(alignment: Alignment.centerRight, child: IconButton(onPressed: (){
           _showDeleteConfirmation(context);
-        },icon: const Icon(Icons.delete, color: Colors.redAccent,))),),
+        },icon: const Icon(Icons.delete, color: Colors.redAccent,))),child: //widget.previewImageBytes
+        previewImageBytesS ?? const Center(child: CircularProgressIndicator()),),
 
       )),
 
@@ -416,7 +448,8 @@ class _DocPreviewState extends State<DocPreview> {
        // mainAxisAlignment: MainAxisAlignment.center, 
         //children: [
         
-          Tooltip(message: widget.projectName,child: Center(child: Text(widget.projectName, maxLines: 1))),
+          Tooltip(message: projectNameS,//widget.projectName,
+          child: Center(child: Text(projectNameS, maxLines:1 ))),//widget.projectName, maxLines: 1))),
           //IconButton(
             //onPressed: () {_showDeleteConfirmation(context);}, // Added it.............
             //icon: const Icon(Icons.delete)),
@@ -499,10 +532,10 @@ class _DocPreviewState extends State<DocPreview> {
 // }
 
 class ProjectGrid extends StatefulWidget {
-  ProjectGrid({super.key});
-  List<String> pathPreview = [];
-  List<String> namePreview = [];
-  bool init = false;
+  const ProjectGrid({super.key});
+  //List<String> pathPreview = [];
+  //List<String> namePreview = [];
+  //bool init = false;
 
   @override
   State<ProjectGrid> createState() => _ProjectGridState();
@@ -510,14 +543,16 @@ class ProjectGrid extends StatefulWidget {
 
 
 class _ProjectGridState extends State<ProjectGrid> {
-  final SliverGridDelegate gridDelegateRef =
+List<String> pathPreviewS = [];
+List<String> namePreviewS = [];
+  /*final SliverGridDelegate gridDelegateRef =
       const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 7,
+          crossAxisCount: 7, // REF #11
           childAspectRatio: 0.65,
           mainAxisSpacing: 10.0,
           crossAxisSpacing: 10.0);
-
-  List<DocPreview> childPreview = []; // Added it.................
+*/
+  //List<DocPreview> childPreview = []; // Added it.................
 
   @override
   void initState() {
@@ -527,21 +562,24 @@ class _ProjectGridState extends State<ProjectGrid> {
   }
 
   // Added it......................................................
-  void populateChildPreview() {
-    childPreview.forEach((w){
+  //void populateChildPreview() {
+  Widget generateDocs(){
+    /*childPreview.forEach((w){
       w.previewImageBytes = null;
       w.projectName = "";
       w.projectPath = "";
-    });
-    childPreview.clear();
-    for (int j = 0; j < widget.pathPreview.length; j++) {
+    });*/
+    //childPreview.clear();
+    /*List<DocPreview> docs = [];
+    for (int j = 0; j < widget.pathPreview.length; j++) { // REF #12
      // if (File(widget.pathPreview[j]).existsSync()) {
-        childPreview.add(DocPreview(
+        //childPreview.add(DocPreview(
+        docs.add(DocPreview(
           projectPath: widget.pathPreview[j],
           projectName: widget.namePreview[j],
           onDelete: deleteDocument,
           deleteJsonDoc: deleteFromJson,
-        ));
+        ));*/
      // } else {
         // Remove orphaned previews
        // setState(() {
@@ -550,7 +588,15 @@ class _ProjectGridState extends State<ProjectGrid> {
         //  j--; // Adjust index after removal
         //});
     //  }
-    }
+   // }
+    return GridView.builder(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, childAspectRatio: 0.65, crossAxisSpacing: 10.0, mainAxisSpacing: 10.0), itemCount: pathPreviewS.length,//widget.pathPreview.length,
+     itemBuilder: (context, count){ // [T] REF #12
+      
+      //return docs[count];
+      //return DocPreview(projectPath: widget.pathPreview[count], projectName: widget.namePreview[count], onDelete: deleteDocument, deleteJsonDoc: deleteFromJson); // [T] REF #12
+      //return DocPreview(projectPathW: widget.pathPreview[count], projectNameW: widget.namePreview[count], onDelete: deleteDocument, deleteJsonDoc: deleteFromJson);
+      return DocPreview(projectPathW: pathPreviewS[count], projectNameW: namePreviewS[count], onDelete: deleteDocument, deleteJsonDoc: deleteFromJson);
+    }); // [T] REF #11
   }
   // Added it......................................................
   
@@ -583,10 +629,15 @@ class _ProjectGridState extends State<ProjectGrid> {
     try {
       await File(path).delete();
       setState(() {
-        widget.pathPreview.remove(path);
-        widget.namePreview.remove(name);
+        updatePreviews();
+        //widget.pathPreview.remove(path);
+        //widget.namePreview.remove(name);
+        
+        //pathPreviewS.remove(path);
+        //pathPreviewS.remove(name);
+        
         // Update the childPreview list
-        childPreview.removeWhere((element) => element.projectPath == path);
+        //childPreview.removeWhere((element) => element.projectPath == path);
       });
 
       // Hide the current snackbar if there is one
@@ -614,10 +665,15 @@ class _ProjectGridState extends State<ProjectGrid> {
     // Implementation to delete from JSON
     try {
       setState(() {
-        widget.pathPreview.remove(path);
-        widget.namePreview.remove(name);
+        updatePreviews();
+        //widget.pathPreview.remove(path);
+        //widget.namePreview.remove(name); // TODO: BUG: Multiple documents with differenet paths could have same name
+        
+        //pathPreviewS.remove(path);
+        //namePreviewS.remove(path);
+        
         // Update the childPreview list
-        childPreview.removeWhere((element) => element.projectPath == path); 
+        //childPreview.removeWhere((element) => element.projectPath == path); 
       });
       
       // Hide the current snackbar if there is one
@@ -649,7 +705,7 @@ class _ProjectGridState extends State<ProjectGrid> {
     // TODO: There is a bug here (probably fixed by below!)
 
     // Added it......................................................
-    populateChildPreview(); // Ensure the grid is populated correctly
+   // populateChildPreview(); // Ensure the grid is populated correctly
     // Added it......................................................
 
 
@@ -683,13 +739,15 @@ class _ProjectGridState extends State<ProjectGrid> {
     // return GridView(gridDelegate: gridDelegateRef, children: childPreview);
 
     // Added it......................................................
+   /* var d = generateDocs();
     return GridView.builder(
       gridDelegate: gridDelegateRef, 
-      itemCount: childPreview.length, 
+      itemCount: d.length, 
       itemBuilder: (context, index) {
-        return childPreview[index];
+        return d[index];
       },
-    );
+    );*/
+    return generateDocs();
     // Added it......................................................
   }
 
@@ -756,13 +814,15 @@ class _ProjectGridState extends State<ProjectGrid> {
       namePreviewTemp = result[0];
       pathPreviewTemp = result[1];
 
-      if (pathPreviewTemp.toString() != widget.pathPreview.toString() ||
-          namePreviewTemp.toString() != widget.namePreview.toString()) {
+      if (pathPreviewTemp.toString() != pathPreviewS.toString() || //widget.pathPreview.toString() ||
+          namePreviewTemp.toString() != namePreviewS.toString()) {//widget.namePreview.toString()) {
         setState(() {
-          widget.pathPreview = pathPreviewTemp;
-          widget.namePreview = namePreviewTemp;
+          //widget.pathPreview = pathPreviewTemp;
+          //widget.namePreview = namePreviewTemp;
+          pathPreviewS = pathPreviewTemp;
+          namePreviewS = namePreviewTemp;
         });
-        populateChildPreview();
+       // populateChildPreview();
       }
     });
   }
@@ -772,8 +832,8 @@ class _ProjectGridState extends State<ProjectGrid> {
 
 
 // Needs improvements......................................................................
-loadFormPage(BuildContext context, String path, bool isMflowFile ,{String title = "M-Flow"}) {
-  if (isMflowFile){
+loadFormPage(BuildContext context, String path, bool isNotMflowFile ,{String title = "M-Flow"}) {
+  if (!isNotMflowFile){
   Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) { // [T] REF #10
   return FormPage(
   initText: File(path).readAsStringSync(), initTitle : title , 

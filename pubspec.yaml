@@ -20,6 +20,7 @@ dependencies:
   flutter_math_fork: ^0.7.2
   screenshot: ^3.0.0
   window_manager: ^0.3.9
+  http: ^1.2.2
 
   
 dev_dependencies:
