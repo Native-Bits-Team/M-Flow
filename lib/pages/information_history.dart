@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 
 class InfoPage extends StatelessWidget {
   const InfoPage({super.key});
@@ -44,3 +44,9 @@ loadLicenseMIT() {
   // [TRANSPARENCY] I copy pasted the License text from https://github.com/jmaupetit/md2pdf?tab=MIT-1-ov-file#readme
   return "Copyright (C) 2013-2016 Julien Maupetit\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of\nthis software and associated documentation files (the \"Software\"), to deal in\nthe Software without restriction, including without limitation the rights to\nuse, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of\nthe Software, and to permit persons to whom the Software is furnished to do so,\nsubject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS\nFOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR\nCOPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER\nIN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.";
 }
+*/
+
+// HISTORY: this file went through changes that were lost, these changes had pointed to the references it was used (i.e [TRANSPARENCY]) and so on, and they are lost
+// one miss had happen in which I (Imad Laggoune) have looked up a part of the answer during search from site StackOverflow, knowing that the answers have their license I credited it in the lost file
+// however now this file is marked _history
+// for more information regarding NBT learning policies, check TRANSPARENCY.md, Date: 05/08/2024 DD/MM/YYYY

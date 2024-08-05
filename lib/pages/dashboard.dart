@@ -8,8 +8,10 @@ import 'package:m_flow/dependencies/flutter_markdown/code/code_src/style_sheet.d
 import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/pages/form_page.dart';
-import 'package:m_flow/pages/information.dart';
 import 'package:m_flow/pages/settings.dart';
+
+
+import 'package:m_flow/pages/info.dart';
 
 class DashBoard extends StatelessWidget {
   const DashBoard({super.key});
@@ -182,7 +184,7 @@ class DashBoard extends StatelessWidget {
                                         ),
                                         icon: const Icon(Icons.info),
                                         onPressed: () {
-                                            Navigator.push(context,MaterialPageRoute(builder: (context) {return const InfoPage();}));
+                                            Navigator.push(context,MaterialPageRoute(builder: (context) {return const Info();}));
                                         })
                                   ]),
                                 )

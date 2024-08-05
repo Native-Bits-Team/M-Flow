@@ -1,1 +1,18 @@
-{"user":{"name":"user"},"settings":{"signature":false,"compress":false,"deflat":false,"autosave":false,"lastFormat":"pdf","lastTheme":"github_dark","lastNameUsed":""},"projects":{"recentOpen":{"3":{"filePath":"C:\\Users\\Work\\Documents\\md\\M-Flow\\TRANSPARENCYs.md","fileName":"TRANSPARENCYs.md"},"4":{"filePath":"C:\\Users\\Work\\Documents\\md\\M-Flow\\TRANSPARENCY.md","fileName":"TRANSPARENCY.md"},"5":{"filePath":"C:\\Users\\DELL\\Downloads\\Document.md","fileName":"Document.md"}},"list":{}}}
+{
+    "user": {
+        "name": "user"
+    },
+    "settings": {
+        "signature": false,
+        "compress": false,
+        "deflat": false,
+        "autosave": false,
+        "lastFormat": "pdf",
+        "lastTheme": "github_dark",
+        "lastNameUsed": ""
+    },
+    "projects": {
+        "recentOpen": {},
+        "list": {}
+    }
+}
