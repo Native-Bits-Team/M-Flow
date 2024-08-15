@@ -77,9 +77,52 @@ class _MyAppState extends State<MyApp> {
         //const FormPage(
           //  initText: "Test TEST TEST", initTitle: "Test"),
         theme: ThemeData(
+          //canvasColor: Colors.red,
+          //cardColor: Colors.red,
+          cardColor: Color(HexColor(theme["backgroundColor"]).value), // [T] used LicensePage as a reference | REF #W
+          //primaryTextTheme: typographySwitcher(int.parse(theme["typography"])), // [T] Ref below
+          /* [T] used LicensePage as a reference
+          menuButtonTheme: MenuButtonThemeData(style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white)))), // [T] used LicensePage as a reference
+          segmentedButtonTheme: SegmentedButtonThemeData(style: ButtonStyle(splashFactory:NoSplash.splashFactory,textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white)))), // [T] used LicensePage as a reference
+          floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.red, focusColor: Colors.red), //
+          filledButtonTheme: FilledButtonThemeData(style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white)))), //
+          buttonBarTheme: ButtonBarThemeData(alignment: MainAxisAlignment.center), //
+          elevatedButtonTheme: ElevatedButtonThemeData(style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white)))), //
+          toggleButtonsTheme: ToggleButtonsThemeData(color: Colors.red, textStyle: TextStyle(color: Colors.white)), //
+           outlinedButtonTheme: OutlinedButtonThemeData(style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.red)))), //
+           menuBarTheme: MenuBarThemeData(style: MenuStyle(backgroundColor: WidgetStatePropertyAll(Colors.red))), //
+           menuTheme: MenuThemeData(style: MenuStyle(backgroundColor: WidgetStatePropertyAll(Colors.red))), //
+           navigationBarTheme: NavigationBarThemeData(backgroundColor: Colors.red), //
+           navigationDrawerTheme: NavigationDrawerThemeData(backgroundColor: Colors.red), //
+           navigationRailTheme: NavigationRailThemeData(backgroundColor: Colors.red), //
+           bottomNavigationBarTheme: BottomNavigationBarThemeData(backgroundColor: Colors.red), //
+           scrollbarTheme: ScrollbarThemeData(trackColor: WidgetStatePropertyAll(Colors.red), thumbColor: WidgetStatePropertyAll(Colors.red)), //
+           tabBarTheme: TabBarTheme(dividerColor: Colors.red, dividerHeight: 10), //
+           snackBarTheme: SnackBarThemeData(backgroundColor: Colors.red), //
+           bannerTheme: MaterialBannerThemeData(backgroundColor: Colors.red), //
+           expansionTileTheme: ExpansionTileThemeData(backgroundColor: Colors.red), //
+           chipTheme: ChipThemeData(backgroundColor: Colors.red), //
+          // switchTheme: SwitchThemeData(overlayColor: WidgetStatePropertyAll(Colors.red), trackColor: ), //
+          secondaryHeaderColor: Colors.red, //
+          canvasColor: Colors.red, //
+          splashColor: Colors.blue, // step
+          //splashFactory: InkSparkle.splashFactory, //
+          progressIndicatorTheme: ProgressIndicatorThemeData(color: Colors.red), //
+          //cupertinoOverrideTheme: MaterialBasedCupertinoThemeData(materialTheme: ThemeData.dark()),//
+          
+          */
+          
+          //colorScheme: ColorScheme.dark(), //  // This made LicensePage text visible, and change the look of the application | REF #L
+          colorScheme: colorSchemeSwitcher(theme["type"]), // [T] REF #L
+
+
+           //materialTapTargetSize: MaterialTap,
+           //materialTapTargetSize: MaterialTapTargetSize.padded,
+           //buttonTheme: const ButtonThemeData(buttonColor: Colors.red), // // [T] REF #L
+           
           //colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
           drawerTheme: DrawerThemeData(
-              backgroundColor: Color(HexColor(theme["backgroundColor"]).value),
+              backgroundColor: Color(HexColor(theme["backgroundColor"]).value), // REF #W
               shape: const ContinuousRectangleBorder()),
           //iconTheme: IconThemeData(color: Color(HexColor(theme["backgroundColor"]).value)),
           inputDecorationTheme: InputDecorationTheme(
@@ -90,7 +133,6 @@ class _MyAppState extends State<MyApp> {
               focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                       color: Color(HexColor(theme["firstColor"]).value)))),
-
           appBarTheme: AppBarTheme(
               centerTitle: true,
               toolbarHeight: 40,
@@ -152,5 +194,18 @@ typographySwitcher(int index) {
       return Typography.whiteHelsinki;
     default:
       return Typography.whiteHelsinki;
+  }
+}
+
+
+colorSchemeSwitcher(String? type){
+  if (type == null){
+    return const ColorScheme.dark();
+  }
+  if (type == "dark"){
+    return const ColorScheme.dark();
+  }
+  if (type == 'light'){
+    return const ColorScheme.light();
   }
 }

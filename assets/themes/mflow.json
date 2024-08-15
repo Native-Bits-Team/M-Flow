@@ -6,6 +6,7 @@
     "themeName" : "M-Flow",
     "themeFileName" : "mflow",
     "typography" : "0",
+    "type" : "light",
 
     "p":{
         "color": "00B6BC"

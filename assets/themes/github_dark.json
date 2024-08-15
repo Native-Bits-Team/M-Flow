@@ -6,6 +6,7 @@
     "pageBackgroundColor": "2c3544",
     "firstColor" : "e6edf3",
     "typography" : "1",
+    "type": "dark",
     
     "h1": {
         "fontWeight" : "600",
