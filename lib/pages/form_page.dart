@@ -118,19 +118,19 @@ class _FormPageState extends State<FormPage> {
   // void _pickImage(){
   //   // will write code here...
   // }
-void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
+void addPrefixToStartWrap(String prefix){
     var start = leftController.selection.baseOffset;
     //var prefix = "";
     var originalLength = leftController.text.length;
     var newText = addToLineStart(leftController.text, start, prefix);
     if (newText == null){
       focusGuider.requestFocus();
-      leftController.selection = TextSelection(baseOffset: start, extentOffset: start); // [TRANSPARENCY] REF #4
+      leftController.selection = TextSelection(baseOffset: start, extentOffset: start);
       return;}
     leftController.text = newText;
     var diff = newText.length - originalLength - 1;
-    focusGuider.requestFocus(); // [TRANSPARENCY] REF #4
-    leftController.selection = TextSelection(baseOffset: start + diff, extentOffset: start+ diff ); // [TRANSPARENCY] REF #4
+    focusGuider.requestFocus();
+    leftController.selection = TextSelection(baseOffset: start + diff, extentOffset: start+ diff );
 }
 
 
@@ -154,17 +154,6 @@ void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
       markdownText = getUserInput(); // get user input from this method...
     });
   }
-
-//  // updateStyle() method OLD ----------------------------------------
-  // void updateStyle() {
-  //   var markdownStyleValue = buildMarkdownStyle(zoom);
-  //   var backgroundColors = getBackgroundColors();
-  //   setState(() {
-  //     markdownStyle = markdownStyleValue;
-  //     themeBackgroundColor = backgroundColors[0];
-  //     formPageBackgroundColor = backgroundColors[1];
-  //   });
-  // }
 
 //  // updateStyle() method OPTIMIZATION APPROACH - I (using _isUpdatingStyle())----------*DO NOT REMOVE THIS*------------------------------
 
@@ -254,8 +243,7 @@ void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
         start,
         prefix,
       );
-      focusGuider.requestFocus(); // REF #4
-      //leftController.selection = TextSelection(baseOffset: start + prefix.length, extentOffset: start + prefix.length); // REF #4
+      focusGuider.requestFocus();
       leftController.selection = TextSelection(baseOffset: start + ((leftController.text.length - originalLength)/2.0).toInt(), extentOffset: start +  ((leftController.text.length - originalLength)/2.0).toInt()); // REF #6
     } else {
       // Handle when text is selected
@@ -284,96 +272,21 @@ void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
 
   @override
   Widget build(BuildContext context) {
-    // if (stopper) {
-    //   stopper = false;
-    //   updateStyle();
-    // }
-   /* List<DropdownMenuEntry> dropEntries = []; // Moved to json_db.dart;
-    Directory("assets/themes").listSync().forEach((entry){
-      File data = File(entry.path);
-      if (data.existsSync()){
-      Map<String, dynamic> dataD =  jsonDecode(data.readAsStringSync());
-      dropEntries.add(DropdownMenuEntry(value: dataD["themeFileName"], label: dataD["themeName"]));
-      }
-    });*/
     temp = this;
     return Scaffold(
       appBar: AppBar(
         title: Text(title,
-            //style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)
             )),
 
       // *DRAWER : -------------------------------------------------------------------------------- *
       drawer: ProfileDrawer(
         onSettingsTap: () {
-        /*  showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return ExportDialog(
-                dialogContext: context,
-                markdownTextExport: markdownText,
-                markdownStyle: temp!.markdownStyle,
-              );
-            },
-          );*/
-          
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const SettingsPanel()));
         },
         onDashTap: () {
-          //Navigator.push(context,
-            //  MaterialPageRoute(builder: (context) => const DashBoard()));
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const DashBoard())); // REF #10
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const DashBoard()));
         },
-/*
-        onDashTap: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                backgroundColor: Colors.blueGrey[100],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      12.0), // Adjust border radius as needed
-                  side: const BorderSide(
-                      color: Colors.black,
-                      width: 2.0), // Adjust border color and width
-                ),
-                title: const Text('Select Theme'),
-                content: SizedBox(
-                  width: 100,
-                  height: 60,
-                  child: DropdownMenu(
-                    trailingIcon: const Icon(Icons.arrow_drop_down),
-                    initialSelection: "github_dark",
-                    expandedInsets: const EdgeInsets.all(0.0),
-                    inputDecorationTheme: const InputDecorationTheme(
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none
-                    ),
-                    onSelected: (valueName) {
-                      setState(() {
-                        // Handle selection if needed
-                      });
-                    },
-                    dropdownMenuEntries: const [
-                      DropdownMenuEntry(
-                          value: "github_dark", label: "Github Flavour"),
-                    ],
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Close'),
-                  ),
-                ],
-              );
-            },
-          );
-        }, */// GitTap ends here
       ),
       // *DRAWER : -------------------------------------------------------------------------------- *
 
@@ -424,40 +337,14 @@ void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
                         await _handleUploadImage(); // go to the top...
                       },icon: const Icon(Icons.image)
                     ),
-                    //IconButton(onPressed: (){}, icon: Icon(Icons.align_horizontal_left)),
-                    
-                    IconButton(onPressed: (){ // REF #5
+                    IconButton(onPressed: (){
                     addPrefixToStartWrap("");
-                      /*var start = leftController.selection.baseOffset;
-                      var prefix = "";
-                      var originalLength = leftController.text.length;
-                      var newText = addToLineStart(leftController.text, start, prefix);
-                      if (newText == null){return;}
-                      leftController.text = newText;
-                      focusGuider.requestFocus(); // [TRANSPARENCY] REF #4
-                      leftController.selection = TextSelection(baseOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length, extentOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length); // [TRANSPARENCY] REF #4*/
                     }, icon: const Icon(Icons.align_horizontal_left)),
                     IconButton(onPressed: (){
                       addPrefixToStartWrap("w\$");
-                      /*var start = leftController.selection.baseOffset;
-                      var prefix = "w\$";
-                      var originalLength = leftController.text.length;
-                      var newText = addToLineStart(leftController.text, start, prefix);
-                      if (newText == null){print("es");return;}
-                      leftController.text = newText;
-                      focusGuider.requestFocus(); // [TRANSPARENCY] REF #4
-                      leftController.selection = TextSelection(baseOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length, extentOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length); // [TRANSPARENCY] REF #4*/
                     }, icon: const Icon(Icons.align_horizontal_center)),
                     IconButton(onPressed: (){
                       addPrefixToStartWrap("r\$");
-                      /*var start = leftController.selection.baseOffset;
-                      var prefix = "ww\$";
-                      var originalLength = leftController.text.length;
-                      var newText = addToLineStart(leftController.text, start, prefix);
-                      if (newText == null){return;}
-                      leftController.text = newText;
-                      focusGuider.requestFocus(); // [TRANSPARENCY] REF #4
-                      leftController.selection = TextSelection(baseOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length, extentOffset: originalLength < leftController.text.length ? start - prefix.length : start + prefix.length); // [TRANSPARENCY] REF #4*/
                     }, icon: const Icon(Icons.align_horizontal_right)),
 
 
@@ -508,9 +395,9 @@ void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
                         })
                       },
                       child: Focus( // is this needed for shotcuts to work?
-                        child: TextField( // [TRANSPARENCY] Imad : I mistankely opened text_field.dart
+                        child: TextField(
                       controller: leftController,
-                      focusNode: focusGuider, // The Description is useful
+                      focusNode: focusGuider,
                       decoration: const InputDecoration(
                         hintText: 'What\'s on your mind?',
                       ),
@@ -553,8 +440,6 @@ void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: DropdownMenu(
-                        // label: const Text("Theme: "),
-                        //enableFilter: true,
                         trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white60),
                         initialSelection: getDropThemeEntries().isEmpty ? "default" : widget.initTheme,
                         inputDecorationTheme: const InputDecorationTheme(
@@ -563,13 +448,8 @@ void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
                           border: InputBorder.none,
-                          // border: OutlineInputBorder(
-                          //   borderSide: BorderSide(color: Colors.red, width: 0.5),
-                          //   borderRadius: BorderRadius.circular(16.0),
-                          // ),
                           isCollapsed: true,
                         ),
-                        //textStyle: const TextStyle(fontSize: 13),
                         onSelected: (valueName) {
                           setState(() {
                             loadThemeFile(valueName as String);
@@ -583,18 +463,7 @@ void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
                     const Spacer(), // Pushes icons to the rightmost edge
 
                     Row(
-                      // mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                    /*    IconButton(
-                          onPressed: () {
-                            //implement here
-                          },
-                          icon: const Icon(
-                            Icons.icecream,
-                            color: Colors.greenAccent,
-                          ),
-                          color: Colors.greenAccent)*/
-                        
                         IconButton(
                           onPressed: () {
                             showDialog(
@@ -630,33 +499,6 @@ void addPrefixToStartWrap(String prefix){ // [TRANSPARENCY] REF #5
   }
 }
 
-
-// class PreviewPanel extends StatelessWidget {
-//   final String markdownText; // used to declare a variable that can only be assigned once...
-//   // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
-//   final MarkdownStyleSheet style;
-
-//   const PreviewPanel({
-//     super.key,
-//     required this.markdownText,
-//     required this.style,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Card: A Material Design Card...
-//     return Card(
-//       elevation: 1.0,
-//       child: Padding(
-//         padding: const EdgeInsets.all(10.0),
-//         child: Markdown(data: markdownText, styleSheet: style),
-//       ),
-//     );
-//   }
-// }
-
-
-
 class PreviewPanel extends StatelessWidget {
   final String markdownText; // used to declare a variable that can only be assigned once...
   // A final variable must be initialized either at the time of declaration or in a constructor (if it's an instance variable)...
@@ -676,57 +518,9 @@ class PreviewPanel extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10.0), // Markdown() has a padding of 16.0
        child: Markdown(data: markdownText, styleSheet: style),
-     //   child: ListView(
-     //     children: _buildMarkdownWidgets(markdownText, style),
-     //   ),
       ),
     );
   }
-
-/* Not needed anymore
-  // MATHJAX INTEGRATION FOR OUR MARKDOWN...
-  List<Widget> _buildMarkdownWidgets(String text, MarkdownStyleSheet style) {
-    List<Widget> widgets = [];
-
-    // Split the text by lines
-    List<String> lines = text.split('\n');
-
-    for (String line in lines) {
-      // Check if the line contains a math expression (e.g., enclosed in $...$ or $$...$$)
-      if (line.contains(r'\$') || line.contains(r'$$')) {
-        if (line.startsWith(r'$$') && line.endsWith(r'$$')) {
-          // Block math expression
-          widgets.add(Math.tex(
-            line.replaceAll(r'$$', ''),
-            textStyle: TextStyle(fontSize: 16),
-          ));
-        } else {
-          // Inline math expression
-          final parts = line.split(r'$');
-          for (int i = 0; i < parts.length; i++) {
-            if (i % 2 == 0) {
-              widgets.add(MarkdownBody(
-                data: parts[i],
-                styleSheet: style,
-              ));
-            } else {
-              widgets.add(Math.tex(
-                parts[i],
-                textStyle: TextStyle(fontSize: 16),
-              ));
-            }
-          }
-        }
-      } else {
-        widgets.add(MarkdownBody(
-          data: line,
-          styleSheet: style,
-        ));
-      }
-    }
-
-    return widgets;
-  }*/
 }
 
 MarkdownStyleSheet buildMarkdownStyleZoomChange(MarkdownStyleSheet style, double zoom){
@@ -792,66 +586,6 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom, {String? tempTheme}) {
       listBullet: pStyle, // TODO: pStyle For now
       textScaler: TextScaler.linear(zoom));
 }
-
-
-/* For now, this is not needed
-class ParameterDialog extends StatefulWidget {
-  final BuildContext dialogContext;
-
-  const ParameterDialog({super.key, required this.dialogContext});
-
-  @override
-  State<ParameterDialog> createState() => _ParameterDialogState();
-}
-
-class _ParameterDialogState extends State<ParameterDialog> {
-  @override
-  Widget build(BuildContext context) {
-    return SimpleDialog(
-      title: const Text("Apperance Parameters"),
-      elevation: 3.0,
-      contentPadding: const EdgeInsets.all(24.0),
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: DropdownMenu(
-                label: const Text("Theme: "),
-                trailingIcon: const Icon(Icons.arrow_drop_down),
-                onSelected: (valueName) {
-                  Navigator.of(widget.dialogContext).pop();
-                },
-                dropdownMenuEntries: const [
-                  DropdownMenuEntry(value: "github_dark", label: "Github Theme")
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton.icon(
-              onPressed: () {
-                Navigator.of(widget.dialogContext).pop(null);
-              },
-              icon: const Icon(Icons.cancel),
-              label: const Text("Cancel"),
-            ),
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.save),
-              label: const Text("Save"),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-*/
-
 
 autoSave(){
   File("autosave${DateTime.now().toUtc().toIso8601String().replaceAll(':', '')}.md").writeAsStringSync(temp!.markdownText);

@@ -25,37 +25,6 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     double size = 300;
     double ratio = PdfPageFormat.a4.height / PdfPageFormat.a4.width;
     ratio *= 300;
-    /*
-    if (widget.content.isEmpty) {
-      return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FullPreviewScreen(widget.content),
-            ),
-          );
-        },
-        child: Column(children: [
-          Container(
-          width: size,
-          height: ratio,
-          child: const Card(
-            child: Center(
-              child: Text(
-                "Nothing to display", 
-                style: TextStyle(
-                  color: Colors.red
-                  ),
-                ),
-            ),
-          ),
-        )
-        Text("Path 1/1")]),
-      );
-    }
-*/ // NOT REALLY NEEDED
-
     if (previewImage == null || lastPageIndex != currentPageIndex) {
       previewImage = null;
       lastPageIndex = currentPageIndex;
@@ -71,10 +40,6 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     if (widget.content.isEmpty) {
       wError = const Center(
         child: Tooltip(message: "Nothing to Display", child: Icon(Icons.info, color: Colors.red))
-        //Text(
-          //"Nothing to Display",
-          //style: TextStyle(color: Colors.red),
-      //  ),
       );
     } else {
       wError = const Center(child: CircularProgressIndicator());
@@ -105,12 +70,10 @@ class _DocumentPreviewState extends State<DocumentPreview> {
               child: Card(
               clipBehavior: 
               Clip.antiAliasWithSaveLayer,
-              //elevation: 0.0,
               borderOnForeground: false,
               shadowColor: Colors.black, // will this effect the preview accuracy
               margin: const EdgeInsets.all(0.0),
                   child: previewImage ?? wError
-                      //const Center(child: CircularProgressIndicator()),
                   )),
           IconButton(
               onPressed: () {

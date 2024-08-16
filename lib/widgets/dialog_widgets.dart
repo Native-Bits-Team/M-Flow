@@ -28,8 +28,6 @@ class ExportDialog extends StatefulWidget {
 class _ExportDialogState extends State<ExportDialog> {
   List<String> exportFormatOptions = ["HTML", "PDF", "MD"];
   String exportFormat = "PDF";
-  //TextEditingController pathParameter =
-    //  TextEditingController(text: "");
   TextEditingController authorName = TextEditingController(text: "");
   TextEditingController documentTitle =
       TextEditingController(text: "");
@@ -38,33 +36,22 @@ class _ExportDialogState extends State<ExportDialog> {
 
   bool _showAuthorAndSubject = true;
 
-  // METHOD ADDED TO HANDLE SWITCH PRE-FILLED TEXT B/W HTML, PDF, MD...
   void updateTextFields(String format) {
     switch (format) {
       case "HTML":
-     //   pathParameter.text = "Document_1";
-     //   documentTitle.text = "Document_1";
         _showAuthorAndSubject = false;
         break;
       case "PDF":
-      //  pathParameter.text = "Document_1.pdf";
-       // documentTitle.text = "Document_1.pdf";
         _showAuthorAndSubject = true;
         break;
       case "MD":
-      //  pathParameter.text = "Document_1.md";
-        //documentTitle.text = "Document_1.md";
         _showAuthorAndSubject = false;
         break;
       default:
-      //  pathParameter.text = "Document_1.pdf";
-        //documentTitle.text = "Document_1.pdf";
         _showAuthorAndSubject = true;
         break;
     }
   }
-
-// // BUILD METHOD FOR EXPORT DIALOG----------------------------------------------------------------------------*
 
   @override
   Widget build(BuildContext context) {
@@ -90,33 +77,6 @@ class _ExportDialogState extends State<ExportDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      //SizedBox(
-                    //    width: 300,
-                  //      child: Row(
-                        //  crossAxisAlignment: CrossAxisAlignment.start,
-                          //children: [
-                       //     Container(
-                         //     width: 100, // FIXED WIDTH FOR LABELS
-                           //   padding: const EdgeInsets.only(top: 22),
-                           //   child: const Text("Export Path: ",
-                            //      style:
-                             //         TextStyle(fontWeight: FontWeight.bold)),
-                            //),
-                            //const SizedBox(width: 30.0),
-                     //       Expanded(
-                       //       child: TextField(
-                         //       controller: pathParameter,
-                           //     decoration: const InputDecoration(
-                             //     border: OutlineInputBorder(),
-                               //   hintText: 'Enter export path',
-                               // ),
-                              //),
-                            //),
-                          //],
-                      //  ),
-                      //),
-                     // const SizedBox(height: 10.0),
-                     
                       Visibility(visible: !_showAuthorAndSubject, child: const SizedBox(width:350, child: Text("Warning: The Preview may not match the exported file.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent),))),
                       Visibility(visible: _showAuthorAndSubject,
                       child: SizedBox(
@@ -124,18 +84,11 @@ class _ExportDialogState extends State<ExportDialog> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                          //  Container(
-                            //  width: 100, // FIXED WIDTH FOR LABELS
-                              //padding: const EdgeInsets.only(top: 22),
-                              //child: 
                               const Expanded(
                                 flex: 60,
                                 child: 
                               Text("Doc. Title: ", strutStyle: StrutStyle(height: 3),
-                                //  style:
-                              //        TextStyle(fontWeight: FontWeight.bold)),
                             )),
-                            //const SizedBox(width: 30.0),
                             const Spacer(),
                             Expanded(
                               flex: 61,
@@ -159,15 +112,8 @@ class _ExportDialogState extends State<ExportDialog> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              //Container(
-                                //width: 100, // FIXED WIDTH FOR LABELS
-                                //padding: const EdgeInsets.only(top: 22),
-                                //child: 
                                 const Expanded(flex: 60,child: Text("Author Name: ", strutStyle: StrutStyle(height: 3),
-                                  //  style:
-                                    //    TextStyle(fontWeight: FontWeight.bold)),
                               )),
-                              //const SizedBox(width: 30.0),
                               const Spacer(),
                               Expanded(
                                 flex: 61,
@@ -192,15 +138,8 @@ class _ExportDialogState extends State<ExportDialog> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              //Container(
-                                //width: 100, // FIXED WIDTH FOR LABELS
-                                //padding: const EdgeInsets.only(top: 14),
-                                //child: 
                                 const Expanded(flex: 60, child: Text("Doc. Subject: ", strutStyle: StrutStyle(height: 3),
-                                  //  style:
-                                    //    TextStyle(fontWeight: FontWeight.bold)),
                               )),
-                              //const SizedBox(width: 30.0),
                               const Spacer(),
                               Expanded(
                                 flex: 61,
@@ -222,13 +161,8 @@ class _ExportDialogState extends State<ExportDialog> {
                 const SizedBox(height: 1.0),
                 Container(
                   padding: const EdgeInsets.all(12.0),
-                  // decoration: BoxDecoration(
-                  //   borderRadius: BorderRadius.circular(12),
-                  // ),
                   child: Column(
                     children: [
-                      // const Text("File Format: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                      // const SizedBox(height: 10),
                       Row(
                         children: [
                           const Text("HTML"),
@@ -268,15 +202,6 @@ class _ExportDialogState extends State<ExportDialog> {
                           ),
                         ],
                       ),
-
-                      // const SizedBox(height: 25.0),
-                      // TextButton(
-                      //   onPressed: () {
-                      //     Navigator.of(context).push(MaterialPageRoute(
-                      //         builder: (context) => const ProfilePage()));
-                      //   },
-                      //   child: const Text("Personalize First Page"),
-                      // ),
                     ],
                   ),
                 ),
@@ -284,7 +209,7 @@ class _ExportDialogState extends State<ExportDialog> {
                 SizedBox(
                   width: 400,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center, // NOTE: making it center was NBT member Madhur Pandey Idea
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton.icon(
                         onPressed: () {
@@ -295,15 +220,6 @@ class _ExportDialogState extends State<ExportDialog> {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 11),
                         ),
-                    //    style: TextButton.styleFrom(
-                      //    shape: RoundedRectangleBorder(
-                        //    borderRadius: BorderRadius.circular(10.0),
-                          //),
-                          //padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
-                        //  side: BorderSide(color: Colors.white, width: 0.2),
-                      //    shadowColor: Colors.black.withOpacity(0.3), // Shadow color and opacity
-                    //      elevation: 2, // Optional: add a border color
-                     //   ),
                       ),
                       const SizedBox(width: 20),
                       TextButton.icon(
@@ -344,15 +260,6 @@ class _ExportDialogState extends State<ExportDialog> {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 11),
                         ),
-                     //   style: TextButton.styleFrom(
-                       //   shape: RoundedRectangleBorder(
-                         //   borderRadius: BorderRadius.circular(10.0),
-                         // ),
-                         // padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 13),
-                        //  side: BorderSide(color: Colors.white, width: 0.2), // Thinner border
-                     //     shadowColor: Colors.black,//.withOpacity(0.9), // Shadow color and opacity
-                       //   elevation: 4, // Shadow elevation
-                        //),
                       )
                     ],
                   ),

@@ -21,19 +21,7 @@ class DashBoard extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text("M-Flow"),
-          //backgroundColor: const Color.fromARGB(255, 5, 24, 32),
         ),
-
-        // *DRAWER : -------------------------------------------------------------------------------- *
-     /*   Imad: The main page doesn't really need a drawer, most things are already shown
-     drawer: ProfileDrawerDashboard(
-          onProfileTap: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()));
-          },
-        ),*/
-        // *DRAWER : -------------------------------------------------------------------------------- *
-
         body: Padding(
             padding: const EdgeInsets.all(30.0),
             child: Column(
@@ -77,25 +65,14 @@ class DashBoard extends StatelessWidget {
                                                   //print("ERROR");
                                                   return;
                                                 }
-                                            //    if (data["title"] == null ||
-                                              //      data["title"] == "") {
-                                                //  data["title"] =
-                                                  //    result.files.first.name;
-                                                //}
                                                 if (data["content"] == null){
                                                   //print("Error");
                                                 }
-                                                //data["mflow"] = true;
-                                             //   data["filePath"] = result.files.first.path;
-                                                Navigator.pushReplacement(context, // [T] REF #10
+                                                Navigator.pushReplacement(context,
                                                     MaterialPageRoute(
                                                         builder: (context) {
                                                   return FormPage(
                                                     initText: data["content"],
-                                                    //File(result.files[0]
-                                                      //      .path as String)
-                                                        //.readAsStringSync(),
-                                                    //fileData: data,
                                                     initTitle: data["title"] == "" || data["title"] == null ? result.files.first.name : data["title"],
                                                     initPath: result.files.first.path,
                                                   );
@@ -103,17 +80,6 @@ class DashBoard extends StatelessWidget {
                                               });
                                             } else {
                                               loadFormPage(context, result.files.first.path!,false, title: result.files.first.name);
-                                             /* Navigator.push(context,MaterialPageRoute(builder: (context) {
-                                                return FormPage(
-                                                  initText: File(result.files[0]
-                                                          .path as String)
-                                                      .readAsStringSync(),
-                                                  fileData: {
-                                                    "title":
-                                                        result.files.first.name
-                                                  },
-                                                );
-                                              }));*/
                                             }
                                           });
                                         },
@@ -128,10 +94,9 @@ class DashBoard extends StatelessWidget {
                                     TextButton.icon(
                                         icon: const Icon(Icons.add),
                                         onPressed: () {
-                                          Navigator.pushReplacement(context, // [TRANSPARENCY] REF #10
+                                          Navigator.pushReplacement(context,
                                               MaterialPageRoute(
                                                   builder: (context) {
-                                            //addNewValue("projects", {"projectName": "Unknown", "filePath" : "README.md"});
                                             return const FormPage(
                                               initText: "",
                                               initTitle: "M-Flow",
@@ -145,24 +110,11 @@ class DashBoard extends StatelessWidget {
                                     ),
                                   ]),
                             ),
-                            const Column(
+                            const Column( // TODO: is this needed?
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                 // Spacer(),
-                                  /*TextButton.icon(
-                                      style: const ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blueGrey), backgroundColor: WidgetStatePropertyAll(Colors.grey)),
-                                      label: const Text("NOT WORKING: Load From URL"),
-                                      icon: const Icon(Icons.error),
-                                      onPressed: () {}),*/
                                 SizedBox(height: 20),
-                                /*TextButton.icon(
-                                      style: const ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blueGrey), backgroundColor: WidgetStatePropertyAll(Colors.grey)),
-                                      label: const Text("NOT WORKING: Load From Template"),
-                                      icon: const Icon(Icons.error),
-                                      onPressed: () {}),*/
                                 ]),
-                               // const SizedBox.expand(child: Text("e"),),
-
                                 IntrinsicWidth(
                                   child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -198,19 +150,6 @@ class DashBoard extends StatelessWidget {
   }
 }
 
-// class DocPreview extends StatefulWidget {
-//   const DocPreview(
-//       {super.key,
-//       required this.projectPath,
-//       required this.projectName,
-//       required this.parentHandle});
-//   final String projectPath;
-//   final String projectName;
-//   final _ProjectGridState parentHandle; // TODO: Should be removed
-//   @override
-//   State<DocPreview> createState() => _DocPreviewState();
-// }
-
 class DocPreview extends StatefulWidget {
   DocPreview({
     super.key,
@@ -231,8 +170,6 @@ class DocPreview extends StatefulWidget {
 
 
 class _DocPreviewState extends State<DocPreview> {
- // Widget? previewImageBytes;
-
  late String projectPathS;
  late String projectNameS;
  Widget? previewImageBytesS;
@@ -309,72 +246,6 @@ class _DocPreviewState extends State<DocPreview> {
     }
   }
 
-
-  // void updatePreview({bool force = false}){
-  //   if ((previewImageBytes == null && widget.projectPath != "") || force) {
-  //     //ScreenshotController sController = ScreenshotController();
-  //     var file = File(widget.projectPath);
-  //     if (!file.existsSync()) {
-  //       enabled =false;
-  //       // TODO: Maybe there is an alternative that doesn't use File object
-  //       previewImageBytes = const Tooltip(
-  //           message: "File Not Found",
-  //           child: Icon(Icons.info, color: Colors.red));
-  //     } else {
-  //     if (_debounce?.isActive ?? false){
-  //       _debounce!.cancel(); // Credits to NBT member Madhur for this code
-  //     }
-  //     _debounce = Timer(const Duration(milliseconds: 200), () {
-  //       // This was added to remove lag when switching to the dashbaord, this isn't a permenent solution, as all previews will
-  //       // update at the same time, a better solution would be to make preview update one by one, or in a spread thread, etc...
-  //       // TODO: Implment a better solution
-
-  //       file.readAsString().then((text) {
-  //         test = text;
-  //         // TODO: Wrong way of handling opening and closing a file?
-  //         if (text.startsWith("mflow")) {
-  //           Map<String, dynamic> data = jsonDecode(text.substring(10));
-  //           test = data["content"];
-  //           generatePdfImageFromMD(
-  //                   data["content"], buildMarkdownStyle(1.0, tempTheme: data["theme"]),
-  //                   tempTheme: data["theme"])
-  //               .then((imageAndSize) {
-  //             setState(() {
-  //               previewImageBytes = imageAndSize[0];
-  //             });
-  //           });
-  //         } else {
-  //           generatePdfImageFromMD(text, MarkdownStyleSheet(),
-  //                   tempTheme: "mflow")
-  //               .then((imageAndSize) {
-  //             setState(() {
-  //               previewImageBytes = imageAndSize[0];
-  //             });
-  //           });
-  //         }
-
-  //         //sController.captureFromWidget(MarkdownBody(data: text)).then((data){
-  //         //setState(() {
-  //         //previewImageBytes = Image.memory(data, alignment: Alignment.topCenter, filterQuality: FilterQuality.none);
-  //         //});
-  //         //});
-  //       });
-  //     });}
-  //   }
-  // }
-/*
-    void checkPreviewInfo(){
-    if (widget.projectPath.isNotEmpty &&
-        widget.previewImageBytes is Tooltip &&
-        File(widget.projectPath).existsSync()){
-          setState(() {
-            widget.previewImageBytes = const CircularProgressIndicator();
-          });
-          updatePreview(force: true);
-      }
-  }
-*/
-
 void checkPreviewInfo(){
   //print(projectNameS == widget.projectNameW ? "SAME NAME" : "DIFFERENET NAME");
   if (projectNameS != widget.projectNameW || projectPathS != widget.projectPathW){
@@ -389,12 +260,6 @@ void checkPreviewInfo(){
     //});
   }
 }
-// void checkPreviewInfo(){
-//   if (widget.projectPath != "" && previewImageBytes.runtimeType == Tooltip && File(widget.projectPath).existsSync()){
-//     previewImageBytes = const CircularProgressIndicator();
-//     updatePreview(force: true);
-//   }
-// }
   @override
   Widget build(BuildContext context) {
     //checkPreviewInfo(); // TODO: This method removes a RecentOpen and then regenerate all DocPreviews, a better solution would to just delete the most recent then the button of it
@@ -517,19 +382,6 @@ void checkPreviewInfo(){
   }
 
 }
-// Added it............................................................
-
-
-
-// class ProjectGrid extends StatefulWidget {
-//   ProjectGrid({super.key});
-//   List<String> pathPreview = [];
-//   List<String> namePreview = [];
-//   bool init = false;
-
-//   @override
-//   State<ProjectGrid> createState() => _ProjectGridState();
-// }
 
 class ProjectGrid extends StatefulWidget {
   const ProjectGrid({super.key});
@@ -545,15 +397,6 @@ class ProjectGrid extends StatefulWidget {
 class _ProjectGridState extends State<ProjectGrid> {
 List<String> pathPreviewS = [];
 List<String> namePreviewS = [];
-  /*final SliverGridDelegate gridDelegateRef =
-      const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 7, // REF #11
-          childAspectRatio: 0.65,
-          mainAxisSpacing: 10.0,
-          crossAxisSpacing: 10.0);
-*/
-  //List<DocPreview> childPreview = []; // Added it.................
-
   @override
   void initState() {
     super.initState();
@@ -561,83 +404,19 @@ List<String> namePreviewS = [];
 
   }
 
-  // Added it......................................................
-  //void populateChildPreview() {
   Widget generateDocs(){
-    /*childPreview.forEach((w){
-      w.previewImageBytes = null;
-      w.projectName = "";
-      w.projectPath = "";
-    });*/
-    //childPreview.clear();
-    /*List<DocPreview> docs = [];
-    for (int j = 0; j < widget.pathPreview.length; j++) { // REF #12
-     // if (File(widget.pathPreview[j]).existsSync()) {
-        //childPreview.add(DocPreview(
-        docs.add(DocPreview(
-          projectPath: widget.pathPreview[j],
-          projectName: widget.namePreview[j],
-          onDelete: deleteDocument,
-          deleteJsonDoc: deleteFromJson,
-        ));*/
-     // } else {
-        // Remove orphaned previews
-       // setState(() {
-         // widget.pathPreview.removeAt(j);
-        //  widget.namePreview.removeAt(j);
-        //  j--; // Adjust index after removal
-        //});
-    //  }
-   // }
     return GridView.builder(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, childAspectRatio: 0.65, crossAxisSpacing: 10.0, mainAxisSpacing: 10.0), itemCount: pathPreviewS.length,//widget.pathPreview.length,
-     itemBuilder: (context, count){ // [T] REF #12
-      
-      //return docs[count];
-      //return DocPreview(projectPath: widget.pathPreview[count], projectName: widget.namePreview[count], onDelete: deleteDocument, deleteJsonDoc: deleteFromJson); // [T] REF #12
-      //return DocPreview(projectPathW: widget.pathPreview[count], projectNameW: widget.namePreview[count], onDelete: deleteDocument, deleteJsonDoc: deleteFromJson);
+     itemBuilder: (context, count){
       return DocPreview(projectPathW: pathPreviewS[count], projectNameW: namePreviewS[count], onDelete: deleteDocument, deleteJsonDoc: deleteFromJson);
-    }); // [T] REF #11
+    });
   }
-  // Added it......................................................
-  
-  // void populateChildPreview() {
-  //   for (int j = 0; j < widget.pathPreview.length; ++j) {
-  //     childPreview.add(DocPreview(
-  //       projectPath: widget.pathPreview[j],
-  //       projectName: widget.namePreview[j],
-  //       onDelete: deleteDocument,
-  //     ));
-  //   }
-  // }
 
-  // Added it...................................
-  // For explicitly deleting the misclennious docs....(can be removed)
-  // void deleteDocument(String path, String name) {
-  //   setState(() {
-  //     widget.pathPreview.remove(path);
-  //     widget.namePreview.remove(name);
-  //   });
-  // }
-  
-  // Added it.......................................................................
-  // Deletes the file from the file system.
-  // Removes the document's path and name from pathPreview and namePreview.
-  // Updates childPreview to remove the corresponding DocPreview widget.
-  // Shows a SnackBar with success or error message.
   void deleteDocument(String path, String name) async {
     removeRecentOpen(path, name);
     try {
       await File(path).delete();
       setState(() {
         updatePreviews();
-        //widget.pathPreview.remove(path);
-        //widget.namePreview.remove(name);
-        
-        //pathPreviewS.remove(path);
-        //pathPreviewS.remove(name);
-        
-        // Update the childPreview list
-        //childPreview.removeWhere((element) => element.projectPath == path);
       });
 
       // Hide the current snackbar if there is one
@@ -662,18 +441,10 @@ List<String> namePreviewS = [];
   void deleteFromJson(String path, String name) {
     removeRecentOpen(path, name);
     // print('hello');
-    // Implementation to delete from JSON
     try {
       setState(() {
         updatePreviews();
-        //widget.pathPreview.remove(path);
         //widget.namePreview.remove(name); // TODO: BUG: Multiple documents with differenet paths could have same name
-        
-        //pathPreviewS.remove(path);
-        //namePreviewS.remove(path);
-        
-        // Update the childPreview list
-        //childPreview.removeWhere((element) => element.projectPath == path); 
       });
       
       // Hide the current snackbar if there is one
@@ -702,107 +473,9 @@ List<String> namePreviewS = [];
 
   @override
   Widget build(BuildContext context) {
-    // TODO: There is a bug here (probably fixed by below!)
-
-    // Added it......................................................
-   // populateChildPreview(); // Ensure the grid is populated correctly
-    // Added it......................................................
-
-
-
-    // List<DocPreview> childPreview = [];
-
-    // Added it.......................................
-    // childPreview.clear(); // Clear childPreview here
-    // Added it.......................................
-
-    //if (!widget.init){
-    //widget.init = true;
-    //updatePreviews();
-    //}
-
-    // for (int j = 0; j < widget.pathPreview.length; ++j) {
-    //   childPreview.add(DocPreview(
-    //     projectPath: widget.pathPreview[j],
-    //     projectName: widget.namePreview[j],
-    //     // parentHandle: this, // TODO: Is there an alternative to this?
-
-    //     onDelete: deleteDocument, // Added it...........................
-
-    //   ));
-
-    //   //childPreview[j].projectPath = widget.pathPreview[j];
-    //   //childPreview[j].projectName = widget.namePreview[j];
-    //   //childPreview[j].parentHandle = this;
-    // }
- 
-    // return GridView(gridDelegate: gridDelegateRef, children: childPreview);
-
-    // Added it......................................................
-   /* var d = generateDocs();
-    return GridView.builder(
-      gridDelegate: gridDelegateRef, 
-      itemCount: d.length, 
-      itemBuilder: (context, index) {
-        return d[index];
-      },
-    );*/
     return generateDocs();
-    // Added it......................................................
   }
 
-//   void updatePreviews() {
-//     Timer(Duration(milliseconds: 30),(){
-//     List<String> pathPreviewTemp = [];
-//     List<String> namePreviewTemp = [];
-
-//     // List<Map<String, dynamic>> projectsPath = [];
-
-//     //var list = getDatabase()["projects"]["recentOpen"]; // Moved to json_db.dart
-//    // var projList = getDatabase()["projects"]["list"];
-//     //widget.previewLength = size;
-//     //list.forEach((key, value) { // Moved to json_db.dart
-//       // maybe we should save the data as json too, rather then a list
-//       //pathPreviewTemp.add(list[key]["filePath"]);
-//       //namePreviewTemp.add(list[key]["fileName"]);
-//     //});
-
-//     // projList.forEach((key, value){
-//     //projectsPath.add(value);
-//     //});
-   
-//     // Fetch updated previews
-//     List<List<String>> result = getMostRecentOpens();
-//     namePreviewTemp = result[0];
-//     pathPreviewTemp = result[1];
-
-//     if (pathPreviewTemp.toString() != widget.pathPreview.toString() ||
-//         namePreviewTemp.toString() != widget.namePreview.toString()) {
-//       setState(() {
-//         widget.pathPreview = pathPreviewTemp;
-//         widget.namePreview = namePreviewTemp;
-//       });
-//       populateChildPreview();
-//     }
-
-
-//     // if (pathPreviewTemp.toString() == widget.pathPreview.toString() &&
-//     //     namePreviewTemp.toString() == widget.namePreview.toString()) {
-//     //   return;
-//     // } else {
-//     //   setState(() {
-//     //     widget.pathPreview = pathPreviewTemp;
-//     //     widget.namePreview = namePreviewTemp;
-//     //     // Added it.................
-//     //     childPreview.clear(); // Clear the childPreview list
-//     //   });
-//     //   populateChildPreview(); // Call populateChildPreview here
-//     // }
-//   });
-// }
-// }
-
-  // Added it......................................................
   void updatePreviews() {
     // Timer(Duration(milliseconds: 30), () {
     Future.delayed(const Duration(milliseconds: 30), () {
@@ -834,7 +507,7 @@ List<String> namePreviewS = [];
 // Needs improvements......................................................................
 loadFormPage(BuildContext context, String path, bool isNotMflowFile ,{String title = "M-Flow"}) {
   if (!isNotMflowFile){
-  Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) { // [T] REF #10
+  Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) {
   return FormPage(
   initText: File(path).readAsStringSync(), initTitle : title , 
   initPath : path,
@@ -844,7 +517,7 @@ loadFormPage(BuildContext context, String path, bool isNotMflowFile ,{String tit
 
   } else {
     loadMFlowFile(path).then((data){
-    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) { // [T] REF #10
+    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) {
   return FormPage(
   initText: data["content"], initTitle : title , 
   initPath : path,

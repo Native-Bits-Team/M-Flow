@@ -1,6 +1,3 @@
-// [HISTORY] [TRANSPARENCY] Check information_history.dart, I (Imad Laggoune) may have got expereience from making that lost file that may helped the making of this new file.
-
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
