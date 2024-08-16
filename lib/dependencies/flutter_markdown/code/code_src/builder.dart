@@ -451,54 +451,54 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
       // ```````````````````````````````````````````````````````````````````````````````````````
       // NBT```````````````````````````````````````````````````````````````````````````````````````````
 
-
+      // DO NOT REMOVE IT, AS OF NOW....
       //////////// NBT Starts, Credits to NBT member Madhur for original Code, Modified by Imad Laggoune
-      if (text.text.contains(r'\$') || text.text.contains(r'$$')) {
-        if (text.text.startsWith(r'$$')){// && text.text.endsWith(r'$$')) {
-        if (text.text.endsWith(r'$$' + "w\$")){
-          // Block math expression
-          //_inlines.last.children.add(Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2));
-          _inlines.last.children.add(Center(child: Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('w\$', ''), textScaleFactor: 1.2,)));
-          print(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('w\$', ''));
-        } else if (text.text.endsWith(r'$$' + "r\$")){
-          _inlines.last.children.add(Align(alignment: Alignment.centerRight, child: Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('r\$', ''), textScaleFactor: 1.2)));
-        } else {
-          _inlines.last.children.add(Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ")));
-        }
-        return;
-        } else {
-          if (text.text.endsWith(r'$' + 'w\$')){
-            var nText = text.text.replaceAll('w\$', '');
-          // Inline math expression
-          //final parts = text.text.split(r'$');
-          final parts = nText.split(r'$');
-          for (int i = 0; i < parts.length; i++) {
-            if (i % 2 == 0) {
-              _inlines.last.children.add(Text(nText));
-            } else {
-              _inlines.last.children.add(Center(child:Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2)));
-            }
-          }
-          } else if (text.text.endsWith(r'$' + 'r\$')) {
-            var nText = text.text.replaceAll('r\$', '');
-            final parts = nText.split(r'$');
-            for (int i = 0; i < parts.length; i++){
-              if (i % 2 == 0){
-                _inlines.last.children.add(Text(nText));
-              } else {
-                _inlines.last.children.add(Align(alignment: Alignment.centerRight, child: Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2)));
-              }
-            }
-          }
-        }
-      }
+      // if (text.text.contains(r'\$') || text.text.contains(r'$$')) {
+      //   if (text.text.startsWith(r'$$')){// && text.text.endsWith(r'$$')) {
+      //   if (text.text.endsWith(r'$$' + "w\$")){
+      //     // Block math expression
+      //     //_inlines.last.children.add(Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2));
+      //     _inlines.last.children.add(Center(child: Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('w\$', ''), textScaleFactor: 1.2,)));
+      //     print(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('w\$', ''));
+      //   } else if (text.text.endsWith(r'$$' + "r\$")){
+      //     _inlines.last.children.add(Align(alignment: Alignment.centerRight, child: Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ").replaceAll('r\$', ''), textScaleFactor: 1.2)));
+      //   } else {
+      //     _inlines.last.children.add(Math.tex(text.text.replaceAll(r'$$', '').replaceAll(" \\ ", " \\\\ ")));
+      //   }
+      //   return;
+      //   } else {
+      //     if (text.text.endsWith(r'$' + 'w\$')){
+      //       var nText = text.text.replaceAll('w\$', '');
+      //     // Inline math expression
+      //     //final parts = text.text.split(r'$');
+      //     final parts = nText.split(r'$');
+      //     for (int i = 0; i < parts.length; i++) {
+      //       if (i % 2 == 0) {
+      //         _inlines.last.children.add(Text(nText));
+      //       } else {
+      //         _inlines.last.children.add(Center(child:Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2)));
+      //       }
+      //     }
+      //     } else if (text.text.endsWith(r'$' + 'r\$')) {
+      //       var nText = text.text.replaceAll('r\$', '');
+      //       final parts = nText.split(r'$');
+      //       for (int i = 0; i < parts.length; i++){
+      //         if (i % 2 == 0){
+      //           _inlines.last.children.add(Text(nText));
+      //         } else {
+      //           _inlines.last.children.add(Align(alignment: Alignment.centerRight, child: Math.tex(parts[i].replaceAll(" \\ ", " \\\\ "), textScaleFactor: 1.2)));
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
       ////////////// NBT Ends
       
       TextStyle t = _inlines.last.style!.copyWith(decoration: d);  // Apply the text style decoration
       
       // NBT
 
-      if (o.contains('~') || o.contains('^') || o.contains('-')){
+      if (o.contains('~') || o.contains('^') || o.contains('-') || o.contains('\$\$')){
       child = _buildTextWithFormatting(
         _isInBlockquote ? o : trimText(o),  // Pass text with or without blockquote formatting
         t, // Pass the updated text style with decoration
@@ -1183,14 +1183,14 @@ if (alignmentIndex == 1){
   // It interprets specific charactars (`~` for subscript and `^` for superscript)
   // within the input text and applies the corresponding formatting.
   Widget _buildTextWithFormatting(String text, TextStyle style, MarkdownStyleSheet styleSheet) {
-var aIndex = 0;
-if (text.endsWith('w\$')){
-  text = text.replaceRange(text.length-2, text.length, '');
-  aIndex = 1;
-} else if (text.endsWith('r\$')){
-  text = text.replaceRange(text.length-2, text.length, '');
-  aIndex = 2;
-}
+    var aIndex = 0;
+    if (text.endsWith('w\$')){
+      text = text.replaceRange(text.length-2, text.length, '');
+      aIndex = 1;
+    } else if (text.endsWith('r\$')){
+      text = text.replaceRange(text.length-2, text.length, '');
+      aIndex = 2;
+    }
     // List to hold all the formatted spans (text segments with specific styles)
     final List<InlineSpan> spans = <InlineSpan>[];
 
@@ -1234,6 +1234,41 @@ if (text.endsWith('w\$')){
           i += 1;
         }
       }
+    
+
+    // NEW MATHJAX IMPLEMENTATION FOR DYNAMIC-RENDERING, SO FAR IT'S NOT PERFECT, THE MAIN BUG IS THAT, THE LINE IN WHICH MATHJAX IS USED, THAT TEXT WON'T RENDER SUPER, SUB & UNDERLINE....
+    else if (text.indexOf('\$\$', i) != -1) {
+      // print('working');
+      final int startIndex = text.indexOf('\$\$', i);
+      final RegExp mathRegExp = RegExp(r'\$\$(.*?)\$\$');
+      final RegExpMatch? match = mathRegExp.firstMatch(text.substring(startIndex));
+      if (match != null) {
+        final String mathContent = match.group(1)!;
+    
+        // Add the text before the math expression, if any (THIS CODE CAUSES THE ABOVE MENTIONED BUG...)
+        if (i < startIndex) {
+          spans.add(TextSpan(
+            text: text.substring(i, startIndex),
+            style: style.copyWith(fontSize: styleSheet.textScaler?.scale(style.fontSize ?? 16.0) ?? 16.0),
+          ));
+        }
+
+        // Add the math expression as a WidgetSpan
+        spans.add(
+          WidgetSpan(
+            // Credits to NBT leader IMAD for this...
+            child: Math.tex(mathContent.replaceAll(' \\ ', ' \\\\ '), textScaleFactor: 1.2),
+          ),
+        );
+
+        i = startIndex + match.end; // Move i to the end of the math expression
+      } else {
+        spans.add(TextSpan(text: '\$\$', style: style));
+        i += 2; // Move i past the two $
+      }
+    }
+
+    // NEW MATHJAX IMPLEMENTATION ENDS HERE...
 
 
       // Check if the current character is a subscript marker '~'
