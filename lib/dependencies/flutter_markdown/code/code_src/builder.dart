@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// THIS FILE WAS MODIFIED BY NATIVE BITS TEAM
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart'; // NBT
@@ -1183,6 +1185,8 @@ if (alignmentIndex == 1){
   // It interprets specific charactars (`~` for subscript and `^` for superscript)
   // within the input text and applies the corresponding formatting.
   Widget _buildTextWithFormatting(String text, TextStyle style, MarkdownStyleSheet styleSheet) {
+    Widget? alignWidget;
+
     var aIndex = 0;
     if (text.endsWith('w\$')){
       text = text.replaceRange(text.length-2, text.length, '');
@@ -1237,31 +1241,43 @@ if (alignmentIndex == 1){
     
 
     // NEW MATHJAX IMPLEMENTATION FOR DYNAMIC-RENDERING, SO FAR IT'S NOT PERFECT, THE MAIN BUG IS THAT, THE LINE IN WHICH MATHJAX IS USED, THAT TEXT WON'T RENDER SUPER, SUB & UNDERLINE....
-    else if (text.indexOf('\$\$', i) != -1) {
+    else if (text.startsWith('\$\$',i)){//.indexOf('\$\$', i) != -1) {
+    print("reached at index: " + i.toString());
       // print('working');
-      final int startIndex = text.indexOf('\$\$', i);
-      final RegExp mathRegExp = RegExp(r'\$\$(.*?)\$\$');
-      final RegExpMatch? match = mathRegExp.firstMatch(text.substring(startIndex));
-      if (match != null) {
-        final String mathContent = match.group(1)!;
+      //print('test');
+      //final int startIndex = text.indexOf('\$\$', i); i == startIndex here, since this block isn't called until they are ?
+     // final RegExp mathRegExp = RegExp(r'\$\$(.*?)\$\$');
+      //final RegExpMatch? match = mathRegExp.firstMatch(text.substring(startIndex));
+    //  if (match != null) {
+    //    final String mathContent = match.group(1)!;
     
         // Add the text before the math expression, if any (THIS CODE CAUSES THE ABOVE MENTIONED BUG...)
-        if (i < startIndex) {
-          spans.add(TextSpan(
-            text: text.substring(i, startIndex),
-            style: style.copyWith(fontSize: styleSheet.textScaler?.scale(style.fontSize ?? 16.0) ?? 16.0),
-          ));
-        }
+        //if (i < startIndex) {
+        //if (i != 0){
+        //  spans.add(TextSpan(
+        //    text: text.substring(i, startIndex),
+        //    style: style.copyWith(fontSize: styleSheet.textScaler?.scale(style.fontSize ?? 16.0) ?? 16.0),
+        //  ));
+        //}
 
         // Add the math expression as a WidgetSpan
+        var length = text.indexOf('\$\$', i+2);
+        if (length != -1){//text.indexOf('\$\$', i+2) != -1){
+        var mathJax = text.substring(i+2, length);
+       // print(mathJax);
         spans.add(
           WidgetSpan(
             // Credits to NBT leader IMAD for this...
-            child: Math.tex(mathContent.replaceAll(' \\ ', ' \\\\ '), textScaleFactor: 1.2),
+            child: Math.tex(
+              //mathContent
+              mathJax.replaceAll(' \\ ', ' \\\\ '), textScaleFactor: 1.2),
           ),
         );
-
-        i = startIndex + match.end; // Move i to the end of the math expression
+        //}
+        //i = startIndex + match.end; // Move i to the end of the math expression
+        i += (length - (i+2)) + 4;
+       // print("LENGTH: " +text.length.toString());
+       // print("INDEX: " +i.toString());
       } else {
         spans.add(TextSpan(text: '\$\$', style: style));
         i += 2; // Move i past the two $
@@ -1345,16 +1361,38 @@ if (alignmentIndex == 1){
       } else {
         int j = i;
         // Collect all consecutive regular text characters
-        while (j < text.length && text[j] != '~' && text[j] != '^' && !text.startsWith('-', j) && text[j] != '\\') {
+        print(text.length);
+        while (j < text.length && text[j] != '~' && text[j] != '^' && !text.startsWith('-', j) && text[j] != '\\' && !text.startsWith('\$\$',j)){//text[j] != '\$') {
+          print(j);
           j++;
         }
+       // if (text[j] == '\$'){
+        //  j++;
+          //if (j < text.length){
 
+          //}
+        //}
+        //print(text.substring(i,j));
         // Add the regular text to the spans list without any special formatting
+     //   if (j < text.length && j != text.length){
+     //   if (text[j] != '\$' && text.indexOf('\$\$',j) == -1){
+     //     print("reached");
+          //print(j)
+          //j = max(text.length, j+1);
+     //     j++;
+     //   }
+     //   }
         spans.add(TextSpan(text: text.substring(i, j), style: style.copyWith(fontSize: 
         //styleSheet.textScaler!.scale(style.fontSize ?? 16.0))
         styleSheet.textScaler != null ? styleSheet.textScaler!.scale(style.fontSize ?? 16.0) : 16.0
         ))); // TODO: 16.0 is a const
         i = j; // Move the index to the next character to be processed
+        //if (text[j] == '\$'){
+        //  i+1;
+        //}
+        //if (text.indexOf('\$\$',j) == -1){
+        //  i+=1;
+        //}
       }
     }
     if (aIndex == 1){
