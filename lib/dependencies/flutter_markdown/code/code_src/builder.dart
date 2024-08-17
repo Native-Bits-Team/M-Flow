@@ -500,7 +500,7 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
       
       // NBT
 
-      if (o.contains('~') || o.contains('^') || o.contains('-') || o.contains('\$\$')){
+      if (o.contains('~') || o.contains('^') || o.contains('-') || o.contains('\$\$') || o.contains('\$t')){
       child = _buildTextWithFormatting(
         _isInBlockquote ? o : trimText(o),  // Pass text with or without blockquote formatting
         t, // Pass the updated text style with decoration
@@ -1218,8 +1218,7 @@ if (alignmentIndex == 1){
 
     else if (text.startsWith('-', i) && (i == 0 || text[i - 1 == -1 ? 0 : i-1] != '\\')) {
       // Check if the current segment is underlined (enclosed in '-')
-        int j = i + 2;
-
+        int j = i + 2; // REF #-M
         // Find the closing '-' to determine the underlined text
         while (j < text.length && !text.startsWith('-', j)) {
           j++;
@@ -1238,11 +1237,46 @@ if (alignmentIndex == 1){
           i += 1;
         }
       }
+      
+      else if (text.startsWith('\$t', i)){ // For Adding inline center
+        print("reached");
+        // COPY PASTED FROM REF #-M
+                int j = i + 2;
+
+        // Find the closing '-' to determine the underlined text
+        while (j < text.length && !text.startsWith('\$t', j)) {
+          j++;
+        }
+
+        if (j < text.length) {
+          final String underlineText = text.substring(i + 2, j);
+          print(underlineText);
+          spans.add(
+            WidgetSpan(
+            //baseline: TextBase,
+            //alignment: PlaceholderAlignment.baseline,
+           // child: SizedBox.shrink(
+              child:// Expanded(child: 
+              Center(
+                //widthFactor: 3.0,
+                //heightFactor: 3.0,
+                child: Text( // [T] REF #-M1
+            //text: 
+            underlineText,
+            //style: style.copyWith(decoration: TextDecoration.underline),
+          ))));//);//);
+          i = j + 2;
+        } else {
+          spans.add(TextSpan(text: '\$t', style: style));
+          i += 2;
+        }
+      }
+     // }
     
 
     // NEW MATHJAX IMPLEMENTATION FOR DYNAMIC-RENDERING, SO FAR IT'S NOT PERFECT, THE MAIN BUG IS THAT, THE LINE IN WHICH MATHJAX IS USED, THAT TEXT WON'T RENDER SUPER, SUB & UNDERLINE....
     else if (text.startsWith('\$\$',i)){//.indexOf('\$\$', i) != -1) {
-    print("reached at index: " + i.toString());
+    //print("reached at index: " + i.toString());
       // print('working');
       //print('test');
       //final int startIndex = text.indexOf('\$\$', i); i == startIndex here, since this block isn't called until they are ?
@@ -1302,8 +1336,8 @@ if (alignmentIndex == 1){
 
           // Create a WidgetSpan for subscript with a vertical offset
           spans.add(
-            WidgetSpan(
-              child: Transform.translate(
+            WidgetSpan( // REF #-M1
+              child: Transform.translate( // [T] Example of translate function
                 offset: Offset(0, styleSheet.textScaler != null ? styleSheet.textScaler!.scale(3.0*2.0) : 3.0), // adjust vertical offset for subscript
                 child: Text(
                   subscriptText,
@@ -1361,9 +1395,9 @@ if (alignmentIndex == 1){
       } else {
         int j = i;
         // Collect all consecutive regular text characters
-        print(text.length);
-        while (j < text.length && text[j] != '~' && text[j] != '^' && !text.startsWith('-', j) && text[j] != '\\' && !text.startsWith('\$\$',j)){//text[j] != '\$') {
-          print(j);
+        //print(text.length);
+        while (j < text.length && text[j] != '~' && text[j] != '^' && !text.startsWith('\$t', j) && !text.startsWith('-', j) && text[j] != '\\' && !text.startsWith('\$\$',j)){//text[j] != '\$') {
+        //  print(j);
           j++;
         }
        // if (text[j] == '\$'){

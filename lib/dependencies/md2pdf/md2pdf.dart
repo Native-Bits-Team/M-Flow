@@ -636,7 +636,7 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style,
       //return pw.Rectangle(fillColor: const p.PdfColor(0.0, 1.0, 1.0), strokeColor: const p.PdfColor(0.0, 0.0, 1.0), strokeWidth: 50);
     //}),
    // pageFormat: p.PdfPageFormat.a4,
-    build: (context) => ch.widget ?? []));
+    build: (context) => ch.widget ?? [])); // REF #MD2PDF
   if (!htmlOrPdf){
   File(exportPath).writeAsBytes(await doc.save());
   }
@@ -966,5 +966,41 @@ buildTextWithFormattingPDF(String text, pw.TextStyle style) {
         } else {
           return -1;
         }
+  }
+
+  //int getPageCount(){
+    //pw.MultiPage().
+    
+  //}
+
+Future<int> getPageCount(String md2) async { // [T] dart_pdf
+
+// COPY PASTED AND CLEANED
+  if (md2 == ""){
+    return 1;
+  }
+
+  String s = "";
+  md2.split('\n').forEach((line){
+    if (line.length > 1){
+      s += line;
+      s += "\n";
+    }
+  });
+  md2 = s;
+  var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()], // COPY PASTED
+
+  blockSyntaxes: [const md.TableSyntax(),
+  const md.FencedCodeBlockSyntax(),
+  const md.HeaderWithIdSyntax(),
+  const md.SetextHeaderWithIdSyntax()],
+  extensionSet: md.ExtensionSet.gitHubWeb);
+
+  var document = parse(htmlx);
+  Chunk ch = await Styler().format(document.body!);
+// END OF COPY PAST
+    pw.Document doc = pw.Document();
+    doc.addPage(pw.MultiPage(build: (context) => ch.widget ?? [])); // [T] REF #MD2PDF  
+    return doc.document.pdfPageList.pages.length;
   }
   // NBT Ends

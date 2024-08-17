@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:m_flow/components/profile_drawer.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
+import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
 import 'package:m_flow/functions/json_db.dart';
 import 'package:m_flow/functions/mark_down_styler.dart';
 import 'package:m_flow/functions/string_utilities.dart';
@@ -461,7 +462,9 @@ void addPrefixToStartWrap(String prefix){
                     ),
 
                     const Spacer(), // Pushes icons to the rightmost edge
-
+                    //Text("Page Count: ", ),
+                    pageInfo(),
+                    const Spacer(),
                     Row(
                       children: [
                         IconButton(
@@ -589,4 +592,31 @@ MarkdownStyleSheet buildMarkdownStyle(double zoom, {String? tempTheme}) {
 
 autoSave(){
   File("autosave${DateTime.now().toUtc().toIso8601String().replaceAll(':', '')}.md").writeAsStringSync(temp!.markdownText);
+}
+
+
+
+class pageInfo extends StatefulWidget {
+  @override
+  State<pageInfo> createState() => _pageInfoState();
+}
+
+class _pageInfoState extends State<pageInfo> {
+  int pageCount = 0;
+  @override
+  Widget build(BuildContext context) {
+    //print("update");
+    // TODO: implement build
+    //throw UnimplementedError();
+    getPageCount(temp!.getUserInput()).then((newPageCount){
+      if (newPageCount != pageCount){
+      setState(() {
+        pageCount = newPageCount;
+        //print("t");
+      });
+      //pageCount= newPageCount
+    }});
+    //print("update done");
+    return Text("Page Count: $pageCount");// getPageCount(temp.getUserInput().toString()));
+  }
 }

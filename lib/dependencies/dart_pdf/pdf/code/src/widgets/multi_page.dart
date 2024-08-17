@@ -216,10 +216,13 @@ class MultiPage extends Page {
   }
 
   @override
-  void generate(Document document, {bool insert = true, int? index}) {
+  //void // NBT
+  //int  // NBT
+  void generate(Document document, {bool insert = true, int? index}){//, bool count = false}) { // NBT
     assert(pageFormat.width > 0 && pageFormat.width < double.infinity);
     assert(pageFormat.height > 0 && pageFormat.height < double.infinity);
 
+    //int pageCount = 0;
     final _margin = resolvedMargin!;
     final _mustRotate = mustRotate;
     final pageHeight = _mustRotate ? pageFormat.width : pageFormat.height;
@@ -268,6 +271,7 @@ class MultiPage extends Page {
       // Create a new page if we don't already have one
       if (context == null ||
           (child is NewPage) && child.newPageNeeded(freeSpace)) {
+        //pageCount +=1; // NBT
         final pdfPage = PdfPage(
           document.document,
           pageFormat: pageFormat,
@@ -389,6 +393,11 @@ class MultiPage extends Page {
       sameCount = 0;
       _index++;
     }
+    //if (count){ // NBT
+    //  return pageCount; //
+    //} else { // 
+    //  return 0; //
+    //} //
   }
 
   @override
