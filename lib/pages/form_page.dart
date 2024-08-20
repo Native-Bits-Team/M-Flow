@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:m_flow/components/profile_drawer.dart';
 import 'package:m_flow/dependencies/flutter_markdown/code/flutter_markdown.dart';
 import 'package:m_flow/dependencies/md2pdf/md2pdf.dart';
@@ -277,7 +279,9 @@ void addPrefixToStartWrap(String prefix){
     return Scaffold(
       appBar: AppBar(
         title: Text(title,
-            )),
+            ),
+        //actionsIconTheme: IconThemeData(color: Colors.red),
+        ),
 
       // *DRAWER : -------------------------------------------------------------------------------- *
       drawer: ProfileDrawer(
@@ -396,15 +400,28 @@ void addPrefixToStartWrap(String prefix){
                         })
                       },
                       child: Focus( // is this needed for shotcuts to work?
-                        child: TextField(
+                        child: Card(
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          color: Color(HexColor(getTheme()["forthColor"]).value),
+                          shape: RoundedRectangleBorder(side: BorderSide(),borderRadius: BorderRadius.circular(5.0)),
+                          //borderOnForeground: true,
+                         // clipBehavior: Clip.antiAliasWithSaveLayer,
+                          child: TextField(
+                            //shap
+                          textDirection: TextDirection.ltr,
+                          
+                          //keyboardType: ,
+                          //selectionHeightStyle: BoxHeightStyle.includeLineSpacingBottom,
                       controller: leftController,
                       focusNode: focusGuider,
+                      //strutStyle: StrutStyle(),
+                      
                       decoration: const InputDecoration(
-                        hintText: 'What\'s on your mind?',
+                        hintText: 'What\'s in your mind?',
                       ),
                       maxLines: null,
                       minLines: 50,
-                    ))),
+                    )))),
                   )),
                 ],
               ),
@@ -467,8 +484,15 @@ void addPrefixToStartWrap(String prefix){
                     const Spacer(),
                     Row(
                       children: [
+                        IconButton(onPressed: (){
+                          showDialog(context: context, builder: (BuildContext context){
+                            return DocumentSettings();
+                          });
+                        }, icon: Icon(Icons.settings)),
                         IconButton(
                           onPressed: () {
+                            //print(temp!.getUserInput());
+                            //print(markdownText);
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -486,12 +510,14 @@ void addPrefixToStartWrap(String prefix){
                       ],
                     ),
                   ]),
+                  true ? 
                   Expanded(
                     child: PreviewPanel(
                       markdownText: markdownText,
                       style: markdownStyle,
                     ),
-                  ),
+                  ) : AspectRatio(aspectRatio: 0.8,
+                   child: PreviewPanel(markdownText: markdownText, style: markdownStyle),),
                 ],
               ),
             ),
@@ -517,6 +543,7 @@ class PreviewPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     // Card: A Material Design Card...
     return Card(
+      color: Color(HexColor(getTheme()["pageBackgroundColor"]).value), // TODO: CHANGE
       elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.all(10.0), // Markdown() has a padding of 16.0

@@ -588,6 +588,7 @@ if (e.text!.contains(r'\$') || e.text!.contains(r'$$')) {
 mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style, {Map<String,dynamic> metadata = const {"title": null, "author" : null, "subject" : null}}) async {
   //md2 = md2.replaceAll('\n', '');
   //md2 = md2.replaceAll('\n\n', '\n');
+  if (md2.length > 1){
   String s = "";
   md2.split('\n').forEach((line){
     if (line.length > 1){
@@ -596,6 +597,7 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style,
     }
   });
   md2 = s;
+  }
   var htmlx = md.markdownToHtml(md2,
       inlineSyntaxes: [md.InlineHtmlSyntax()],
       blockSyntaxes: [
@@ -623,7 +625,7 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style,
     subject: metadata["subject"],
     creator: "M-Flow 0.1v"
   );
-  Color pageBackgroundColor = Color(HexColor(getTheme()["backgroundColor"]).value);
+  Color pageBackgroundColor = Color(HexColor(getTheme()["pageBackgroundColor"]).value);
   doc.addPage(pw.MultiPage(
     pageTheme: pw.PageTheme(
     theme: mStyleToThemeData(style),
@@ -642,11 +644,12 @@ mdtopdf(String md2, String exportPath, bool htmlOrPdf, MarkdownStyleSheet style,
   }
 }
 
-Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0, String? tempTheme, double dpiMultiplicator = 1.0, FilterQuality fq = FilterQuality.low}) async {
+Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style ,{p.PdfPageFormat format = p.PdfPageFormat.a4, pageIndex=0, String? tempTheme, double dpiMultiplicator = 1.0, FilterQuality fq = FilterQuality.low, bool multi = false}) async {
   if (md2 == ""){
     return [null,0]; // TODO: Should be removed
   }
-
+//print(md2);
+if (md2.length > 1){
   String s = "";
   md2.split('\n').forEach((line){
     if (line.length > 1){
@@ -659,6 +662,8 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
   //md2 = md2.replaceAll('\n\n\n\n', '\n\n');
   //md2 = md2.replaceAll('\n\n', '\n'); // THis fixes a bug
   md2 = s;
+}
+ // print(s);
  // print(md2);
   //print(md2.contains('\n\n'));
  /* var listS = md2.split('\n');
@@ -701,12 +706,13 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
     version: p.PdfVersion.pdf_1_5,);
     Color pageBackgroundColor;
     if (tempTheme == null){
-    pageBackgroundColor = Color(HexColor(getTheme()["backgroundColor"]).value);
+    pageBackgroundColor = Color(HexColor(getTheme()["pageBackgroundColor"]).value);
     } else {
-    pageBackgroundColor = Color(HexColor(loadThemeFileReturn(tempTheme)["backgroundColor"]).value);
+    pageBackgroundColor = Color(HexColor(loadThemeFileReturn(tempTheme)["pageBackgroundColor"]).value);
     }
+ // if (multi){
   doc.addPage(pw.MultiPage(
-  maxPages: 200,
+  maxPages: multi ? 200 : 1, //200,
   pageTheme: pw.PageTheme(
     buildBackground: (context){
       return pw.Expanded(child: pw.Rectangle(fillColor: p.PdfColor(pageBackgroundColor.red/255.0,pageBackgroundColor.green/255.0,pageBackgroundColor.blue/255.0)));
@@ -716,6 +722,16 @@ Future<List<dynamic>> generatePdfImageFromMD(String md2,MarkdownStyleSheet style
    // },
     theme: mStyleToThemeData(style)),
    build: (context) => ch.widget ?? []));
+ /* } else {
+  doc.addPage(pw.Page(
+    pageTheme: pw.PageTheme(buildBackground: (context){
+      return pw.Expanded(child: pw.Rectangle(fillColor: p.PdfColor(pageBackgroundColor.red/255.0, pageBackgroundColor.green/255.0, pageBackgroundColor.blue/255.0)));
+    },
+    theme: mStyleToThemeData(style)),
+    build: (context) => ch.widget!.first));
+  }*/
+
+
   Uint8List t = await doc.save();
   Stream<PdfRaster> r = Printing.raster(t, dpi: PdfPageFormat.inch*dpiMultiplicator); // [TRANSPARENCY] [IMAD LAGGOUNE]: I learned this from the source code of dart_pdf dependency
                                                                       // PdfPageFormat.inch is 72.0, I learned it from page_format.dart form pdf dependency
@@ -977,9 +993,9 @@ Future<int> getPageCount(String md2) async { // [T] dart_pdf
 
 // COPY PASTED AND CLEANED
   if (md2 == ""){
-    return 1;
+    return 0;
   }
-
+if (md2.length > 1){
   String s = "";
   md2.split('\n').forEach((line){
     if (line.length > 1){
@@ -988,6 +1004,7 @@ Future<int> getPageCount(String md2) async { // [T] dart_pdf
     }
   });
   md2 = s;
+}
   var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [md.InlineHtmlSyntax()], // COPY PASTED
 
   blockSyntaxes: [const md.TableSyntax(),

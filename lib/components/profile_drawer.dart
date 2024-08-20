@@ -34,6 +34,7 @@ class ProfileDrawer extends StatelessWidget {
     List<Widget> children = [
 DrawerHeader(
                 child: Image.file(File("assets/icon.png"))),
+                const SizedBox(height:5),
               Tiles(
                 icon: Icons.home, 
                 text: 'Dashboard',

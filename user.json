@@ -8,11 +8,20 @@
         "deflat": false,
         "autosave": false,
         "lastFormat": "pdf",
-        "lastTheme": "github_dark",
+        "lastTheme": "mflow_light",
         "lastNameUsed": ""
     },
     "projects": {
-        "recentOpen": {},
+        "recentOpen": {
+            "0": {
+                "filePath": "C:\\Users\\Work\\Documents\\m\\M-Flow\\TRANSPARENCY.md",
+                "fileName": "TRANSPARENCY.md"
+            },
+            "1": {
+                "filePath": "C:\\Users\\Work\\Documents\\m\\M-Flow\\assets\\manual.md",
+                "fileName": "manual.md"
+            }
+        },
         "list": {}
     }
 }

@@ -274,3 +274,21 @@ class _ExportDialogState extends State<ExportDialog> {
     );
   }
 }
+
+
+class DocumentSettings extends StatefulWidget {
+  @override
+  State<DocumentSettings> createState() => _DocumentSettingsState();
+}
+
+class _DocumentSettingsState extends State<DocumentSettings> {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    //throw UnimplementedError();
+    return const SimpleDialog( // [T] Above
+      title: Text("Document Settings"),
+      contentPadding: EdgeInsets.all(32.0),
+      children: [Row(children: [Text("Primary Text Direction: "), Spacer(), DropdownMenu(initialSelection: "ltr",dropdownMenuEntries: [DropdownMenuEntry(value: "ltr", label: "Left To Right"), DropdownMenuEntry(value: "rtl", label: "Right to Left")])])]);
+  }
+}
