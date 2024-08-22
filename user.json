@@ -1,18 +1,1 @@
-{
-    "user": {
-        "name": "user"
-    },
-    "settings": {
-        "signature": false,
-        "compress": false,
-        "deflat": false,
-        "autosave": false,
-        "lastFormat": "pdf",
-        "lastTheme": "github_dark",
-        "lastNameUsed": ""
-    },
-    "projects": {
-        "recentOpen": {},
-        "list": {}
-    }
-}
+{"user":{"name":"user"},"settings":{"signature":false,"compress":false,"deflat":false,"autosave":true,"lastFormat":"pdf","lastTheme":"github_dark","lastNameUsed":""},"projects":{"recentOpen":{"2":{"filePath":"C:\\Users\\DELL\\Downloads\\manualmd","fileName":"manualmd"}},"list":{}}}

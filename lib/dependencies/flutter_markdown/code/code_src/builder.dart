@@ -1216,6 +1216,45 @@ if (alignmentIndex == 1){
       }
     }
 
+    
+  else if (text.contains('c\$', i)) {
+    print("Working!");
+  
+    // Find the position of 'c$' after the current index i
+    int startIndex = text.indexOf('c\$', i);
+    print(startIndex);
+    int endIndex = text.indexOf('c\$', startIndex + 2);
+    print(endIndex);
+
+    // Get the text before and after the 'c$' syntax
+    final String beforeText = text.substring(i, startIndex);
+    print(beforeText);
+    final String centeredText = endIndex != -1 
+        ? text.substring(startIndex + 2, endIndex) 
+        : text.substring(startIndex + 2);
+        print(centeredText);
+    final String afterText = endIndex != -1 
+        ? text.substring(endIndex + 2) 
+        : '';
+        print(afterText);
+
+    // Add the text before 'c$' as a normal span
+    if (beforeText.isNotEmpty) {
+      spans.add(TextSpan(text: beforeText, style: style));
+    }
+
+    // Add the centered text using WidgetSpan
+    spans.add(WidgetSpan(
+      child: Container(
+        alignment: Alignment.center,
+        width: 550,
+        child: Text(centeredText, style: style, maxLines: 2, overflow: TextOverflow.ellipsis),
+      ),
+    ));
+
+    // Update i to continue processing the text after the last c$
+    i = endIndex != -1 ? endIndex + 2 : text.length;
+  }
 
     else if (text.startsWith('--', i) && (i == 0 || text[i - 1] != '\\')) {
       // Check if the current segment is underlined (enclosed in '-')
@@ -1304,7 +1343,7 @@ if (alignmentIndex == 1){
         }
 
         // If a closing '~' is found, apply the subscript formatting
-        if (j < text.length) {
+        if (j < text.length  && text[i+1] != ' ' && text[j-1] != ' ') {
           final String subscriptText = text.substring(i + 1, j);
 
           // Create a WidgetSpan for subscript with a vertical offset
@@ -1339,7 +1378,7 @@ if (alignmentIndex == 1){
         }
 
         // If a closing '^' is found, apply the superscript formatting
-        if (j < text.length) {
+        if (j < text.length && text[i+1] != ' ' && text[j-1] != ' ') {
           final String superscriptText = text.substring(i + 1, j);
 
           // Create a WidgetSpan for superscript with a vertical offset
