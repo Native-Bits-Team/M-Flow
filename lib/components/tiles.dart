@@ -20,11 +20,13 @@ class Tiles extends StatelessWidget {
       child: ListTile(
         leading: Icon(
           icon,
+          //color: Colors.red,
           //color: Colors.white,
         ),
         onTap: onTap,
         title: Text(text, maxLines: 1,
-        style: const TextStyle(color: Colors.white),),
+       // style: const TextStyle(color: Colors.white),
+       ),
       ),
     );
   }

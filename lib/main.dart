@@ -9,7 +9,9 @@ void main() {
   WidgetsFlutterBinding();
   windowManager.ensureInitialized();
   var winOp =
-      const WindowOptions(size: Size(1360, 900), center: true, title: "M-Flow");
+      const WindowOptions(
+        minimumSize: Size(1000, 700),
+        size: Size(1360, 900), center: true, title: "M-Flow");
 
   windowManager.waitUntilReadyToShow(winOp, () async {
     await windowManager.show();
@@ -54,11 +56,20 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         home: const DashBoard(),
         theme: ThemeData(
-          cardColor: Color(HexColor(theme["backgroundColor"]).value),
+          cardColor: Color(HexColor(theme["pageBackgroundColor"]).value),
           colorScheme: colorSchemeSwitcher(theme["type"]),
+          //floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.red),
+          //menuButtonTheme: MenuButtonThemeData(style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.red))),
+          /*navigationDrawerTheme: NavigationDrawerThemeData(
+            backgroundColor: Colors.red,
+            iconTheme: WidgetStatePropertyAll(IconThemeData(color: Colors.red)),
+            indicatorShape: CircleBorder()),*/
+         
           drawerTheme: DrawerThemeData(
               backgroundColor: Color(HexColor(theme["backgroundColor"]).value),
-              shape: const ContinuousRectangleBorder()),
+              shape: const ContinuousRectangleBorder(),
+              //elevation: 10.0,
+              ),
           inputDecorationTheme: InputDecorationTheme(
               enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white54)),
@@ -69,25 +80,35 @@ class _MyAppState extends State<MyApp> {
           appBarTheme: AppBarTheme(
               centerTitle: true,
               toolbarHeight: 40,
-              backgroundColor: Color(HexColor(theme["backgroundColor"]).value),
+              backgroundColor: Color(HexColor(theme["secondColor"]).value), // REF #TT
               titleTextStyle: TextStyle(
                   color: Color(HexColor(theme["firstColor"]).value),
                   fontSize: 20)),
 
           iconButtonTheme: IconButtonThemeData(
               style: ButtonStyle(
+                //splashFactory: ,
+                //backgroundColor: 
+                //surfaceTintColor: 
+                //mouseCursor: 
+                overlayColor: 
+                WidgetStatePropertyAll(Color(HexColor(theme["forthColor"]).value)), // [T] below
                   iconColor: WidgetStatePropertyAll(
-                      Color(HexColor(theme["firstColor"]).value)))),
+                      Color(HexColor(theme["thirdColor"]).value)))),
+
+          iconTheme: IconThemeData(color: Color(HexColor(theme["forthColor"]).value)), // [T] REF #TT
 
           cardTheme: CardTheme(
-              color: Color(HexColor(theme["backgroundColor"]).value),
+              color: Color(HexColor(theme["secondColor"]).value),
               shadowColor: Colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
               elevation: 3.0),
+          
           listTileTheme: ListTileThemeData(
-              iconColor: Color(HexColor(theme["firstColor"]).value)),
+              iconColor: Color(HexColor(theme["thirdColor"]).value)),
+          
           scaffoldBackgroundColor:
-              Color(HexColor(theme["pageBackgroundColor"]).value),
+              Color(HexColor(theme["backgroundColor"]).value),
           dialogBackgroundColor:
               Color(HexColor(theme["pageBackgroundColor"]).value),
           dialogTheme:
@@ -105,7 +126,7 @@ class _MyAppState extends State<MyApp> {
             backgroundColor: WidgetStatePropertyAll(
                 Color(HexColor(theme["backgroundColor"]).value)),
             iconColor: WidgetStatePropertyAll(
-                Color(HexColor(theme["firstColor"]).value)),
+                Color(HexColor(theme["thirdColor"]).value)),
             textStyle: WidgetStatePropertyAll(TextStyle(
                 color: Color(HexColor(theme["firstColor"]).value),
                 fontWeight: FontWeight.bold)),
@@ -116,7 +137,10 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-typographySwitcher(int index) {
+typographySwitcher(int? index) {
+  if (index == null){
+    return Typography.whiteHelsinki;
+  }
   switch (index) {
     case 0:
       return Typography.blackHelsinki;

@@ -233,7 +233,7 @@ class _DocPreviewState extends State<DocPreview> {
               });
             });
           } else {
-            generatePdfImageFromMD(text, MarkdownStyleSheet(), tempTheme: "mflow", dpiMultiplicator: 0.7, fq: FilterQuality.high)
+            generatePdfImageFromMD(text, MarkdownStyleSheet(), tempTheme: "mflow_light", dpiMultiplicator: 0.7, fq: FilterQuality.high)
             .then((imageAndSize) {
               setState(() {
                 //widget.previewImageBytes = imageAndSize[0];

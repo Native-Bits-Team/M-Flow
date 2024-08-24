@@ -1,0 +1,17 @@
+{
+    "note" : "Used ColorPaletteGenerator.con: color-palette-DBE1E6-E9EBF5-9DB5CB-6B88AA-3C4474.png",
+    "backgroundColor" : "E9EBF5",
+    "pageBackgroundColor" : "FFFFFF",
+    "firstColor" : "000000",
+    "secondColor" : "9DB5CB",
+    "thirdColor" : "6B88AA",
+    "forthColor" : "DBE1E6",
+    "themeFileName" : "mflow_light",
+    "themeName" : "M-Flow Light",
+    "typography" : "0",
+    "type" : "light",
+
+    "h1" : {
+        "fontSize" : "16"
+    }
+}

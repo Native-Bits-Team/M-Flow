@@ -29,7 +29,7 @@ initDatabaseAndThemes(){
     loadThemeFile(globalDatabase["settings"]["lastTheme"]);
   } else {
     globalDatabase = newDatabase();
-    loadThemeFile("github_dark");
+    loadThemeFile("mflow_light");
   }
 
   updateDropThemeEntries();
@@ -47,7 +47,7 @@ newDatabase(){
         "deflat": false,
         "autosave": true,
         "lastFormat": "pdf",
-        "lastTheme": "github_dark",
+        "lastTheme": "mflow_light",
         "lastNameUsed": ""
     },
     "projects": {
@@ -128,18 +128,18 @@ removeRecentOpen(String? path, String? fileName) {
 }
 
 loadThemeFile(String? themePath) {
-  if (themePath == "default"){
+  if (themePath == "default" || themePath == null){
     // TODO: Add a default theme here
-    globalTheme = jsonDecode(File("assets/themes/github_dark.json").readAsStringSync());
+    globalTheme = jsonDecode(File("assets/themes/mflow_light.json").readAsStringSync());
     return;
   }
-  if (themePath == null){
-    return;
-  }
+ // if (themePath == null){
+ //   return;
+ // }
   if (File("assets/themes/$themePath.json").existsSync()){
   globalTheme = jsonDecode(File("assets/themes/$themePath.json").readAsStringSync());
   } else {
-  globalTheme = jsonDecode(File("assets/themes/github_dark").readAsStringSync());
+  globalTheme = jsonDecode(File("assets/themes/mflow_light.json").readAsStringSync());
   }
 }
 

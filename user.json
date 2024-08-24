@@ -1,1 +1,27 @@
-{"user":{"name":"user"},"settings":{"signature":false,"compress":false,"deflat":false,"autosave":true,"lastFormat":"pdf","lastTheme":"github_dark","lastNameUsed":""},"projects":{"recentOpen":{"2":{"filePath":"C:\\Users\\DELL\\Downloads\\manualmd","fileName":"manualmd"}},"list":{}}}
+{
+    "user": {
+        "name": "user"
+    },
+    "settings": {
+        "signature": false,
+        "compress": false,
+        "deflat": false,
+        "autosave": false,
+        "lastFormat": "pdf",
+        "lastTheme": "mflow_light",
+        "lastNameUsed": ""
+    },
+    "projects": {
+        "recentOpen": {
+            "0": {
+                "filePath": "C:\\Users\\Work\\Documents\\m\\M-Flow\\TRANSPARENCY.md",
+                "fileName": "TRANSPARENCY.md"
+            },
+            "1": {
+                "filePath": "C:\\Users\\Work\\Documents\\m\\M-Flow\\assets\\manual.md",
+                "fileName": "manual.md"
+            }
+        },
+        "list": {}
+    }
+}
