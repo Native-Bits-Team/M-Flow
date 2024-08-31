@@ -1217,44 +1217,56 @@ if (alignmentIndex == 1){
     }
 
     
-  else if (text.contains('c\$', i)) {
-    print("Working!");
+    else if (text.contains('^\$', i)) {
+      print("Working!");
   
-    // Find the position of 'c$' after the current index i
-    int startIndex = text.indexOf('c\$', i);
-    print(startIndex);
-    int endIndex = text.indexOf('c\$', startIndex + 2);
-    print(endIndex);
+      // Find the position of 'c$' after the current index i
+      int startIndex = text.indexOf('^\$', i);
+      print("stidx: $startIndex");
+      int endIndex = text.indexOf('^\$', startIndex + 2);
+      print("endidx: $endIndex");
 
-    // Get the text before and after the 'c$' syntax
-    final String beforeText = text.substring(i, startIndex);
-    print(beforeText);
-    final String centeredText = endIndex != -1 
-        ? text.substring(startIndex + 2, endIndex) 
-        : text.substring(startIndex + 2);
-        print(centeredText);
-    final String afterText = endIndex != -1 
-        ? text.substring(endIndex + 2) 
-        : '';
-        print(afterText);
+      // Get the text before and after the 'c$' syntax
+      final String beforeText = text.substring(i, startIndex);
+      print("before: $beforeText");
+      final String centeredText = endIndex != -1 
+          ? text.substring(startIndex + 2, endIndex) 
+          : text.substring(startIndex + 2);
 
-    // Add the text before 'c$' as a normal span
-    if (beforeText.isNotEmpty) {
-      spans.add(TextSpan(text: beforeText, style: style));
+      // String? centeredText;
+      // if (endIndex != -1){
+      //   centeredText = text.substring(startIndex + 2, endIndex);
+      // } else {
+      //   centeredText = "No centered text found";
+      // }
+      print("center: $centeredText");    
+    
+      final String afterText = endIndex != -1 
+          ? text.substring(endIndex + 2) 
+          : '';
+      print("after: $afterText");
+
+      // Add the text before 'c$' as a normal span
+      if (beforeText.isNotEmpty) {
+        spans.add(TextSpan(text: beforeText, style: style));
+      }
+
+      // Add the centered text using WidgetSpan
+      spans.add(WidgetSpan(
+        child: Container(
+          alignment: Alignment.center,
+          width: 550,
+          // child: Text(centeredText, style: style),
+          child: Text(centeredText, style: style, maxLines: 2, overflow: TextOverflow.ellipsis),
+        ),
+      ));
+
+      // Update i to continue processing the text after the last c$
+      i = endIndex != -1 ? endIndex + 2 : text.length;
+      // if (endIndex != -1){
+      //   i = endIndex+2;
+      // }
     }
-
-    // Add the centered text using WidgetSpan
-    spans.add(WidgetSpan(
-      child: Container(
-        alignment: Alignment.center,
-        width: 550,
-        child: Text(centeredText, style: style, maxLines: 2, overflow: TextOverflow.ellipsis),
-      ),
-    ));
-
-    // Update i to continue processing the text after the last c$
-    i = endIndex != -1 ? endIndex + 2 : text.length;
-  }
 
     else if (text.startsWith('--', i) && (i == 0 || text[i - 1] != '\\')) {
       // Check if the current segment is underlined (enclosed in '-')
