@@ -500,11 +500,11 @@ if (element.textContent.contains(r'\$') || element.textContent.contains(r'$$')) 
       
       // NBT
 
-      if (o.contains('~') || o.contains('^') || o.contains('-') || o.contains('\$\$') || o.contains('\$t')){
+      if (o.contains('~') || o.contains('^') || o.contains('-') || o.contains('\$\$') || o.contains('^\$')){
       child = _buildTextWithFormatting(
         _isInBlockquote ? o : trimText(o),  // Pass text with or without blockquote formatting
         t, // Pass the updated text style with decoration
-        styleSheet
+        styleSheet, delegate.context,
       );
       } else{
 
@@ -1177,6 +1177,23 @@ if (alignmentIndex == 1){
     }
   }
 
+  // HELPER METHOD...........................................................
+  double getTextWidth(String text, TextStyle style, BuildContext context) {
+    // TextPainter: An object that paints a TextSpan tree into a Canvas.
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      maxLines: 1,
+      textDirection: TextDirection.ltr, // WE CAN USE 'rtl' for arabic & hebrew.
+    );
+
+    // Use the context's media query to get the maximum width
+    double maxWidth = MediaQuery.of(context).size.width;
+
+    textPainter.layout(minWidth: 0, maxWidth: maxWidth);
+    return textPainter.width;
+  }
+
+
 
   // NBT
   // CUSTOM WIDGET TO APPLY THE SUB & SUPERSCRIPT FEATURES....
@@ -1184,7 +1201,7 @@ if (alignmentIndex == 1){
   // This method builds a RichText widget with support for custom formatting.
   // It interprets specific charactars (`~` for subscript and `^` for superscript)
   // within the input text and applies the corresponding formatting.
-  Widget _buildTextWithFormatting(String text, TextStyle style, MarkdownStyleSheet styleSheet) {
+  Widget _buildTextWithFormatting(String text, TextStyle style, MarkdownStyleSheet styleSheet, BuildContext context) {
     Widget? alignWidget;
 
     var aIndex = 0;
@@ -1216,57 +1233,128 @@ if (alignmentIndex == 1){
       }
     }
 
-    
-    else if (text.contains('^\$', i)) {
-      print("Working!");
-  
-      // Find the position of 'c$' after the current index i
+    // UNDER TESTING, MAIN BUGS: RANGE ERRORS & NOT COMPATIBLE WHEN USED ALONG WITH OTHER SYNTAXES i.e BOLD/ITALIC/SUB-SUPER SCRIPTS...
+    else if (text.contains('^\$')) {
+      print("HEY! it's working.");
       int startIndex = text.indexOf('^\$', i);
-      print("stidx: $startIndex");
-      int endIndex = text.indexOf('^\$', startIndex + 2);
-      print("endidx: $endIndex");
+      if (startIndex != -1) {
+        int endIndex = text.indexOf('^\$', startIndex + 2);
+      
+      if (endIndex != -1 && (text[startIndex+2] != ' ') && (text[endIndex-1] != ' ')){
 
-      // Get the text before and after the 'c$' syntax
-      final String beforeText = text.substring(i, startIndex);
-      print("before: $beforeText");
-      final String centeredText = endIndex != -1 
-          ? text.substring(startIndex + 2, endIndex) 
-          : text.substring(startIndex + 2);
+      print("Start: $startIndex");
+      print("End: $endIndex");
 
-      // String? centeredText;
-      // if (endIndex != -1){
-      //   centeredText = text.substring(startIndex + 2, endIndex);
-      // } else {
-      //   centeredText = "No centered text found";
-      // }
-      print("center: $centeredText");    
-    
-      final String afterText = endIndex != -1 
-          ? text.substring(endIndex + 2) 
-          : '';
-      print("after: $afterText");
+      String leftText = text.substring(0, startIndex);
+      String centerText = endIndex != -1 ? text.substring(startIndex + 2, endIndex) : text.substring(startIndex + 2);
+      String rightText = endIndex != -1 ? text.substring(endIndex+2, text.length) : '';
+      print("LEFT: $leftText");
+      print("Right: $rightText");
+      print("Center: $centerText");
 
-      // Add the text before 'c$' as a normal span
-      if (beforeText.isNotEmpty) {
-        spans.add(TextSpan(text: beforeText, style: style));
-      }
 
-      // Add the centered text using WidgetSpan
+      double availableWidth = MediaQuery.of(context).size.width - 40;
+      double leftTextWidth = getTextWidth(leftText, style, context);
+      double rightTextWidth = getTextWidth(rightText, style, context);
+
+      double maxCenterTextWidth = availableWidth - leftTextWidth - rightTextWidth;
+      double centerTextWidth = maxCenterTextWidth;
+
       spans.add(WidgetSpan(
-        child: Container(
-          alignment: Alignment.center,
-          width: 550,
-          // child: Text(centeredText, style: style),
-          child: Text(centeredText, style: style, maxLines: 2, overflow: TextOverflow.ellipsis),
-        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(leftText, style: style,),
+            ),
+            if (centerText.isNotEmpty)
+            Expanded(
+              child: Container(
+                width: centerTextWidth,
+                child: Text(
+                  centerText,
+                  textAlign: TextAlign.center,
+                  style: style,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Text(rightText, style: style,),
+            )
+          ],
+        )
       ));
 
-      // Update i to continue processing the text after the last c$
+      i= endIndex != -1 ? endIndex + 2 : text.length;
+      } else {
+
+      // If there's a space after the starting '^\$' or before the ending '^\$', treat it as normal text
+      spans.add(TextSpan(text: text.substring(startIndex, endIndex != -1 ? endIndex + 2 : text.length), style: style));
       i = endIndex != -1 ? endIndex + 2 : text.length;
-      // if (endIndex != -1){
-      //   i = endIndex+2;
-      // }
-    }
+
+      }
+      } else {
+        // if not starting index found, skip processing
+        print("No valid start index found!");
+        break;
+      }
+    } 
+    // ENDS HERE------------------------------------------------------------
+
+    // ----------------------------------------------------**CAUTION: 'DO NOT REMOVE THIS'**--------------------------------------------------------------------
+    // else if (text.contains('^\$', i)) {
+    //   print("Working!");
+  
+    //   // Find the position of 'c$' after the current index i
+    //   int startIndex = text.indexOf('^\$', i);
+    //   print("stidx: $startIndex");
+    //   int endIndex = text.indexOf('^\$', startIndex + 2);
+    //   print("endidx: $endIndex");
+
+    //   // Get the text before and after the 'c$' syntax
+    //   final String beforeText = text.substring(i, startIndex);
+    //   print("before: $beforeText");
+    //   final String centeredText = endIndex != -1 
+    //       ? text.substring(startIndex + 2, endIndex) 
+    //       : text.substring(startIndex + 2);
+
+    //   // String? centeredText;
+    //   // if (endIndex != -1){
+    //   //   centeredText = text.substring(startIndex + 2, endIndex);
+    //   // } else {
+    //   //   centeredText = "No centered text found";
+    //   // }
+    //   print("center: $centeredText");    
+    
+    //   final String afterText = endIndex != -1 
+    //       ? text.substring(endIndex + 2) 
+    //       : '';
+    //   print("after: $afterText");
+
+    //   // Add the text before 'c$' as a normal span
+    //   if (beforeText.isNotEmpty) {
+    //     spans.add(TextSpan(text: beforeText, style: style));
+    //   }
+
+    //   // Add the centered text using WidgetSpan
+    //   spans.add(WidgetSpan(
+    //     child: Container(
+    //       alignment: Alignment.center,
+    //       width: 550,
+    //       // child: Text(centeredText, style: style),
+    //       child: Text(centeredText, style: style, maxLines: 2, overflow: TextOverflow.ellipsis),
+    //     ),
+    //   ));
+
+    //   // Update i to continue processing the text after the last c$
+    //   i = endIndex != -1 ? endIndex + 2 : text.length;
+    //   // if (endIndex != -1){
+    //   //   i = endIndex+2;
+    //   // }
+    // }
+    // ----------------------------------------------------**CAUTION: 'DO NOT REMOVE THIS'**--------------------------------------------------------------------
+
+
 
     else if (text.startsWith('--', i) && (i == 0 || text[i - 1] != '\\')) {
       // Check if the current segment is underlined (enclosed in '-')
@@ -1390,7 +1478,7 @@ if (alignmentIndex == 1){
         }
 
         // If a closing '^' is found, apply the superscript formatting
-        if (j < text.length && text[i+1] != ' ' && text[j-1] != ' ') {
+        if (j < text.length && (text[i+1] != ' ' || text[i+1] != '\$') && (text[j-1] != ' ' || text[j-1] != '\$')) {
           final String superscriptText = text.substring(i + 1, j);
 
           // Create a WidgetSpan for superscript with a vertical offset
